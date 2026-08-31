@@ -1,56 +1,82 @@
-# Welcome to your Expo app 👋
+# in2u
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+App móvil (iOS + Android, Expo/React Native) para parejas: calendario compartido
+sincronizado con Google Calendar y check-in diario de ánimo que le llega a tu
+pareja en tiempo real.
 
-## Get started
+El plan completo de arquitectura y fases está en `tasks/todo.md`.
 
-1. Install dependencies
+## Stack
 
-   ```bash
-   npm install
-   ```
+- **App**: Expo (React Native) + TypeScript + expo-router
+- **Backend**: [Supabase](https://supabase.com) (Postgres + Auth + Realtime + Edge Functions)
+- **Login**: Google OAuth (vía Supabase Auth) — también da acceso a Google Calendar
+- **Notificaciones**: Expo Notifications (push)
 
-2. Start the app
+## Setup — cuentas que hay que crear una sola vez
 
-   ```bash
-   npx expo start
-   ```
+Esto lo tenés que hacer vos manualmente (login y creación de cuentas/proyectos
+en servicios de terceros no se puede automatizar). Una vez hecho, es un paso
+único por entorno.
 
-In the output, you'll find options to open the app in a
+### 1. Crear el proyecto de Supabase
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+1. Entrá a [supabase.com](https://supabase.com) y creá un proyecto nuevo (el
+   plan free alcanza de sobra para esto).
+2. En **Project Settings → API**, copiá el `Project URL` y la `anon public key`.
+3. Copiá `.env.example` a `.env` y pegá esos dos valores.
+4. En el **SQL Editor** de Supabase, corré el contenido de
+   `supabase/migrations/0001_profiles_and_couples.sql` (y las que se vayan
+   agregando en fases siguientes, en orden).
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### 2. Habilitar login con Google
 
-## Get a fresh project
+1. En [Google Cloud Console](https://console.cloud.google.com/), creá un
+   proyecto (o reusá uno) y andá a **APIs & Services → Credentials**.
+2. Creá un **OAuth client ID** de tipo **Web application**.
+3. En **Authorized redirect URIs** agregá la URL de callback que te muestra
+   Supabase en **Authentication → Providers → Google** (algo como
+   `https://<tu-proyecto>.supabase.co/auth/v1/callback`).
+4. Copiá el **Client ID** y **Client Secret** que te da Google y pegalos en
+   **Authentication → Providers → Google** dentro de Supabase. Activá el
+   provider.
+5. En **Authentication → URL Configuration** de Supabase, agregá `in2u://` a
+   la lista de **Redirect URLs** (es el esquema custom de la app, definido en
+   `app.json`).
+6. Si vas a usar la API de Google Calendar (Fase C), en Google Cloud además
+   activá la **Google Calendar API** en **APIs & Services → Library**.
 
-When you're ready, run:
+El Client ID/Secret de Google viven únicamente en el panel de Supabase — la
+app nunca los necesita directamente.
+
+## Correr el proyecto
 
 ```bash
-npm run reset-project
+npm install
+npm run web       # navegador, para iterar rápido en layout/textos
+npx expo start     # QR para abrir en Expo Go (celular real) — necesario para probar el login con Google
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Estructura
 
-### Other setup steps
+```
+src/
+  app/                     # rutas (expo-router)
+    (auth)/login.tsx        # login con Google
+    onboarding.tsx          # crear/unirse a una pareja con código
+    (tabs)/                 # Nosotros (mood), Calendario, Perfil
+  contexts/auth-context.tsx # sesión + pareja vinculada
+  lib/
+    supabase.ts             # cliente Supabase
+    google-auth.ts          # flujo de login con Google
+    couples.ts               # crear / unirse a pareja
+  components/                # UI reusable (ThemedText, ThemedView, tabs)
+supabase/
+  migrations/                # SQL versionado, una fase por archivo
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## Fases del proyecto
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Ver `tasks/todo.md` para el detalle y el estado de cada fase (A: login +
+pairing, B: ánimo en tiempo real, C: calendario + Google Calendar, D: Outlook,
+E: demo web para el portfolio).
