@@ -18,6 +18,8 @@ Plan completo original: `C:\Users\UMA\.claude\plans\agile-plotting-ritchie.md`
 - [x] Migración `0001_profiles_and_couples.sql` corrida en Supabase — `profiles` y `couples` confirmadas
 - [x] Google habilitado como provider en Supabase: consent screen + OAuth Client ID creados en Google Cloud (proyecto "My First Project" / `ethereal-runner-326715`), callback URL registrada, Client ID/Secret cargados y guardados en Supabase (confirmado: "Google: Enabled" en la lista de providers)
 - [x] Verificado en preview web con credenciales reales de Supabase: la app carga y `signInWithOAuth` dispara correctamente
+- [x] Agregadas las Redirect URLs que faltaban en Supabase (Authentication → URL Configuration): sin esto, Supabase no sabía adónde volver después del login de Google y caía al Site URL por defecto (`localhost:3000`, inexistente) → error "ERR_CONNECTION_FAILED" en el celular. Fix: `in2u://*` y `exp://*` agregadas a Redirect URLs, Site URL cambiado a `in2u://`.
+- [x] Agregados como usuarios de prueba en Google Cloud (ver más abajo) — necesario mientras la pantalla de consentimiento esté en modo "Prueba"
 - [ ] Probar el flujo completo (login → pairing) en Expo Go con dos cuentas de Google reales — pendiente, requiere el celular de Melany (ver mensaje del chat)
 
 ### Hallazgo: popup bloqueado en el preview web (no afecta la app real)
@@ -58,6 +60,11 @@ menstrual con niveles de privacidad hacia Nico) — y mostró la app
 internacionalizada (ES/EN según idioma del sistema). El roadmap de acá abajo
 quedó reordenado para reflejar eso; el detalle completo de la Fase B está en
 el plan (`C:\Users\UMA\.claude\plans\agile-plotting-ritchie.md`, aprobado).
+
+**"Nico" en el diseño y en las notas de acá es el nombre placeholder del
+mockup** — la pareja real de Melany se llama **Raúl** (`raulveneriruiz@gmail.com`).
+En la app el nombre nunca está hardcodeado, sale del `display_name` del
+perfil, así que esto no afecta el código.
 
 ## Fase B — Sistema de diseño Nocturne + Nosotros + Check-in
 
