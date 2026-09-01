@@ -13,7 +13,7 @@
     "android": {
       "package": "com.melanymartinez.in2u",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#161826",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -38,6 +38,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ab228a17-5ae9-45c2-9e1d-16477d9912aa"
+      }
+    },
+    "owner": "melware-labs"
   }
 }
