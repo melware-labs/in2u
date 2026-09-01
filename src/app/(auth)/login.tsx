@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import * as Linking from 'expo-linking';
+import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -6,12 +7,26 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { signInWithGoogle } from '@/lib/google-auth';
+import { createSessionFromUrl, signInWithGoogle } from '@/lib/google-auth';
 
 export default function LoginScreen() {
   const theme = useTheme();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const handledUrl = useRef<string | null>(null);
+
+  // Red de respaldo: `WebBrowser.openAuthSessionAsync` a veces no intercepta
+  // la vuelta a la app después del login (más común en Expo Go). Si eso
+  // pasa, el sistema operativo igual reabre la app con la URL del deep
+  // link — este listener la agarra y crea la sesión desde ahí.
+  const url = Linking.useLinkingURL();
+  useEffect(() => {
+    if (!url || url === handledUrl.current) return;
+    handledUrl.current = url;
+    createSessionFromUrl(url).catch((err) => {
+      setErrorMessage(err instanceof Error ? err.message : 'No se pudo iniciar sesión.');
+    });
+  }, [url]);
 
   async function handlePress() {
     setErrorMessage(null);
