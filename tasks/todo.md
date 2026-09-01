@@ -88,10 +88,11 @@ perfil, así que esto no afecta el código.
 - [ ] Pantalla "Nuevo evento" (modal): cuándo/dura, visibilidad, toggle "escribir también en Google Calendar"
 - [ ] Sync lectura+escritura con Google Calendar usando el refresh token obtenido en el login
 
-## Fase D — Consejos (nueva, del diseño)
+## Fase D — Consejos (nueva, del diseño — actualizada con IA)
 
 - [ ] Pestaña nueva "Consejos" en el tab bar (pasa de 3 a 4 tabs)
-- [ ] Contenido curado estático al principio (sin IA ni backend nuevo), selección simple según patrón de ánimo reciente de la pareja
+- [ ] Contenido base curado (categorías de consejos, como en el diseño)
+- [ ] **Decisión 2026-09-01 (confirmada por Melany): análisis con IA real vía Gemini**, no reglas de palabras clave. Edge Function en Supabase recibe la nota del check-in, la manda a la API de Gemini (tiene tier gratis, alcanza para el volumen de la app) con un prompt que la clasifica y elige qué consejo curado mostrarle a quien la lee. La API key de Gemini vive solo en la Edge Function, nunca en el cliente. **Nota de privacidad ya conversada y aceptada**: esto manda las notas del check-in (potencialmente íntimas) a un servicio externo (Google/Gemini) para procesarlas — no se quedan solo entre Supabase y la app.
 
 ## Fase E — Ciclo (nueva, del diseño — sensible, requiere confirmación aparte antes de construirla)
 
@@ -113,6 +114,17 @@ perfil, así que esto no afecta el código.
 - [ ] Exportar build web (`expo export --platform web`)
 - [ ] Embeberla en un mockup de celular dentro de una página del portfolio
 - [ ] Nota: el login con Google y algunas cosas nativas pueden no funcionar igual en la demo web — evaluar un modo "demo" con datos de ejemplo si hace falta
+
+## Fase I — Pedidos nuevos de Melany, 2026-09-01 (pendientes de planificar en detalle)
+
+Todavía no tienen fase asignada ni diseño de datos — se planifican con
+`EnterPlanMode` cuando la Fase B esté verificada de punta a punta. Anotados
+acá para no perderlos:
+
+- [ ] **Diario de citas / acontecimientos importantes con fotos adjuntas.** Necesita tabla nueva + Supabase Storage para las fotos (con su propia RLS de bucket).
+- [ ] **"Conocer a la pareja" para adaptar el contenido.** Un cuestionario o perfil sobre la pareja (gustos, lenguaje del amor, lo que sea que Melany tenga en mente) que alimenta la personalización de Consejos. Falta que Melany precise qué datos concretos quiere capturar.
+- [ ] **Botón "Escribirle" conectado a la app de mensajería preferida.** Melany confirmó: se pregunta al crear la cuenta (onboarding) qué app usa cada quien (WhatsApp/Telegram/SMS/etc.) y su contacto. El botón arma el deep link correspondiente (`whatsapp://send?phone=...`, `sms:...`, etc.). Es chico y toca el onboarding + la Fase B ya construida — buen candidato para ir antes que el resto de esta lista.
+- [ ] **Versión web real de la app** (no solo la demo de la Fase H) — usable con login y datos reales desde el navegador, no solo una vista de muestra. Pendiente de confirmar el alcance exacto con Melany (le pregunté, todavía no contestó esa parte).
 
 ## Distribución (decidir en Fase B, no bloquea nada ahora)
 
