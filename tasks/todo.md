@@ -133,6 +133,15 @@ Melany y su pareja usan un Android y un iPhone (uno de cada uno).
 - **Android**: gratis siempre — `.apk` standalone vía EAS Build (tier free), sin pasar por Play Store, sin el fee de u$s 25.
 - **iOS**: sin cuenta de Apple Developer (u$s 99/año) no hay forma razonable de instalar un build propio de forma permanente. Camino gratis: **Expo Go**. Falta confirmar en la práctica, al construir la Fase B, si las notificaciones push en background andan confiables dentro de Expo Go en iOS con el SDK actual — si no alcanza, ahí se decide si vale pagar la cuenta de Apple.
 
+### Setup del `.apk` para Raúl (2026-09-01)
+
+- [x] `eas.json` creado con perfil `preview` (`distribution: internal`, `android.buildType: apk`) — genera un `.apk` instalable directo, sin pasar por Play Store
+- [x] `app.json`: agregado `android.package` (`com.melanymartinez.in2u`), requerido por EAS Build y antes ausente
+- [x] Script `npm run build:android:apk` agregado (corre `eas-cli` vía `npx`, sin instalarlo como dependencia del proyecto — así lo pide `expo-doctor`)
+- [x] `expo-doctor` verificado: limpio salvo un desfasaje de versión de `typescript`/`@types/react` preexistente, no relacionado con este cambio
+- [ ] **Pendiente de Melany — no automatizable**: correr `npx eas-cli login` para autenticarse con su cuenta de Expo (o crear una en [expo.dev](https://expo.dev) si no tiene). Es login interactivo, no se puede hacer desde una sesión no interactiva.
+- [ ] **Pendiente de Melany**: correr `npm run build:android:apk`. La primera vez EAS pregunta si quiere crear/vincular un proyecto EAS nuevo para `in2u` — aceptar. El build corre en la nube (gratis, tier free) y al terminar da un link para descargar el `.apk` directo al celular de Raúl (o al de ella para pasárselo).
+
 ## Notas / hallazgos
 
 - `C:\Users\UMA` (la carpeta de usuario completa) resultó ser, sorpresivamente,
