@@ -38,6 +38,14 @@ setearle la URL una vez que Supabase la devuelve.
 - El grupo de rutas `(auth)` no tenía `_layout.tsx` propio (a diferencia de `(tabs)`), así que expo-router no lo colapsaba como grupo direccionable desde el `Stack.Protected` del layout raíz. Fix: se agregó `src/app/(auth)/_layout.tsx`.
 - El botón "Continuar con Google" / "Generar código" / "Vincular" tenía `backgroundColor: '#000000'` hardcodeado; en modo oscuro el fondo de la pantalla también es negro, así que el botón quedaba invisible. Fix: el fondo del botón ahora usa `theme.text` (color invertido del tema), visible en los dos modos.
 
+### Bugs encontrados y corregidos al bajar de SDK 57 a SDK 54
+
+- `NativeTabs.Trigger.Label`/`.Icon` (subcomponentes) no existen en la versión de `expo-router` de SDK 54 — ahí `Label`/`Icon` son componentes sueltos, hijos directos de `NativeTabs.Trigger`. Fix en `app-tabs.tsx`.
+- `DarkTheme`/`DefaultTheme`/`ThemeProvider` no se re-exportan desde `expo-router` en esta versión — vienen de `@react-navigation/native`.
+- `useColorScheme()` de React Native no tiene el valor `'unspecified'` en el tipo de esta versión — se sacó esa comparación.
+- `StyleSheet.absoluteFill` no se puede spread-ear (es un registered style ID, no un objeto) — bug preexistente del template, no relacionado al downgrade; el fix correcto es `StyleSheet.absoluteFillObject`.
+- `app.json` tenía plugins (`expo-font`, `expo-image`, etc.) que `expo install --fix` agregó de más en SDK 56/57 y no tienen config plugin válido en SDK 54 — se sacaron (no hacían falta).
+
 ## Diseño: "in2u couples app design" en Claude Design
 
 El 2026-09-01 Melany armó un diseño completo (9 pantallas) en Claude Design
@@ -53,13 +61,16 @@ el plan (`C:\Users\UMA\.claude\plans\agile-plotting-ritchie.md`, aprobado).
 
 ## Fase B — Sistema de diseño Nocturne + Nosotros + Check-in
 
-- [ ] `theme.ts`: tokens de Nocturne (bg/surface/text, rampas neutral y accent 100-900, radios, espaciados)
-- [ ] Fuente Inter (`@expo-google-fonts/inter`), cargada en `_layout.tsx` antes de ocultar el splash
-- [ ] Migración: tabla `mood_checkins` (1 check-in por día vía índice único, RLS con patrón de `couples`)
-- [ ] Pantalla "Nosotros" (`(tabs)/index.tsx`) rehecha con el diseño: card de ánimo de la pareja, card de check-in propio, grilla semanal, próximo evento (placeholder hasta Fase C)
-- [ ] Pantalla de check-in (`app/check-in.tsx`, modal): 6 moods + nota opcional
-- [ ] `use-mood-realtime.ts`: suscripción Realtime a `mood_checkins` por `couple_id`
-- [ ] Edge Function `notify-mood`: push a la pareja al registrar ánimo (formato de la pantalla "Push" del diseño)
+- [x] `theme.ts`: tokens de Nocturne (bg/surface/text, rampas neutral y accent 100-900, radios, espaciados)
+- [x] Fuente Inter (`@expo-google-fonts/inter`), cargada en `_layout.tsx` antes de ocultar el splash
+- [x] Migración escrita: tabla `mood_checkins` (1 check-in por día vía columna generada + unique, RLS con patrón de `couples`) + policy nueva en `profiles` para leer el perfil de la pareja (`0002_mood_checkins.sql`)
+- [x] Pantalla "Nosotros" (`(tabs)/index.tsx`) rehecha con el diseño: card de ánimo de la pareja, card de check-in propio, grilla semanal, próximo evento (placeholder hasta Fase C)
+- [x] Pantalla de check-in (`app/check-in.tsx`, modal): 6 moods + nota opcional
+- [x] `use-mood-realtime.ts`: suscripción Realtime a `mood_checkins` por `couple_id`
+- [x] Verificado: `tsc` limpio en todo el proyecto; preview web confirma que el tema Nocturne + Inter renderiza bien en el login (Nosotros/Check-in necesitan sesión real, no se ven sin login)
+- [ ] **Pendiente de Melany**: correr `0002_mood_checkins.sql` en el SQL Editor de Supabase
+- [ ] **Pendiente de Melany**: probar Nosotros + check-in en Expo Go (dos cuentas) — confirmar que el check-in se guarda y que el de la pareja aparece en tiempo real sin refrescar
+- [ ] Edge Function `notify-mood`: push a la pareja al registrar ánimo (formato de la pantalla "Push" del diseño) — sigue una vez confirmado lo anterior
 - [ ] Recordatorio diario programado (cron) — si no entra en esta pasada, queda para la siguiente
 
 ## Fase C — Calendario compartido + Google Calendar
