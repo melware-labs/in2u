@@ -139,8 +139,12 @@ Melany y su pareja usan un Android y un iPhone (uno de cada uno).
 - [x] `app.json`: agregado `android.package` (`com.melanymartinez.in2u`), requerido por EAS Build y antes ausente
 - [x] Script `npm run build:android:apk` agregado (corre `eas-cli` vía `npx`, sin instalarlo como dependencia del proyecto — así lo pide `expo-doctor`)
 - [x] `expo-doctor` verificado: limpio salvo un desfasaje de versión de `typescript`/`@types/react` preexistente, no relacionado con este cambio
-- [ ] **Pendiente de Melany — no automatizable**: correr `npx eas-cli login` para autenticarse con su cuenta de Expo (o crear una en [expo.dev](https://expo.dev) si no tiene). Es login interactivo, no se puede hacer desde una sesión no interactiva.
-- [ ] **Pendiente de Melany**: correr `npm run build:android:apk`. La primera vez EAS pregunta si quiere crear/vincular un proyecto EAS nuevo para `in2u` — aceptar. El build corre en la nube (gratis, tier free) y al terminar da un link para descargar el `.apk` directo al celular de Raúl (o al de ella para pasárselo).
+- [x] Melany se logueó (`npx eas-cli login`, cuenta `melware-labs`)
+- [x] Proyecto EAS creado y vinculado: `@melware-labs/in2u`
+- [x] **Bug encontrado y corregido — Node desactualizado en la imagen de build**: la imagen default de EAS Build trae Node 20.19.4, pero `@supabase/*` piden Node ≥22 (warnings `EBADENGINE`). Fijado `"node": "22.18.0"` en cada perfil de `eas.json`.
+- [x] **Bug encontrado y corregido — lockfile generado con una versión de npm distinta a la del build**: `npm ci` fallaba con `Missing: typescript@5.9.3 from lock file`. Causa: npm 11 (local) no instala una copia anidada de `typescript` que satisface el peer opcional de `@expo/image-utils` → `@expo/require-utils` (`typescript ^5.0.0`, no cubierto por el `typescript ~6.0.3` del proyecto); npm 10.8.2 (el que usa EAS) sí la instala y exige que esté en el lockfile. Se regeneró `package-lock.json` corriendo la instalación con `npx npm@10.8.2` para que incluya esa entrada.
+- [x] **Primer `.apk` generado con éxito** (build `d0cbc135-da9c-42a4-9887-3c2b1c71f085`, perfil `preview`) — link de descarga: https://expo.dev/accounts/melware-labs/projects/in2u/builds/d0cbc135-da9c-42a4-9887-3c2b1c71f085
+- [ ] Pendiente: Melany le pasa el link/QR a Raúl para que lo instale y probar login + pairing con dos cuentas reales
 
 ## Notas / hallazgos
 
