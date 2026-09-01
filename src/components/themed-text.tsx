@@ -30,44 +30,49 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
   );
 }
 
+// Inter se carga como un archivo por peso (ver _layout.tsx / useFonts), así
+// que el peso va en fontFamily, no en fontWeight — no hay negrita sintética.
 const styles = StyleSheet.create({
   small: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: 500,
+    fontFamily: Fonts.body,
+    fontSize: 13,
+    lineHeight: 19,
   },
   smallBold: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: 700,
+    fontFamily: Fonts.headingSemiBold,
+    fontSize: 13,
+    lineHeight: 19,
   },
   default: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontWeight: 500,
+    fontFamily: Fonts.body,
+    fontSize: 15,
+    lineHeight: 23,
   },
   title: {
-    fontSize: 48,
-    fontWeight: 600,
-    lineHeight: 52,
+    fontFamily: Fonts.heading,
+    fontSize: 28,
+    lineHeight: 34,
+    letterSpacing: -0.2,
   },
   subtitle: {
-    fontSize: 32,
-    lineHeight: 44,
-    fontWeight: 600,
+    fontFamily: Fonts.heading,
+    fontSize: 20,
+    lineHeight: 26,
+    letterSpacing: -0.1,
   },
   link: {
-    lineHeight: 30,
+    fontFamily: Fonts.body,
+    lineHeight: 20,
     fontSize: 14,
   },
   linkPrimary: {
-    lineHeight: 30,
+    fontFamily: Fonts.body,
+    lineHeight: 20,
     fontSize: 14,
-    color: '#3c87f7',
   },
   code: {
     fontFamily: Fonts.mono,
-    fontWeight: Platform.select({ android: 700 }) ?? 500,
+    fontWeight: Platform.select({ android: '700' }) ?? '500',
     fontSize: 12,
   },
 });
