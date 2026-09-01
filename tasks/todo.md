@@ -68,6 +68,7 @@ el plan (`C:\Users\UMA\.claude\plans\agile-plotting-ritchie.md`, aprobado).
 - [x] Pantalla de check-in (`app/check-in.tsx`, modal): 6 moods + nota opcional
 - [x] `use-mood-realtime.ts`: suscripción Realtime a `mood_checkins` por `couple_id`
 - [x] Verificado: `tsc` limpio en todo el proyecto; preview web confirma que el tema Nocturne + Inter renderiza bien en el login (Nosotros/Check-in necesitan sesión real, no se ven sin login)
+- [x] Agregados como usuarios de prueba en Google Cloud (pantalla de consentimiento en estado "Prueba" — solo estos dos pueden loguearse hasta que se publique/verifique): `melanymartinezpineda@gmail.com`, `raulveneriruiz@gmail.com`
 - [ ] **Pendiente de Melany**: correr `0002_mood_checkins.sql` en el SQL Editor de Supabase
 - [ ] **Pendiente de Melany**: probar Nosotros + check-in en Expo Go (dos cuentas) — confirmar que el check-in se guarda y que el de la pareja aparece en tiempo real sin refrescar
 - [ ] Edge Function `notify-mood`: push a la pareja al registrar ánimo (formato de la pantalla "Push" del diseño) — sigue una vez confirmado lo anterior
