@@ -38,25 +38,58 @@ setearle la URL una vez que Supabase la devuelve.
 - El grupo de rutas `(auth)` no tenía `_layout.tsx` propio (a diferencia de `(tabs)`), así que expo-router no lo colapsaba como grupo direccionable desde el `Stack.Protected` del layout raíz. Fix: se agregó `src/app/(auth)/_layout.tsx`.
 - El botón "Continuar con Google" / "Generar código" / "Vincular" tenía `backgroundColor: '#000000'` hardcodeado; en modo oscuro el fondo de la pantalla también es negro, así que el botón quedaba invisible. Fix: el fondo del botón ahora usa `theme.text` (color invertido del tema), visible en los dos modos.
 
-## Fase B — Ánimo en tiempo real
+## Diseño: "in2u couples app design" en Claude Design
 
-- [ ] Migración: tabla `mood_checkins`
-- [ ] UI de check-in (5-6 estados + nota opcional, uno por día)
-- [ ] Suscripción Realtime en Home para ver el ánimo del partner al instante
-- [ ] Edge Function + Expo push: notificar cuando la app está en background/cerrada
+El 2026-09-01 Melany armó un diseño completo (9 pantallas) en Claude Design
+usando su sistema "Nocturne" (dark, acento violeta `#9184d9`, tipografía
+Inter). Proyecto: `e86ba3ac-2aba-49f7-a4c6-7010c0fd13fb`, archivo
+`in2u - Ánimo y Calendario.dc.html` (leído vía `DesignSync` MCP, requiere
+`/design-login` corrido una vez en sesión interactiva). Sumó dos features
+nuevas no planeadas — "Consejos" (tips de pareja) y "Ciclo" (tracker
+menstrual con niveles de privacidad hacia Nico) — y mostró la app
+internacionalizada (ES/EN según idioma del sistema). El roadmap de acá abajo
+quedó reordenado para reflejar eso; el detalle completo de la Fase B está en
+el plan (`C:\Users\UMA\.claude\plans\agile-plotting-ritchie.md`, aprobado).
+
+## Fase B — Sistema de diseño Nocturne + Nosotros + Check-in
+
+- [ ] `theme.ts`: tokens de Nocturne (bg/surface/text, rampas neutral y accent 100-900, radios, espaciados)
+- [ ] Fuente Inter (`@expo-google-fonts/inter`), cargada en `_layout.tsx` antes de ocultar el splash
+- [ ] Migración: tabla `mood_checkins` (1 check-in por día vía índice único, RLS con patrón de `couples`)
+- [ ] Pantalla "Nosotros" (`(tabs)/index.tsx`) rehecha con el diseño: card de ánimo de la pareja, card de check-in propio, grilla semanal, próximo evento (placeholder hasta Fase C)
+- [ ] Pantalla de check-in (`app/check-in.tsx`, modal): 6 moods + nota opcional
+- [ ] `use-mood-realtime.ts`: suscripción Realtime a `mood_checkins` por `couple_id`
+- [ ] Edge Function `notify-mood`: push a la pareja al registrar ánimo (formato de la pantalla "Push" del diseño)
+- [ ] Recordatorio diario programado (cron) — si no entra en esta pasada, queda para la siguiente
 
 ## Fase C — Calendario compartido + Google Calendar
 
-- [ ] Migración: tabla `couple_events`
-- [ ] CRUD de eventos compartidos con Realtime
+- [ ] Migración: tabla `couple_events` (con visibilidad `solo yo` / `los dos`, como en el diseño de "Nuevo evento")
+- [ ] Pantalla "Calendario": toggle Mes/Agenda, grilla mensual con color por persona, agenda del día
+- [ ] Pantalla "Nuevo evento" (modal): cuándo/dura, visibilidad, toggle "escribir también en Google Calendar"
 - [ ] Sync lectura+escritura con Google Calendar usando el refresh token obtenido en el login
-- [ ] Vista combinada: eventos de la app + eventos de Google
 
-## Fase D — Outlook (fast-follow)
+## Fase D — Consejos (nueva, del diseño)
+
+- [ ] Pestaña nueva "Consejos" en el tab bar (pasa de 3 a 4 tabs)
+- [ ] Contenido curado estático al principio (sin IA ni backend nuevo), selección simple según patrón de ánimo reciente de la pareja
+
+## Fase E — Ciclo (nueva, del diseño — sensible, requiere confirmación aparte antes de construirla)
+
+- [ ] Tabla propia con RLS estricta (solo lectura propia)
+- [ ] Selector de cuánto ve la pareja: Nada / Solo avisos / Fase y avisos
+- [ ] Card condicional en el "Nosotros" de Nico, solo si Melany compartió
+
+## Fase F — Internacionalización ES/EN (nueva, del diseño)
+
+- [ ] Diccionario propio liviano (sin librería de i18n pesada, son 2 idiomas)
+- [ ] Se aplica desde la Fase D en adelante; A/B/C (ya en español) se traducen en una pasada corta al final
+
+## Fase G — Outlook (fast-follow)
 
 - [ ] Repetir el patrón de Fase C con Microsoft Graph API (registro de app en Azure AD)
 
-## Fase E — Demo web para el portfolio
+## Fase H — Demo web para el portfolio
 
 - [ ] Exportar build web (`expo export --platform web`)
 - [ ] Embeberla en un mockup de celular dentro de una página del portfolio
