@@ -44,7 +44,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "build:android:apk": "npx eas-cli build --platform android --profile preview"
+    "build:android:apk": "npx eas-cli build --platform android --profile preview",
+    "deploy:web": "npx vercel --prod"
   },
   "private": true
 }
