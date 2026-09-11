@@ -3,6 +3,24 @@
 Registro de correcciones del usuario y patrones a seguir, para revisar al
 empezar cada sesión nueva sobre este proyecto.
 
+## Supabase (plan gratuito) se pausa solo por inactividad
+
+- **Si el login (o cualquier llamada a Supabase) falla en TODAS las
+  plataformas a la vez** (web, `.apk`, todo) **con un error de red/DNS**
+  (`DNS_PROBE_FINISHED_NXDOMAIN` o similar) en vez de un error de la app,
+  sospechar primero del proyecto de Supabase pausado, no de configuración.
+  Confirmar con `nslookup <ref>.supabase.co 8.8.8.8` — si ni el DNS público
+  de Google lo resuelve, no es la red del usuario ni nada de eso, el
+  proyecto está caído/pausado. Se arregla desde el dashboard de Supabase →
+  overview del proyecto → botón "Resume project" (tarda 1-2 minutos).
+  Perdimos mucho tiempo antes de esto sospechando de Redirect URLs, DNS de
+  la facultad, y otras cosas — este chequeo debería ser el primero, no el
+  último, cuando "nada anda" de golpe.
+- **Antes de tocar cualquier config de Auth en el dashboard de Supabase,
+  confirmar que el proyecto esté "Healthy"** — si está pausado, las
+  páginas de configuración (URL Configuration, etc.) se quedan con
+  skeleton loaders infinitos sin avisar por qué.
+
 ## Automatizar formularios web con Claude en Chrome (setup de Supabase/Google Cloud)
 
 - **Autofill de Chrome puede rellenar campos sensibles con basura sin avisar**
