@@ -80,7 +80,7 @@ export default function LoginScreen() {
           )}
 
           <ThemedText type="small" themeColor="textSecondary" style={styles.disclaimer}>
-            Usamos tu cuenta de Google para el login y, si querés, para sincronizar tu
+            Usamos tu cuenta de Google para el login y, si quieres, para sincronizar tu
             Google Calendar más adelante.
           </ThemedText>
         </ThemedView>
