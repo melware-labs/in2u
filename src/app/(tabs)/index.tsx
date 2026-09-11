@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, Radius, Spacing } from '@/constants/theme';
+import { BottomTabInset, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 import { useAuth } from '@/contexts/auth-context';
 import { useMoodRealtime } from '@/hooks/use-mood-realtime';
 import { useTheme } from '@/hooks/use-theme';
@@ -177,6 +177,9 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
+    width: '100%',
+    maxWidth: MaxContentWidth,
+    alignSelf: 'center',
     paddingHorizontal: Spacing.three,
     paddingTop: Spacing.two,
     paddingBottom: BottomTabInset + Spacing.three,
