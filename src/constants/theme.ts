@@ -77,3 +77,13 @@ export const Spacing = {
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
+
+/**
+ * Alto de la píldora flotante del tab bar (`app-tabs.tsx`), medido en web
+ * (donde no hay inset de status bar). El contenido de cada pantalla dentro
+ * de `(tabs)` necesita este espacio arriba para no quedar tapado por la
+ * píldora, que va en `position: absolute`. En nativo hay que sumarle el
+ * inset real del safe area (notch/status bar) — ver `useSafeAreaInsets` en
+ * `app-tabs.tsx`.
+ */
+export const TabBarPillHeight = 80;
