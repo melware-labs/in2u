@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, TextInput, StyleSheet } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, TextInput, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -55,51 +55,57 @@ export default function CheckInScreen() {
 
         <ThemedText type="title">¿Cómo estás{'\n'}hoy?</ThemedText>
 
-        <ThemedView style={styles.options}>
-          {MOOD_OPTIONS.map((option) => {
-            const isSelected = option.mood === selected;
-            return (
-              <Pressable
-                key={option.mood}
-                onPress={() => setSelected(option.mood)}
-                style={[
-                  styles.optionRow,
-                  { borderColor: isSelected ? theme.accent : theme.neutral800 },
-                  isSelected && { backgroundColor: theme.accent900 },
-                ]}>
-                <ThemedView
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
+          <ThemedView style={styles.options}>
+            {MOOD_OPTIONS.map((option) => {
+              const isSelected = option.mood === selected;
+              return (
+                <Pressable
+                  key={option.mood}
+                  onPress={() => setSelected(option.mood)}
                   style={[
-                    styles.optionEmojiBadge,
-                    { backgroundColor: isSelected ? theme.accent800 : `${theme.accent500}1F` },
+                    styles.optionRow,
+                    { borderColor: isSelected ? theme.accent : theme.neutral800 },
+                    isSelected && { backgroundColor: theme.accent900 },
                   ]}>
-                  <ThemedText style={styles.optionEmoji}>{option.emoji}</ThemedText>
-                </ThemedView>
-                <ThemedText style={styles.optionLabel} themeColor={isSelected ? 'accent200' : 'text'}>
-                  {option.label}
-                </ThemedText>
-                {isSelected && (
-                  <ThemedText type="small" themeColor="accent300" style={styles.eyebrow}>
-                    elegido
+                  <ThemedView
+                    style={[
+                      styles.optionEmojiBadge,
+                      { backgroundColor: isSelected ? theme.accent800 : `${theme.accent500}1F` },
+                    ]}>
+                    <ThemedText style={styles.optionEmoji}>{option.emoji}</ThemedText>
+                  </ThemedView>
+                  <ThemedText style={styles.optionLabel} themeColor={isSelected ? 'accent200' : 'text'}>
+                    {option.label}
                   </ThemedText>
-                )}
-              </Pressable>
-            );
-          })}
-        </ThemedView>
+                  {isSelected && (
+                    <ThemedText type="small" themeColor="accent300" style={styles.eyebrow}>
+                      elegido
+                    </ThemedText>
+                  )}
+                </Pressable>
+              );
+            })}
+          </ThemedView>
 
-        <ThemedView style={styles.noteBlock}>
-          <ThemedText type="small" themeColor="textSecondary" style={styles.eyebrow}>
-            Nota — opcional
-          </ThemedText>
-          <TextInput
-            value={note}
-            onChangeText={setNote}
-            placeholder={`Una línea para ${partnerFirstName}…`}
-            placeholderTextColor={theme.neutral500}
-            multiline
-            style={[styles.noteInput, { color: theme.text, borderColor: theme.neutral800, backgroundColor: theme.backgroundElement }]}
-          />
-        </ThemedView>
+          <ThemedView style={styles.noteBlock}>
+            <ThemedText type="small" themeColor="textSecondary" style={styles.eyebrow}>
+              Nota — opcional
+            </ThemedText>
+            <TextInput
+              value={note}
+              onChangeText={setNote}
+              placeholder={`Una línea para ${partnerFirstName}…`}
+              placeholderTextColor={theme.neutral500}
+              multiline
+              style={[styles.noteInput, { color: theme.text, borderColor: theme.neutral800, backgroundColor: theme.backgroundElement }]}
+            />
+          </ThemedView>
+        </ScrollView>
 
         <ThemedView style={styles.footer}>
           <Pressable
@@ -154,6 +160,13 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    gap: Spacing.four,
+    paddingBottom: Spacing.three,
+  },
   options: {
     gap: Spacing.two,
   },
@@ -192,7 +205,6 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   footer: {
-    marginTop: 'auto',
     gap: Spacing.two,
     paddingBottom: Spacing.three,
   },
