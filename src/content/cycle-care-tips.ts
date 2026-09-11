@@ -11,13 +11,13 @@ export type CycleCareTip = {
 export const CYCLE_CARE_TIPS_ES: CycleCareTip[] = [
   {
     key: 'carga-invisible',
-    title: 'Bajá la carga invisible',
-    body: 'Ocupate vos de la cena y de los mandados estos días, sin que lo tenga que pedir.',
+    title: 'Baja la carga invisible',
+    body: 'Ocúpate de la cena y de los mandados estos días, sin que ella tenga que pedirlo.',
   },
   {
     key: 'ofrecer-no-diagnosticar',
-    title: 'Ofrecé, no diagnostiques',
-    body: '"¿Querés que salgamos o preferís quedarte?" funciona mejor que "estás así por el ciclo".',
+    title: 'Ofrece, no diagnostiques',
+    body: '"¿Quieres que salgamos o prefieres quedarte?" funciona mejor que "estás así por el ciclo".',
   },
   {
     key: 'contacto-fisico',
