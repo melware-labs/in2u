@@ -81,8 +81,8 @@ as $$
   phases as (
     select
       cycle_length, period_length, day_of_cycle_0,
-      round(remaining * 8.0 / 24) as folicular_days,
-      round(remaining * 4.0 / 24) as ovulacion_days
+      round(remaining * 8.0 / 24)::int as folicular_days,
+      round(remaining * 4.0 / 24)::int as ovulacion_days
     from base
   )
   select jsonb_build_object(
