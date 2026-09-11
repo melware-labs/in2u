@@ -5,20 +5,22 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useAuth } from '@/contexts/auth-context';
+import { useTranslation } from '@/lib/i18n';
 
 export default function PerfilScreen() {
   const { session, couple, signOut } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ThemedText type="title" style={styles.title}>
-          Perfil
+          {t.perfil.title}
         </ThemedText>
 
         <ThemedView type="backgroundElement" style={styles.card}>
           <ThemedText type="smallBold" themeColor="textSecondary">
-            Cuenta
+            {t.perfil.account}
           </ThemedText>
           <ThemedText>{session?.user.user_metadata?.full_name ?? session?.user.email}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
@@ -29,7 +31,7 @@ export default function PerfilScreen() {
         {couple && (
           <ThemedView type="backgroundElement" style={styles.card}>
             <ThemedText type="smallBold" themeColor="textSecondary">
-              Código de pareja
+              {t.perfil.coupleCode}
             </ThemedText>
             <ThemedText type="subtitle" style={styles.code}>
               {couple.invite_code}
@@ -41,7 +43,7 @@ export default function PerfilScreen() {
           onPress={signOut}
           style={({ pressed }) => [styles.signOutButton, pressed && styles.pressed]}>
           <ThemedText type="smallBold" themeColor="text">
-            Cerrar sesión
+            {t.perfil.signOut}
           </ThemedText>
         </Pressable>
       </SafeAreaView>
