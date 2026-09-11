@@ -140,7 +140,11 @@ function WeekRow({
 }) {
   return (
     <View style={styles.weekRow}>
-      <ThemedText type="small" themeColor="neutral300" style={styles.weekRowLabel}>
+      <ThemedText
+        type="small"
+        themeColor="neutral300"
+        numberOfLines={1}
+        style={styles.weekRowLabel}>
         {label}
       </ThemedText>
       <View style={styles.weekBars}>
@@ -255,10 +259,10 @@ const styles = StyleSheet.create({
     gap: Spacing.two + 2,
   },
   weekRowLabel: {
-    width: 34,
+    width: 80,
   },
   weekLabelsRow: {
-    marginLeft: 44,
+    marginLeft: 90,
   },
   weekBars: {
     flex: 1,
