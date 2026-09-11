@@ -76,8 +76,8 @@ perfil, así que esto no afecta el código.
 - [x] `use-mood-realtime.ts`: suscripción Realtime a `mood_checkins` por `couple_id`
 - [x] Verificado: `tsc` limpio en todo el proyecto; preview web confirma que el tema Nocturne + Inter renderiza bien en el login (Nosotros/Check-in necesitan sesión real, no se ven sin login)
 - [x] Agregados como usuarios de prueba en Google Cloud (pantalla de consentimiento en estado "Prueba" — solo estos dos pueden loguearse hasta que se publique/verifique): `melanymartinezpineda@gmail.com`, `raulveneriruiz@gmail.com`
-- [ ] **Pendiente de Melany**: correr `0002_mood_checkins.sql` en el SQL Editor de Supabase
-- [ ] **Pendiente de Melany**: probar Nosotros + check-in en Expo Go (dos cuentas) — confirmar que el check-in se guarda y que el de la pareja aparece en tiempo real sin refrescar
+- [x] **Migración `0002_mood_checkins.sql` corrida en Supabase** (2026-09-11, vía SQL Editor con la sesión de Melany ya autenticada en el navegador — ver "Sesiones concurrentes" en lessons.md)
+- [ ] **Pendiente de Melany**: probar Nosotros + check-in en la web (dos cuentas) — confirmar que el check-in se guarda y que el de la pareja aparece en tiempo real sin refrescar
 - [ ] Edge Function `notify-mood`: push a la pareja al registrar ánimo (formato de la pantalla "Push" del diseño) — sigue una vez confirmado lo anterior
 - [ ] Recordatorio diario programado (cron) — si no entra en esta pasada, queda para la siguiente
 
@@ -91,7 +91,7 @@ aprobado con el detalle técnico completo).
 - [x] `src/lib/couple-events.ts`, `src/lib/calendar-grid.ts` (grilla mensual pura, sin I/O)
 - [x] Pantalla "Calendario" (`(tabs)/calendario.tsx`) rehecha: toggle Mes/Agenda, grilla real por mes/año (con navegación ‹›), leyenda, agenda del día seleccionado
 - [x] Pantalla "Nuevo evento" (`app/new-event.tsx`, modal): título, cuándo/dura (con `@react-native-community/datetimepicker`, dependencia nueva), repetir (fijo "Nunca"), visibilidad, toggle Google Calendar (solo UI)
-- [ ] **Pendiente de Melany**: correr `0003_couple_events.sql` en el SQL Editor de Supabase
+- [x] **Migración `0003_couple_events.sql` corrida en Supabase** (2026-09-11)
 - [ ] **Pendiente de verificar**: `@react-native-community/datetimepicker` en Expo Go real (funcionó bien en el preview web; no se probó en dispositivo)
 - [ ] Sync lectura+escritura con Google Calendar usando el refresh token obtenido en el login — sigue sin implementar, a propósito (fuera de alcance de esta pasada)
 
@@ -102,7 +102,8 @@ aprobado con el detalle técnico completo).
 - [x] Migración `0005_daily_tips.sql`: tabla `daily_tips`, sin policy de insert para `authenticated` (solo la Edge Function escribe, con service role)
 - [x] Edge Function `supabase/functions/analyze-checkin/index.ts`: recibe `{coupleId, checkinAuthorId}`, confirma el vínculo con un cliente scoped al caller, clasifica con Gemini (`responseSchema` JSON) el historial reciente de check-ins, guarda el tip para la PAREJA de quien hizo el check-in. Invocada fire-and-forget desde `check-in.tsx` justo después de guardar
 - [x] Pantalla "Consejos" (`(tabs)/consejos.tsx`): card "Para hoy" si hay tip del día + lista de tips generales + ritual de la semana
-- [ ] **Pendiente de Melany (no es código)**: generar API key de Gemini en Google AI Studio; `npx supabase secrets set GEMINI_API_KEY=... GEMINI_MODEL=gemini-flash-latest`; `npx supabase functions deploy analyze-checkin`; correr `0005_daily_tips.sql`
+- [x] **Migración `0005_daily_tips.sql` corrida en Supabase** (2026-09-11)
+- [ ] **Pendiente de Melany (no es código)**: generar API key de Gemini en Google AI Studio; `npx supabase secrets set GEMINI_API_KEY=... GEMINI_MODEL=gemini-flash-latest`; `npx supabase functions deploy analyze-checkin` — sin esto, "Consejos" no genera tips nuevos (el contenido curado sí se ve)
 
 ## Fase E — Ciclo
 
@@ -110,7 +111,7 @@ aprobado con el detalle técnico completo).
 - [x] Selector de privacidad: Nada / Solo avisos (señal genérica sin fase ni fechas, confirmado por Melany) / Fase y avisos
 - [x] **Decisión 2026-09-11: Ciclo es una 5ta tab** (no una sub-página de Perfil, que era mi recomendación — Melany prefirió la tab)
 - [x] Card condicional en el "Nosotros" de la pareja + sección "Cómo cuidarla estos días" (`src/content/cycle-care-tips.ts`, estático, no depende de IA)
-- [ ] **Pendiente de Melany**: correr `0004_cycle.sql` en el SQL Editor de Supabase
+- [x] **Migración `0004_cycle.sql` corrida en Supabase** (2026-09-11) — encontró y corrigió un bug real al correrla: `round()` sobre una división devuelve `numeric` en Postgres, y sumarlo directo a una fecha (`date + numeric`) no es una operación válida. Cast a `::int` agregado en `folicular_days`/`ovulacion_days`; ver lessons.md
 - [ ] Promedio real de los últimos 6 ciclos (el disclaimer del diseño lo menciona) — v1 usa duración fija/editable a mano (29/5 días default); `cycle_periods` ya está preparada para el cálculo real después
 
 ## Fase F — Internacionalización ES/EN

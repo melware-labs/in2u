@@ -3,6 +3,33 @@
 Registro de correcciones del usuario y patrones a seguir, para revisar al
 empezar cada sesión nueva sobre este proyecto.
 
+## Correr migraciones SQL contra Supabase vía el navegador (sin CLI de Supabase)
+
+- **Escribir SQL largo en el SQL Editor de Supabase simulando teclado
+  (`computer` type) no es confiable** — con queries de más de ~40 líneas
+  se puede cortar a mitad de camino (timeout de `Input.dispatchKeyEvent`)
+  y dejar caracteres sueltos de un intento anterior mezclados (aparecido:
+  un paréntesis de más al final, de un test previo que no se había
+  limpiado del todo). **La forma confiable: setear el valor del modelo de
+  Monaco directamente por JS** — `window.monaco.editor.getModels()[0]
+  .setValue(sql)` — y comparar `model.getValue() === sql` antes de correr,
+  para confirmar que quedó exacto. Generar el string ya escapado con
+  Node (`JSON.stringify(fs.readFileSync(archivo, 'utf8'))`) en vez de
+  escribir el escapado a mano, para no arriesgarse con comillas/backslashes.
+- **Si una migración multi-statement falla a mitad de camino, Supabase la
+  revierte entera** (transacción implícita del protocolo simple de
+  Postgres) — no deja tablas a medio crear. Confirmado corriendo
+  `select table_name from information_schema.tables where table_name like
+  'cycle%'` después de un fallo: 0 filas. Da tranquilidad para corregir y
+  reintentar sin tener que limpiar nada a mano primero.
+- **`round(numeric) / operación con división` en una función SQL de
+  Postgres devuelve `numeric`, no `integer`** — sumarlo directo a una
+  columna `date` (`date + numeric`) tira `operator does not exist:
+  date + numeric`, un error que solo aparece al ejecutar la migración de
+  verdad contra la base, no al leer el código. Si una función calcula un
+  número de días con `round()`/división y después lo suma a una fecha,
+  castear explícito a `::int`.
+
 ## Supabase (plan gratuito) se pausa solo por inactividad
 
 - **Si el login (o cualquier llamada a Supabase) falla en TODAS las
