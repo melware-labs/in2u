@@ -56,7 +56,7 @@ export default function OnboardingScreen() {
         {mode === 'choose' && (
           <ThemedView style={styles.section}>
             <ThemedText type="subtitle" style={styles.centerText}>
-              Vinculá a tu pareja
+              Vincula a tu pareja
             </ThemedText>
             <ThemedText themeColor="textSecondary" style={styles.centerText}>
               Uno de los dos genera un código y el otro lo ingresa. Así quedan conectados.
@@ -88,7 +88,7 @@ export default function OnboardingScreen() {
         {mode === 'create' && inviteCode && (
           <ThemedView style={styles.section}>
             <ThemedText type="subtitle" style={styles.centerText}>
-              Compartí este código
+              Comparte este código
             </ThemedText>
             <ThemedView type="backgroundElement" style={styles.codeBox}>
               <ThemedText type="title" style={styles.codeText}>
@@ -105,7 +105,7 @@ export default function OnboardingScreen() {
         {mode === 'join' && (
           <ThemedView style={styles.section}>
             <ThemedText type="subtitle" style={styles.centerText}>
-              Ingresá el código
+              Ingresa el código
             </ThemedText>
             <TextInput
               value={code}

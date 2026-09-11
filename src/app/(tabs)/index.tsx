@@ -61,7 +61,7 @@ export default function HomeScreen() {
             </>
           ) : (
             <ThemedText themeColor="neutral300">
-              {partner ? `${partnerFirstName} todavía no registró su ánimo hoy.` : 'Todavía no tenés pareja vinculada.'}
+              {partner ? `${partnerFirstName} todavía no registró su ánimo hoy.` : 'Todavía no tienes pareja vinculada.'}
             </ThemedText>
           )}
         </ThemedView>
@@ -94,7 +94,7 @@ export default function HomeScreen() {
                 ))}
             </View>
             <ThemedText type="small" themeColor="textSecondary">
-              Tocá para elegir — {partnerFirstName} lo ve al instante.
+              Toca para elegir — {partnerFirstName} lo ve al instante.
             </ThemedText>
           </ThemedView>
         </Pressable>
@@ -150,7 +150,6 @@ function WeekRow({
       <View style={styles.weekBars}>
         {weekDays.map((day) => {
           const checkin = dayMood(userId, day);
-          const isFuture = day > new Date();
           return (
             <View
               key={day.toISOString()}
@@ -162,7 +161,7 @@ function WeekRow({
                       .padStart(2, '0')}` }
                   : {
                       backgroundColor: 'transparent',
-                      borderWidth: isFuture ? 0 : 1,
+                      borderWidth: 1,
                       borderColor: theme.neutral800,
                       borderStyle: 'dashed',
                     },

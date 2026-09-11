@@ -9,7 +9,7 @@ const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error(
     'Faltan EXPO_PUBLIC_SUPABASE_URL / EXPO_PUBLIC_SUPABASE_ANON_KEY. ' +
-      'Copiá .env.example a .env y completá los valores del panel de Supabase.'
+      'Copia .env.example a .env y completa los valores del panel de Supabase.'
   );
 }
 
