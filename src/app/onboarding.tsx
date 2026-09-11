@@ -96,7 +96,7 @@ export default function OnboardingScreen() {
               </ThemedText>
             </ThemedView>
             <ThemedText themeColor="textSecondary" style={styles.centerText}>
-              Pasáselo a tu pareja para que lo ingrese desde su cuenta. En cuanto lo haga,
+              Pásaselo a tu pareja para que lo ingrese desde su cuenta. En cuanto lo haga,
               vas a ver la app compartida automáticamente.
             </ThemedText>
           </ThemedView>

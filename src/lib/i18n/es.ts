@@ -20,12 +20,12 @@ export const es = {
   },
 
   nosotros: {
-    linkPartnerHint: 'Vinculá a tu pareja desde tu perfil para empezar a compartir el ánimo del día.',
+    linkPartnerHint: 'Vincula a tu pareja desde tu perfil para empezar a compartir el ánimo del día.',
     partnerNoCheckinYet: (partner: string) => `${partner} todavía no registró su ánimo hoy.`,
-    noPartnerYet: 'Todavía no tenés pareja vinculada.',
+    noPartnerYet: 'Todavía no tienes pareja vinculada.',
     checkInPrompt: '¿Cómo estás hoy?',
     notRegistered: 'sin registrar',
-    tapToChoose: (partner: string) => `Tocá para elegir — ${partner} lo ve al instante.`,
+    tapToChoose: (partner: string) => `Toca para elegir — ${partner} lo ve al instante.`,
     week: 'La semana',
     howToCareForHer: 'Cómo cuidarla estos días',
     cycleOf: (partner: string, phase: string) => `Ciclo de ${partner} · ${phase}`,
@@ -33,8 +33,8 @@ export const es = {
     cycleArrivingSoon: 'Le puede arrancar en cualquier momento',
     cycleArrivingIn: (n: number) => `Le puede arrancar en ${n} días`,
     cycleCareHint: 'Estos días suele tener menos energía y dormir peor. No es su humor: es el ciclo.',
-    cycleShared: (partner: string) => `${partner} eligió compartir la fase con vos`,
-    cycleCareMode: (partner: string) => `Cuidá un poco más a ${partner} estos días.`,
+    cycleShared: (partner: string) => `${partner} eligió compartir la fase contigo`,
+    cycleCareMode: (partner: string) => `Cuida un poco más a ${partner} estos días.`,
   },
 
   checkIn: {
@@ -69,7 +69,7 @@ export const es = {
     onlyMe: 'Solo yo',
     bothOfUs: 'Los dos',
     partnerSeesIt: (partner: string) => `${partner} lo ve en su calendario.`,
-    onlyYouSeeIt: 'Solo vos lo vas a ver.',
+    onlyYouSeeIt: 'Solo tú lo vas a ver.',
     googleCalendar: 'Google Calendar',
     googleSyncHint: (email: string) => `Escribir también en ${email}`,
     googleSyncHintGeneric: 'Escribir también en tu Google Calendar',
@@ -94,7 +94,7 @@ export const es = {
     inDays: (n: number) => `en ${n} ${n === 1 ? 'día' : 'días'}`,
     fertileWindow: 'Ventana fértil',
     whatPartnerSees: (partner: string) => `Qué ve ${partner}`,
-    privacyHint: 'Nunca ve lo que registrás en detalle — solo la fase y los avisos que elegís.',
+    privacyHint: 'Nunca ve lo que registras en detalle — solo la fase y los avisos que eliges.',
     disclaimer: 'Estimado a partir de la duración promedio de tu ciclo. No sirve como método anticonceptivo.',
     phases: {
       menstrual: 'Menstruación',
