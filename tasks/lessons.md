@@ -90,3 +90,43 @@ empezar cada sesión nueva sobre este proyecto.
   el código necesite en runtime, y volver a buildear — no hace falta tocar
   `eas.json` para esto, EAS las inyecta solo si están cargadas en ese
   "environment".
+
+## Sesiones concurrentes sobre el mismo repo (2026-09-11)
+
+- **El repo puede estar siendo tocado por otra sesión al mismo tiempo** (en
+  este caso: una sesión aparte deployando a Vercel mientras esta armaba las
+  Fases C-F). Señales: un archivo que se acababa de leer cambia de tamaño/
+  contenido entre lecturas, o el hook de Edit avisa "the file had been
+  modified on disk since you last read it". Regla: releer el archivo justo
+  antes de editarlo, no confiar en el contenido que reportó un subagente de
+  exploración en un paso anterior — puede haber quedado desactualizado
+  mientras se armaba el plan. También puede haber ya un `expo start --web`
+  corriendo en el puerto default (8081) desde esa otra sesión: si
+  `npm run web` falla con "Port 8081 is being used by another process",
+  antes de forzar otro puerto conviene primero probar si ese puerto ya
+  sirve la app (`curl localhost:8081`) y usar ese servidor directamente en
+  vez de arrancar uno nuevo.
+- **`tsconfig.json` con `include: ["**/*.ts", "**/*.tsx", ...]` sin
+  `exclude` se traga también `supabase/functions/**`** — las Edge Functions
+  corren en Deno (`Deno.serve`, imports `jsr:`), así que `tsc` del proyecto
+  Expo tira errores ahí (`Cannot find name 'Deno'`, módulo `jsr:` no
+  resoluble) aunque el código de la función esté bien. Fix: agregar
+  `"exclude": ["node_modules", "supabase/functions"]` al `tsconfig.json`
+  raíz — las Edge Functions se tipan/lintean con las herramientas de
+  Supabase/Deno, no con el `tsc` de la app cliente.
+- **Un objeto de diccionario i18n con `as const` en el archivo "fuente"
+  (`es.ts`) rompe la implementación del otro idioma** si se tipa como
+  `en: Dictionary = {...}` (`Dictionary = typeof es`): `as const` angosta
+  cada string a su literal exacto, así que `en.ts` con cualquier string en
+  inglés falla a compilar ("Type '\"Cancel\"' is not assignable to type
+  '\"Cancelar\"'"). Fix: no usar `as const` en el diccionario fuente cuando
+  otro archivo va a implementar el mismo tipo con valores distintos — dejar
+  que TS infiera `string` para los campos de texto plano, y las funciones
+  (`(n: number) => string`) ya tipan bien solas sin necesitar el const
+  assertion.
+- **`npm run lint` (`expo lint`) en un proyecto que nunca corrió lint antes
+  instala ESLint solo, en el momento** ("No ESLint config found... eslint
+  will be installed") — la primera corrida puede fallar con
+  "Cannot find module 'eslint'" a pesar de decir que lo instaló bien;
+  simplemente volver a correr `npm run lint` una segunda vez lo resuelve
+  (el install ya había terminado, solo hizo falta que el proceso lo viera).

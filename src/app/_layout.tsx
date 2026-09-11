@@ -70,6 +70,7 @@ function RootNavigator() {
       <Stack.Protected guard={!!session && !!couple}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="check-in" options={{ presentation: 'modal', headerShown: false }} />
+        <Stack.Screen name="new-event" options={{ presentation: 'modal', headerShown: false }} />
       </Stack.Protected>
     </Stack>
   );

@@ -83,27 +83,48 @@ perfil, así que esto no afecta el código.
 
 ## Fase C — Calendario compartido + Google Calendar
 
-- [ ] Migración: tabla `couple_events` (con visibilidad `solo yo` / `los dos`, como en el diseño de "Nuevo evento")
-- [ ] Pantalla "Calendario": toggle Mes/Agenda, grilla mensual con color por persona, agenda del día
-- [ ] Pantalla "Nuevo evento" (modal): cuándo/dura, visibilidad, toggle "escribir también en Google Calendar"
-- [ ] Sync lectura+escritura con Google Calendar usando el refresh token obtenido en el login
+Implementado 2026-09-11 (sesión completa Fases C+D+E+F, ver
+`C:\Users\UMA\.claude\plans\partitioned-hugging-pinwheel.md` para el plan
+aprobado con el detalle técnico completo).
 
-## Fase D — Consejos (nueva, del diseño — actualizada con IA)
+- [x] Migración `0003_couple_events.sql`: tabla `couple_events` (`solo_yo`/`los_dos`, `google_sync_enabled` solo-UI por ahora), RLS
+- [x] `src/lib/couple-events.ts`, `src/lib/calendar-grid.ts` (grilla mensual pura, sin I/O)
+- [x] Pantalla "Calendario" (`(tabs)/calendario.tsx`) rehecha: toggle Mes/Agenda, grilla real por mes/año (con navegación ‹›), leyenda, agenda del día seleccionado
+- [x] Pantalla "Nuevo evento" (`app/new-event.tsx`, modal): título, cuándo/dura (con `@react-native-community/datetimepicker`, dependencia nueva), repetir (fijo "Nunca"), visibilidad, toggle Google Calendar (solo UI)
+- [ ] **Pendiente de Melany**: correr `0003_couple_events.sql` en el SQL Editor de Supabase
+- [ ] **Pendiente de verificar**: `@react-native-community/datetimepicker` en Expo Go real (funcionó bien en el preview web; no se probó en dispositivo)
+- [ ] Sync lectura+escritura con Google Calendar usando el refresh token obtenido en el login — sigue sin implementar, a propósito (fuera de alcance de esta pasada)
 
-- [ ] Pestaña nueva "Consejos" en el tab bar (pasa de 3 a 4 tabs)
-- [ ] Contenido base curado (categorías de consejos, como en el diseño)
-- [ ] **Decisión 2026-09-01 (confirmada por Melany): análisis con IA real vía Gemini**, no reglas de palabras clave. Edge Function en Supabase recibe la nota del check-in, la manda a la API de Gemini (tiene tier gratis, alcanza para el volumen de la app) con un prompt que la clasifica y elige qué consejo curado mostrarle a quien la lee. La API key de Gemini vive solo en la Edge Function, nunca en el cliente. **Nota de privacidad ya conversada y aceptada**: esto manda las notas del check-in (potencialmente íntimas) a un servicio externo (Google/Gemini) para procesarlas — no se quedan solo entre Supabase y la app.
+## Fase D — Consejos (con IA real vía Gemini)
 
-## Fase E — Ciclo (nueva, del diseño — sensible, requiere confirmación aparte antes de construirla)
+- [x] Pestaña nueva "Consejos" en el tab bar (ahora 5 tabs: Nosotros/Calendario/Consejos/Ciclo/Perfil)
+- [x] Contenido curado ES/EN (`src/content/tips.ts`, 4 tips + ritual semanal rotativo)
+- [x] Migración `0005_daily_tips.sql`: tabla `daily_tips`, sin policy de insert para `authenticated` (solo la Edge Function escribe, con service role)
+- [x] Edge Function `supabase/functions/analyze-checkin/index.ts`: recibe `{coupleId, checkinAuthorId}`, confirma el vínculo con un cliente scoped al caller, clasifica con Gemini (`responseSchema` JSON) el historial reciente de check-ins, guarda el tip para la PAREJA de quien hizo el check-in. Invocada fire-and-forget desde `check-in.tsx` justo después de guardar
+- [x] Pantalla "Consejos" (`(tabs)/consejos.tsx`): card "Para hoy" si hay tip del día + lista de tips generales + ritual de la semana
+- [ ] **Pendiente de Melany (no es código)**: generar API key de Gemini en Google AI Studio; `npx supabase secrets set GEMINI_API_KEY=... GEMINI_MODEL=gemini-flash-latest`; `npx supabase functions deploy analyze-checkin`; correr `0005_daily_tips.sql`
 
-- [ ] Tabla propia con RLS estricta (solo lectura propia)
-- [ ] Selector de cuánto ve la pareja: Nada / Solo avisos / Fase y avisos
-- [ ] Card condicional en el "Nosotros" de Nico, solo si Melany compartió
+## Fase E — Ciclo
 
-## Fase F — Internacionalización ES/EN (nueva, del diseño)
+- [x] **Decisión 2026-09-11 (confirmada por Melany): sí construirla ahora.** Migración `0004_cycle.sql`: `cycle_settings`/`cycle_periods`/`cycle_daily_logs` con RLS SOLO propia (sin policy de select para la pareja, a propósito) + `get_partner_cycle_summary()` (`security definer`) como único canal hacia la pareja — nunca expone `cycle_daily_logs`, recorta según `partner_visibility`
+- [x] Selector de privacidad: Nada / Solo avisos (señal genérica sin fase ni fechas, confirmado por Melany) / Fase y avisos
+- [x] **Decisión 2026-09-11: Ciclo es una 5ta tab** (no una sub-página de Perfil, que era mi recomendación — Melany prefirió la tab)
+- [x] Card condicional en el "Nosotros" de la pareja + sección "Cómo cuidarla estos días" (`src/content/cycle-care-tips.ts`, estático, no depende de IA)
+- [ ] **Pendiente de Melany**: correr `0004_cycle.sql` en el SQL Editor de Supabase
+- [ ] Promedio real de los últimos 6 ciclos (el disclaimer del diseño lo menciona) — v1 usa duración fija/editable a mano (29/5 días default); `cycle_periods` ya está preparada para el cálculo real después
 
-- [ ] Diccionario propio liviano (sin librería de i18n pesada, son 2 idiomas)
-- [ ] Se aplica desde la Fase D en adelante; A/B/C (ya en español) se traducen en una pasada corta al final
+## Fase F — Internacionalización ES/EN
+
+- [x] Diccionario propio (`src/lib/i18n/{es,en,index}.ts`), sin librería — `expo-localization` (dependencia nueva) resuelve el idioma del sistema
+- [x] Aplicado a TODAS las pantallas, incluidas las viejas de Fase A-C (`(tabs)/index.tsx`, `check-in.tsx`, `(tabs)/perfil.tsx`, `app-tabs.tsx`, `format.ts`) — se adelantó la pasada corta prevista para "al final", ya que tocar cada pantalla dos veces (una sin i18n, otra retrofitteada) era más trabajo que hacerlo una sola vez
+- [ ] `(auth)/login.tsx` y `onboarding.tsx` quedan sin traducir — no estaban en el alcance acordado para esta pasada
+
+## Verificación de esta sesión
+
+- [x] `npx tsc --noEmit` limpio en todo el proyecto (tuvo que excluirse `supabase/functions` del `tsconfig.json` — ver lessons.md)
+- [x] `npm run lint` limpio (0 errores, 0 warnings tras corregir un `unused var`)
+- [x] Preview web (puerto 8081, servidor ya corriendo — no se pudo arrancar uno nuevo por el puerto ocupado, ver lessons.md): pantalla de login carga sin errores de consola, el bundle completo (`entry.bundle`) compila y sirve 200 OK
+- [ ] **No verificado visualmente más allá del login**: Calendario/Consejos/Ciclo/Nosotros necesitan sesión real (mismo límite que Fase B) — pendiente de que Melany las pruebe con su cuenta después de correr las migraciones
 
 ## Fase G — Outlook (fast-follow)
 

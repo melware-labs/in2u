@@ -5,13 +5,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
+import { MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 import { useAuth } from '@/contexts/auth-context';
 import { useTheme } from '@/hooks/use-theme';
+import { useTranslation } from '@/lib/i18n';
 import { MOOD_OPTIONS, upsertTodayCheckin, type Mood } from '@/lib/mood';
+import { supabase } from '@/lib/supabase';
 
 export default function CheckInScreen() {
   const theme = useTheme();
+  const { t, locale } = useTranslation();
   const { session, couple, partner } = useAuth();
   const [selected, setSelected] = useState<Mood | null>(null);
   const [note, setNote] = useState('');
@@ -29,15 +32,23 @@ export default function CheckInScreen() {
         mood: selected,
         note: note.trim() || null,
       });
+
+      // Fire-and-forget: clasifica el check-in con Gemini y arma el tip
+      // de "Consejos" para la pareja (Fase D). Si falla, no rompe nada acá
+      // — el check-in ya se guardó.
+      supabase.functions
+        .invoke('analyze-checkin', { body: { coupleId: couple.id, checkinAuthorId: session.user.id } })
+        .catch((err) => console.warn('No se pudo generar el tip del día:', err));
+
       router.back();
     } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : 'No se pudo guardar el check-in.');
+      setErrorMessage(err instanceof Error ? err.message : t.checkIn.saveError);
     } finally {
       setSaving(false);
     }
   }
 
-  const partnerFirstName = partner?.display_name?.split(' ')?.[0] ?? 'tu pareja';
+  const partnerFirstName = partner?.display_name?.split(' ')?.[0] ?? (locale === 'en' ? 'your partner' : 'tu pareja');
 
   return (
     <ThemedView style={styles.container}>
@@ -45,15 +56,15 @@ export default function CheckInScreen() {
         <ThemedView style={styles.header}>
           <Pressable onPress={() => router.back()}>
             <ThemedText type="small" themeColor="textSecondary">
-              Cancelar
+              {t.checkIn.cancel}
             </ThemedText>
           </Pressable>
           <ThemedText type="small" themeColor="textSecondary" style={styles.eyebrow}>
-            1 por día
+            {t.checkIn.onePerDay}
           </ThemedText>
         </ThemedView>
 
-        <ThemedText type="title">¿Cómo estás{'\n'}hoy?</ThemedText>
+        <ThemedText type="title">{t.checkIn.title}</ThemedText>
 
         <ScrollView
           style={styles.scroll}
@@ -84,7 +95,7 @@ export default function CheckInScreen() {
                   </ThemedText>
                   {isSelected && (
                     <ThemedText type="small" themeColor="accent300" style={styles.eyebrow}>
-                      elegido
+                      {t.checkIn.chosen}
                     </ThemedText>
                   )}
                 </Pressable>
@@ -94,12 +105,12 @@ export default function CheckInScreen() {
 
           <ThemedView style={styles.noteBlock}>
             <ThemedText type="small" themeColor="textSecondary" style={styles.eyebrow}>
-              Nota — opcional
+              {t.checkIn.noteOptional}
             </ThemedText>
             <TextInput
               value={note}
               onChangeText={setNote}
-              placeholder={`Una línea para ${partnerFirstName}…`}
+              placeholder={t.checkIn.notePlaceholder(partnerFirstName)}
               placeholderTextColor={theme.neutral500}
               multiline
               style={[styles.noteInput, { color: theme.text, borderColor: theme.neutral800, backgroundColor: theme.backgroundElement }]}
@@ -120,12 +131,12 @@ export default function CheckInScreen() {
               <ActivityIndicator color={theme.accent200} />
             ) : (
               <ThemedText type="subtitle" themeColor="accent200">
-                Compartir con {partnerFirstName}
+                {t.checkIn.shareWith(partnerFirstName)}
               </ThemedText>
             )}
           </Pressable>
           <ThemedText type="small" themeColor="textSecondary" style={styles.footerHint}>
-            Le llega ahora, incluso con la app cerrada.
+            {t.checkIn.deliveredNow}
           </ThemedText>
           {errorMessage && (
             <ThemedText type="small" themeColor="textSecondary" style={styles.footerHint}>

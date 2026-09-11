@@ -6,12 +6,14 @@ import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
 import { MaxContentWidth, Spacing, TabBarPillHeight } from '@/constants/theme';
+import { useTranslation } from '@/lib/i18n';
 
 export default function AppTabs() {
   // La píldora va en `position: absolute`, así que no empuja el contenido
   // hacia abajo por sí sola — hay que reservarle el espacio a mano acá,
   // si no queda tapando lo primero que haya en cada pantalla.
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   return (
     <Tabs>
@@ -19,13 +21,19 @@ export default function AppTabs() {
       <TabList asChild>
         <CustomTabList>
           <TabTrigger name="index" href="/" asChild>
-            <TabButton>Nosotros</TabButton>
+            <TabButton>{t.tabs.nosotros}</TabButton>
           </TabTrigger>
           <TabTrigger name="calendario" href="/calendario" asChild>
-            <TabButton>Calendario</TabButton>
+            <TabButton>{t.tabs.calendario}</TabButton>
+          </TabTrigger>
+          <TabTrigger name="consejos" href="/consejos" asChild>
+            <TabButton>{t.tabs.consejos}</TabButton>
+          </TabTrigger>
+          <TabTrigger name="ciclo" href="/ciclo" asChild>
+            <TabButton>{t.tabs.ciclo}</TabButton>
           </TabTrigger>
           <TabTrigger name="perfil" href="/perfil" asChild>
-            <TabButton>Perfil</TabButton>
+            <TabButton>{t.tabs.perfil}</TabButton>
           </TabTrigger>
         </CustomTabList>
       </TabList>
