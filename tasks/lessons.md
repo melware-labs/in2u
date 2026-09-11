@@ -130,3 +130,22 @@ empezar cada sesión nueva sobre este proyecto.
   "Cannot find module 'eslint'" a pesar de decir que lo instaló bien;
   simplemente volver a correr `npm run lint` una segunda vez lo resuelve
   (el install ya había terminado, solo hizo falta que el proceso lo viera).
+- **El build de Vercel puede servir un bundle con texto/código viejo aunque
+  el código fuente en git ya esté corregido** — pasó justo después de que
+  esta sesión arregló el voseo y la otra sesión (concurrente) commiteara
+  encima: el deploy siguiente seguía mostrando "no tenés pareja vinculada"
+  en pantalla. No era un problema de caché del navegador (probado con
+  `location.reload(true)`, sin efecto) ni de la CDN — era el propio bundle
+  JS el que tenía el string viejo, confirmado descargando el `.js` real con
+  `curl` y comparando contra el string esperado en el fuente. Causa
+  probable: Metro (el empaquetador de Expo) mantiene un caché incremental
+  basado en mtimes, y un `git checkout`/build fresco resetea los mtimes de
+  todos los archivos a la vez, lo que puede confundir esa invalidación y
+  hacer que reuse una transformación vieja de un módulo aunque su
+  contenido cambió. **Verificar el bundle real, no la pantalla, cuando un
+  fix de texto "no aparece" después de un deploy**: `curl` la página para
+  sacar el nombre del archivo `entry-<hash>.js`, descargarlo, y buscar el
+  string ahí directo — mucho más confiable que pelear con refrescos del
+  navegador. Arreglo: `vercel.json` con `buildCommand: "rm -rf
+  node_modules/.cache .expo && npx expo export --platform web --clear"`
+  para forzar un caché limpio en cada build.
