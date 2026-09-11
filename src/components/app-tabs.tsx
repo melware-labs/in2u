@@ -1,15 +1,21 @@
 import { Tabs, TabList, TabTrigger, TabSlot, TabTriggerSlotProps, TabListProps } from 'expo-router/ui';
 import { Pressable, View, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { MaxContentWidth, Spacing, TabBarPillHeight } from '@/constants/theme';
 
 export default function AppTabs() {
+  // La píldora va en `position: absolute`, así que no empuja el contenido
+  // hacia abajo por sí sola — hay que reservarle el espacio a mano acá,
+  // si no queda tapando lo primero que haya en cada pantalla.
+  const insets = useSafeAreaInsets();
+
   return (
     <Tabs>
-      <TabSlot style={{ height: '100%' }} />
+      <TabSlot style={{ height: '100%', paddingTop: TabBarPillHeight + insets.top }} />
       <TabList asChild>
         <CustomTabList>
           <TabTrigger name="index" href="/" asChild>
@@ -42,8 +48,10 @@ export function TabButton({ children, isFocused, ...props }: TabTriggerSlotProps
 }
 
 export function CustomTabList(props: TabListProps) {
+  const insets = useSafeAreaInsets();
+
   return (
-    <View {...props} style={styles.tabListContainer}>
+    <View {...props} style={[styles.tabListContainer, { paddingTop: insets.top + Spacing.three }]}>
       <ThemedView type="backgroundElement" style={styles.innerContainer}>
         <ThemedText type="smallBold" style={styles.brandText}>
           in2u
