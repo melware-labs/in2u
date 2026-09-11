@@ -152,6 +152,24 @@ Melany y su pareja usan un Android y un iPhone (uno de cada uno).
 - [ ] **Posible bug nuevo detectado en el screenshot**: el contenido se ve rotado en horizontal a pesar de `"orientation": "portrait"` en `app.json`. Podría ser solo cómo sostenía el teléfono al sacar la foto, o una opción de Android ("ignorar solicitud de orientación", común en Samsung/Xiaomi) que fuerza la rotación. Preguntado a Melany, pendiente de su respuesta antes de tocar nada.
 - [ ] Pendiente: Melany le pasa el link/QR a Raúl para que lo instale y probar login + pairing con dos cuentas reales
 
+## Versión web en Vercel (2026-09-11)
+
+Decisión de Melany: probar primero la versión web (responsive para
+Apple/Android/Mac/Windows) antes de seguir peleando con builds nativos.
+
+- [x] `vercel.json` agregado (`buildCommand: npx expo export --platform web`, `outputDirectory: dist`) y desplegado en **https://in2u.vercel.app** (proyecto `melware-labs/in2u` en Vercel, cuenta de Melany)
+- [x] Env vars de Supabase agregadas también en Vercel (mismo patrón que en EAS — si no, mismo crash por variables faltantes)
+- [x] **Causa raíz de que nada funcionara, en ningún lado (ni web ni el `.apk`): el proyecto de Supabase estaba pausado** por inactividad (plan gratuito). El dominio `gwhpehcjhejqlikdoxtx.supabase.co` daba `DNS_PROBE_FINISHED_NXDOMAIN` — confirmado que no resolvía ni siquiera contra el DNS público de Google, o sea que no era la red de Melany ni nada de eso. Se reactivó desde el dashboard de Supabase ("Resume project"); quedó "Healthy" en un par de minutos.
+- [x] Redirect URLs de Supabase actualizados: agregados `https://in2u.vercel.app` y `http://localhost:*` (antes solo estaban `in2u://*` y `exp://*`, nada para web)
+- [x] **Login con Google funcionando de punta a punta en la web**, confirmado por Melany
+- [x] Fix responsive: `maxWidth: MaxContentWidth` (800) + `alignSelf: center` en las 6 pantallas (login, Nosotros, Calendario, Perfil, check-in, onboarding) — antes se estiraban de punta a punta en pantallas anchas
+- [x] Fix: columna de nombres en la grilla semanal de "Nosotros" ensanchada (34px → 80px + `numberOfLines={1}`) — "Melany" y "tu pareja" se cortaban en varias líneas
+- [x] Fix: la píldora flotante del tab bar (`position: absolute`) tapaba el contenido de cada pantalla — no había espacio reservado arriba. Solucionado en un solo lugar (`app-tabs.tsx`, no repetido por pantalla): `TabSlot` reserva `TabBarPillHeight + insets.top` de `paddingTop`
+- [x] Fix: pantalla de check-in sin `ScrollView` — si el contenido no entraba en la altura de pantalla, la nota quedaba cortada sin forma de desplazarse para verla completa
+- [x] Fix: `cleanUrls: true` en `vercel.json` — sin esto, entrar directo a `/check-in`, `/calendario`, etc. (o recargar la página estando ahí) daba 404, porque el export estático de Expo genera cada ruta como archivo plano (`check-in.html`) y Vercel no las servía en la URL limpia por default
+- [ ] Pendiente: completar "Información de la marca" en Google Cloud (nombre + logo de la app) para que la pantalla de consentimiento de Google se vea mejor — la línea "Ir a gwhpehcjhejqlikdoxtx.supabase.co" en el selector de cuenta de Google **no se puede quitar ni renombrar**, es una medida de seguridad de Google que muestra el dominio real que recibe la respuesta del login (pasa con cualquier app que use Supabase u otro proveedor externo para OAuth)
+- [ ] Pendiente: revisar Perfil con una sesión real logueada (no se había verificado visualmente hasta ahora)
+
 ## Notas / hallazgos
 
 - `C:\Users\UMA` (la carpeta de usuario completa) resultó ser, sorpresivamente,
