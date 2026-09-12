@@ -55,3 +55,21 @@ export function weekdayLetter(date: Date, locale: Locale = 'es'): string {
 export function toDateKey(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
+
+/**
+ * Igual que `toDateKey`, pero en el día calendario LOCAL en vez del día en
+ * UTC — `toDateKey` corta el `Date` a las 10 primeras letras de su ISO
+ * string, que está en UTC, así que cerca de la medianoche local (ej. desde
+ * las 21hs en Argentina, UTC-3) devuelve el día siguiente. Usar esta
+ * versión para todo lo que el usuario percibe como "el calendario de su
+ * teléfono" (el ciclo, `src/lib/cycle.ts` y `cycle-grid.ts`) — no para
+ * `mood_checkins`, cuyo `checkin_date` lo genera Postgres a partir de
+ * `created_at at time zone 'utc'`: ahí el cliente tiene que seguir
+ * calculando en UTC para no desalinearse con esa columna generada.
+ */
+export function toLocalDateKey(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}

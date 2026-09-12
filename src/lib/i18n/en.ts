@@ -94,6 +94,10 @@ export const en: Dictionary = {
     whatPartnerSees: (partner) => `What ${partner} sees`,
     privacyHint: 'They never see the detail you log — only the phase and alerts you choose to share.',
     disclaimer: "Estimated from your cycle's average length. Not a contraceptive method.",
+    calendarTitle: 'Cycle calendar',
+    calendarHint: 'Tap a day to mark or unmark the start of your period.',
+    periodLabel: 'Period',
+    saveError: "Couldn't save. Try again.",
     phases: {
       menstrual: 'Period',
       folicular: 'Follicular phase',
