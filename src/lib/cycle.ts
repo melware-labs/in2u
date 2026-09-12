@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { toDateKey } from '@/lib/format';
+import { toLocalDateKey } from '@/lib/format';
 
 export type CyclePhase = 'menstrual' | 'folicular' | 'ovulacion' | 'lutea';
 export type PartnerVisibility = 'nada' | 'avisos' | 'fase_y_avisos';
@@ -26,6 +26,30 @@ export type CyclePhaseResult = {
 };
 
 /**
+ * Cuántos días de folicular/ovulación entran en lo que queda del ciclo
+ * después de la menstruación, con la misma proporción del mock (8:4 sobre
+ * un resto de 24 en un ciclo de 29 días) escalada a `cycleLength`.
+ * Compartida por `computeCyclePhase` (una sola fecha ancla) y por
+ * `src/lib/cycle-grid.ts` (una fecha ancla distinta por día del mes).
+ */
+export function cyclePhaseBuckets(cycleLength: number, periodLength: number): { folicularDays: number; ovulacionDays: number } {
+  const remaining = Math.max(cycleLength - periodLength, 1);
+  return {
+    folicularDays: Math.round((remaining * 8.0) / 24),
+    ovulacionDays: Math.round((remaining * 4.0) / 24),
+  };
+}
+
+/** `dayOfCycle0` es 0-indexado desde el inicio del período (día de sangrado = 0). */
+export function phaseForOffset(dayOfCycle0: number, cycleLength: number, periodLength: number): CyclePhase {
+  const { folicularDays, ovulacionDays } = cyclePhaseBuckets(cycleLength, periodLength);
+  if (dayOfCycle0 < periodLength) return 'menstrual';
+  if (dayOfCycle0 < periodLength + folicularDays) return 'folicular';
+  if (dayOfCycle0 < periodLength + folicularDays + ovulacionDays) return 'ovulacion';
+  return 'lutea';
+}
+
+/**
  * Réplica en TS de `compute_cycle_phase()` en
  * `supabase/migrations/0004_cycle.sql` — mantener las dos sincronizadas a
  * mano. Esta versión la usa la propia dueña del ciclo (sus filas crudas ya
@@ -39,18 +63,10 @@ export function computeCyclePhase(
   periodLength: number,
   asOf: Date = new Date()
 ): CyclePhaseResult {
-  const msPerDay = 24 * 60 * 60 * 1000;
-  const daysSinceStart = Math.floor((startOfDay(asOf).getTime() - startOfDay(lastPeriodStart).getTime()) / msPerDay);
+  const daysSinceStart = daysBetween(lastPeriodStart, asOf);
   const dayOfCycle0 = ((daysSinceStart % cycleLength) + cycleLength) % cycleLength;
-  const remaining = Math.max(cycleLength - periodLength, 1);
-  const folicularDays = Math.round((remaining * 8.0) / 24);
-  const ovulacionDays = Math.round((remaining * 4.0) / 24);
-
-  let phase: CyclePhase;
-  if (dayOfCycle0 < periodLength) phase = 'menstrual';
-  else if (dayOfCycle0 < periodLength + folicularDays) phase = 'folicular';
-  else if (dayOfCycle0 < periodLength + folicularDays + ovulacionDays) phase = 'ovulacion';
-  else phase = 'lutea';
+  const { folicularDays, ovulacionDays } = cyclePhaseBuckets(cycleLength, periodLength);
+  const phase = phaseForOffset(dayOfCycle0, cycleLength, periodLength);
 
   const cyclesElapsed = Math.floor(daysSinceStart / cycleLength);
   const nextPeriodDate = addDays(lastPeriodStart, (cyclesElapsed + 1) * cycleLength);
@@ -61,10 +77,10 @@ export function computeCyclePhase(
     dayOfCycle: dayOfCycle0 + 1,
     cycleLength,
     phase,
-    nextPeriodDate: toDateKey(nextPeriodDate),
+    nextPeriodDate: toLocalDateKey(nextPeriodDate),
     daysUntilNextPeriod: cycleLength - dayOfCycle0,
-    fertileWindowStart: toDateKey(fertileStart),
-    fertileWindowEnd: toDateKey(fertileEnd),
+    fertileWindowStart: toLocalDateKey(fertileStart),
+    fertileWindowEnd: toLocalDateKey(fertileEnd),
   };
 }
 
@@ -80,29 +96,59 @@ function addDays(date: Date, days: number): Date {
   return d;
 }
 
+function daysBetween(from: Date, to: Date): number {
+  const msPerDay = 24 * 60 * 60 * 1000;
+  return Math.floor((startOfDay(to).getTime() - startOfDay(from).getTime()) / msPerDay);
+}
+
 export async function getOwnCycleSettings(userId: string): Promise<CycleSettings | null> {
   const { data, error } = await supabase.from('cycle_settings').select('*').eq('user_id', userId).maybeSingle();
   if (error) throw error;
   return data as CycleSettings | null;
 }
 
-export async function getOwnLastPeriodStart(userId: string): Promise<Date | null> {
+/** Todos los inicios de período registrados, más reciente primero. */
+export async function getOwnPeriodStarts(userId: string, limit = 24): Promise<Date[]> {
   const { data, error } = await supabase
     .from('cycle_periods')
     .select('start_date')
     .eq('user_id', userId)
     .order('start_date', { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .limit(limit);
   if (error) throw error;
-  return data ? new Date(`${data.start_date}T00:00:00`) : null;
+  return (data ?? []).map((row) => new Date(`${row.start_date}T00:00:00`));
 }
 
 export async function logPeriodStart(userId: string, date: Date = new Date()): Promise<void> {
   const { error } = await supabase
     .from('cycle_periods')
-    .upsert({ user_id: userId, start_date: toDateKey(date) }, { onConflict: 'user_id,start_date' });
+    .upsert({ user_id: userId, start_date: toLocalDateKey(date) }, { onConflict: 'user_id,start_date' });
   if (error) throw error;
+}
+
+export async function deletePeriodStart(userId: string, date: Date): Promise<void> {
+  const { error } = await supabase
+    .from('cycle_periods')
+    .delete()
+    .eq('user_id', userId)
+    .eq('start_date', toLocalDateKey(date));
+  if (error) throw error;
+}
+
+/**
+ * Marca/desmarca `date` como inicio de período, tocando a la app desde el
+ * calendario del ciclo. `current` es la lista ya cargada (evita un
+ * round-trip extra solo para saber si ya estaba marcado).
+ */
+export async function togglePeriodStart(userId: string, date: Date, current: Date[]): Promise<Date[]> {
+  const key = toLocalDateKey(date);
+  const exists = current.some((d) => toLocalDateKey(d) === key);
+  if (exists) {
+    await deletePeriodStart(userId, date);
+    return current.filter((d) => toLocalDateKey(d) !== key);
+  }
+  await logPeriodStart(userId, date);
+  return [...current, date].sort((a, b) => b.getTime() - a.getTime());
 }
 
 export async function getTodaySymptoms(userId: string): Promise<Symptom[]> {
@@ -110,7 +156,7 @@ export async function getTodaySymptoms(userId: string): Promise<Symptom[]> {
     .from('cycle_daily_logs')
     .select('symptoms')
     .eq('user_id', userId)
-    .eq('log_date', toDateKey(new Date()))
+    .eq('log_date', toLocalDateKey(new Date()))
     .maybeSingle();
   if (error) throw error;
   return (data?.symptoms as Symptom[] | undefined) ?? [];
@@ -121,7 +167,7 @@ export async function toggleSymptom(userId: string, symptom: Symptom, current: S
   const { error } = await supabase
     .from('cycle_daily_logs')
     .upsert(
-      { user_id: userId, log_date: toDateKey(new Date()), symptoms: next },
+      { user_id: userId, log_date: toLocalDateKey(new Date()), symptoms: next },
       { onConflict: 'user_id,log_date' }
     );
   if (error) throw error;

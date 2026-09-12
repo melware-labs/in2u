@@ -96,6 +96,10 @@ export const es = {
     whatPartnerSees: (partner: string) => `Qué ve ${partner}`,
     privacyHint: 'Nunca ve lo que registras en detalle — solo la fase y los avisos que eliges.',
     disclaimer: 'Estimado a partir de la duración promedio de tu ciclo. No sirve como método anticonceptivo.',
+    calendarTitle: 'Calendario del ciclo',
+    calendarHint: 'Toca un día para marcar o quitar el inicio de tu período.',
+    periodLabel: 'Período',
+    saveError: 'No se pudo guardar. Intenta de nuevo.',
     phases: {
       menstrual: 'Menstruación',
       folicular: 'Fase folicular',

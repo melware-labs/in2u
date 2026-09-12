@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,9 +10,9 @@ import { useTheme } from '@/hooks/use-theme';
 import {
   computeCyclePhase,
   getOwnCycleSettings,
-  getOwnLastPeriodStart,
+  getOwnPeriodStarts,
   getTodaySymptoms,
-  logPeriodStart,
+  togglePeriodStart,
   toggleSymptom,
   updatePartnerVisibility,
   SYMPTOMS,
@@ -22,7 +22,8 @@ import {
   type PartnerVisibility,
   type Symptom,
 } from '@/lib/cycle';
-import { formatDayHeader, INTL_LOCALE } from '@/lib/format';
+import { buildCycleMonthGrid, type CycleDayCell } from '@/lib/cycle-grid';
+import { formatDayHeader, INTL_LOCALE, weekdayLetter } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 
 const DEFAULT_CYCLE_LENGTH = 29;
@@ -35,27 +36,35 @@ export default function CicloScreen() {
   const userId = session?.user.id;
 
   const [settings, setSettings] = useState<CycleSettings | null>(null);
-  const [lastPeriodStart, setLastPeriodStart] = useState<Date | null>(null);
+  const [periodStarts, setPeriodStarts] = useState<Date[]>([]);
   const [symptoms, setSymptoms] = useState<Symptom[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [monthCursor, setMonthCursor] = useState(() => {
+    const d = new Date();
+    d.setDate(1);
+    return d;
+  });
 
   const load = useCallback(async () => {
     if (!userId) return;
     try {
-      const [settingsData, lastPeriod, todaySymptoms] = await Promise.all([
+      const [settingsData, starts, todaySymptoms] = await Promise.all([
         getOwnCycleSettings(userId),
-        getOwnLastPeriodStart(userId),
+        getOwnPeriodStarts(userId),
         getTodaySymptoms(userId),
       ]);
       setSettings(settingsData);
-      setLastPeriodStart(lastPeriod);
+      setPeriodStarts(starts);
       setSymptoms(todaySymptoms);
+      setErrorMessage(null);
     } catch (err) {
       console.error('No se pudo cargar el ciclo:', err);
+      setErrorMessage(t.ciclo.saveError);
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [userId, t.ciclo.saveError]);
 
   useEffect(() => {
     load();
@@ -64,10 +73,28 @@ export default function CicloScreen() {
   const cycleLength = settings?.average_cycle_length_days ?? DEFAULT_CYCLE_LENGTH;
   const periodLength = settings?.average_period_length_days ?? DEFAULT_PERIOD_LENGTH;
   const partnerVisibility = settings?.partner_visibility ?? 'nada';
+  const lastPeriodStart = periodStarts[0] ?? null;
 
   const phase: CyclePhaseResult | null = lastPeriodStart
     ? computeCyclePhase(lastPeriodStart, cycleLength, periodLength)
     : null;
+
+  const grid = useMemo(
+    () =>
+      buildCycleMonthGrid({
+        year: monthCursor.getFullYear(),
+        month: monthCursor.getMonth(),
+        periodStarts,
+        cycleLength,
+        periodLength,
+      }),
+    [monthCursor, periodStarts, cycleLength, periodLength]
+  );
+
+  const weekdayLetters = useMemo(
+    () => Array.from({ length: 7 }, (_, i) => weekdayLetter(new Date(2024, 0, 1 + i), locale)),
+    [locale]
+  );
 
   async function handleToggleSymptom(symptom: Symptom) {
     if (!userId) return;
@@ -75,19 +102,24 @@ export default function CicloScreen() {
     setSymptoms((prev) => (prev.includes(symptom) ? prev.filter((s) => s !== symptom) : [...prev, symptom]));
     try {
       await toggleSymptom(userId, symptom, previous);
+      setErrorMessage(null);
     } catch (err) {
       setSymptoms(previous);
       console.error('No se pudo guardar el síntoma:', err);
+      setErrorMessage(t.ciclo.saveError);
     }
   }
 
-  async function handleLogPeriodStart() {
-    if (!userId) return;
+  async function handleToggleDay(date: Date) {
+    if (!userId || date.getTime() > startOfToday().getTime()) return;
+    const previous = periodStarts;
     try {
-      await logPeriodStart(userId);
-      await load();
+      const next = await togglePeriodStart(userId, date, previous);
+      setPeriodStarts(next);
+      setErrorMessage(null);
     } catch (err) {
-      console.error('No se pudo registrar el inicio del período:', err);
+      console.error('No se pudo registrar el período:', err);
+      setErrorMessage(t.ciclo.saveError);
     }
   }
 
@@ -107,14 +139,27 @@ export default function CicloScreen() {
     );
     try {
       await updatePartnerVisibility(userId, level);
+      setErrorMessage(null);
     } catch (err) {
       setSettings((prev) => (prev ? { ...prev, partner_visibility: previous } : prev));
       console.error('No se pudo actualizar la privacidad:', err);
+      setErrorMessage(t.ciclo.saveError);
     }
+  }
+
+  function changeMonth(delta: number) {
+    setMonthCursor((prev) => {
+      const next = new Date(prev);
+      next.setMonth(next.getMonth() + delta);
+      return next;
+    });
   }
 
   const partnerFirstName = partner?.display_name?.split(' ')?.[0] ?? (locale === 'en' ? 'your partner' : 'tu pareja');
   const intlLocale = INTL_LOCALE[locale];
+  const monthLabel = monthCursor
+    .toLocaleDateString(intlLocale, { month: 'long', year: 'numeric' })
+    .replace(/^\w/, (c) => c.toUpperCase());
 
   return (
     <ThemedView style={styles.container}>
@@ -129,6 +174,14 @@ export default function CicloScreen() {
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          {errorMessage && (
+            <ThemedView style={[styles.errorBanner, { borderColor: theme.neutral800 }]}>
+              <ThemedText type="small" themeColor="textSecondary">
+                {errorMessage}
+              </ThemedText>
+            </ThemedView>
+          )}
+
           <ThemedView style={[styles.phaseCard, { borderColor: theme.accent800, backgroundColor: theme.accent900 }]}>
             {phase ? (
               <>
@@ -160,26 +213,51 @@ export default function CicloScreen() {
                 </View>
               </>
             ) : (
-              !loading && (
-                <>
-                  <ThemedText themeColor="neutral200">{t.ciclo.notRegisteredYet}</ThemedText>
-                  <Pressable
-                    onPress={handleLogPeriodStart}
-                    style={[styles.logPeriodButton, { borderColor: theme.accent600 }]}>
-                    <ThemedText themeColor="accent200">{t.ciclo.startedToday}</ThemedText>
-                  </Pressable>
-                </>
-              )
+              !loading && <ThemedText themeColor="neutral200">{t.ciclo.notRegisteredYet}</ThemedText>
             )}
           </ThemedView>
 
-          {phase && (
-            <Pressable onPress={handleLogPeriodStart}>
-              <ThemedText type="small" themeColor="accent300" style={styles.logAgainLink}>
-                {t.ciclo.logAgain}
+          <View style={styles.section}>
+            <View style={styles.calendarHeader}>
+              <ThemedText type="small" themeColor="textSecondary" style={styles.eyebrow}>
+                {t.ciclo.calendarTitle}
               </ThemedText>
-            </Pressable>
-          )}
+              <View style={styles.monthNav}>
+                <Pressable hitSlop={8} onPress={() => changeMonth(-1)}>
+                  <ThemedText themeColor="textSecondary">‹</ThemedText>
+                </Pressable>
+                <ThemedText type="small">{monthLabel}</ThemedText>
+                <Pressable hitSlop={8} onPress={() => changeMonth(1)}>
+                  <ThemedText themeColor="textSecondary">›</ThemedText>
+                </Pressable>
+              </View>
+            </View>
+
+            <View style={styles.weekdayRow}>
+              {weekdayLetters.map((letter, i) => (
+                <ThemedText key={`${letter}-${i}`} type="small" themeColor="neutral500" style={styles.weekdayLetter}>
+                  {letter}
+                </ThemedText>
+              ))}
+            </View>
+
+            <View style={styles.grid}>
+              {grid.map((cell) => (
+                <CycleDayCellView key={cell.dateKey} cell={cell} theme={theme} onPress={() => handleToggleDay(cell.date)} />
+              ))}
+            </View>
+
+            <View style={styles.legend}>
+              <LegendItem theme={theme} color={theme.accent400} label={t.ciclo.periodLabel} ring />
+              <LegendItem theme={theme} color={`${theme.accent500}48`} label={t.ciclo.phases.folicular} />
+              <LegendItem theme={theme} color={`${theme.accent500}8C`} label={t.ciclo.phases.ovulacion} />
+              <LegendItem theme={theme} color={`${theme.accent500}2E`} label={t.ciclo.phases.lutea} />
+            </View>
+
+            <ThemedText type="small" themeColor="textSecondary">
+              {t.ciclo.calendarHint}
+            </ThemedText>
+          </View>
 
           <View style={styles.section}>
             <ThemedText type="small" themeColor="textSecondary" style={styles.eyebrow}>
@@ -239,6 +317,83 @@ export default function CicloScreen() {
         </ScrollView>
       </SafeAreaView>
     </ThemedView>
+  );
+}
+
+function startOfToday(): Date {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function phaseCellColor(theme: ReturnType<typeof useTheme>, phase: CyclePhase | null): string {
+  switch (phase) {
+    case 'menstrual':
+      return theme.accent400;
+    case 'folicular':
+      return `${theme.accent500}48`;
+    case 'ovulacion':
+      return `${theme.accent500}8C`;
+    case 'lutea':
+      return `${theme.accent500}2E`;
+    default:
+      return 'transparent';
+  }
+}
+
+function CycleDayCellView({
+  cell,
+  theme,
+  onPress,
+}: {
+  cell: CycleDayCell;
+  theme: ReturnType<typeof useTheme>;
+  onPress: () => void;
+}) {
+  const isFuture = cell.date.getTime() > startOfToday().getTime();
+  return (
+    <Pressable onPress={onPress} disabled={isFuture} style={styles.dayCellWrap}>
+      <View
+        style={[
+          styles.dayCell,
+          {
+            backgroundColor: cell.inCurrentMonth ? phaseCellColor(theme, cell.phase) : 'transparent',
+            borderWidth: cell.isRegisteredStart || cell.isToday ? 1.5 : 0,
+            borderColor: cell.isRegisteredStart ? theme.accent200 : theme.neutral500,
+            opacity: cell.inCurrentMonth ? (isFuture ? 0.35 : 1) : 0.25,
+          },
+        ]}>
+        <ThemedText type="small" themeColor={cell.phase === 'menstrual' ? 'accent100' : 'text'}>
+          {cell.date.getDate()}
+        </ThemedText>
+      </View>
+    </Pressable>
+  );
+}
+
+function LegendItem({
+  theme,
+  color,
+  label,
+  ring,
+}: {
+  theme: ReturnType<typeof useTheme>;
+  color: string;
+  label: string;
+  ring?: boolean;
+}) {
+  return (
+    <View style={styles.legendItem}>
+      <View
+        style={[
+          styles.legendSwatch,
+          { backgroundColor: color, borderWidth: ring ? 1.5 : 0, borderColor: theme.accent200 },
+        ]}
+      />
+      <ThemedText type="small" themeColor="textSecondary" numberOfLines={1}>
+        {label}
+      </ThemedText>
+    </View>
   );
 }
 
@@ -313,6 +468,11 @@ const styles = StyleSheet.create({
     gap: Spacing.four,
     paddingBottom: BottomTabInset + Spacing.three,
   },
+  errorBanner: {
+    borderWidth: 1,
+    borderRadius: Radius.md,
+    padding: Spacing.two + 2,
+  },
   phaseCard: {
     borderWidth: 1,
     borderRadius: Radius.md,
@@ -341,18 +501,57 @@ const styles = StyleSheet.create({
   phaseStat: {
     gap: 2,
   },
-  logPeriodButton: {
-    alignSelf: 'flex-start',
-    borderWidth: 1,
-    borderRadius: Radius.md,
-    paddingVertical: Spacing.two - 2,
-    paddingHorizontal: Spacing.three,
-  },
-  logAgainLink: {
-    textAlign: 'center',
-  },
   section: {
     gap: Spacing.two + 1,
+  },
+  calendarHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  monthNav: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+  },
+  weekdayRow: {
+    flexDirection: 'row',
+  },
+  weekdayLetter: {
+    flex: 1,
+    textAlign: 'center',
+    letterSpacing: 1,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  dayCellWrap: {
+    width: `${100 / 7}%`,
+    aspectRatio: 1,
+    padding: 2,
+  },
+  dayCell: {
+    flex: 1,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  legend: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.three,
+    paddingTop: 2,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  legendSwatch: {
+    width: 12,
+    height: 12,
+    borderRadius: 3,
   },
   pillRow: {
     flexDirection: 'row',
