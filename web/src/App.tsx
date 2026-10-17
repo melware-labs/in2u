@@ -59,9 +59,26 @@ export function App() {
   const [chatDraft, setChatDraft] = useState<string | null>(null);
   const clearDraft = useCallback(() => setChatDraft(null), []);
 
-  useEffect(() => {
-    api.me().then(setMe, () => setMe(null));
+  // Al abrir: si el servidor está dormido la primera petición falla o se corta;
+  // se reintenta unas veces y, si sigue sin responder, se ofrece reintentar.
+  const [boot, setBoot] = useState<'loading' | 'waking' | 'failed'>('loading');
+  const loadMe = useCallback(async () => {
+    setBoot('loading');
+    for (let attempt = 0; attempt < 4; attempt++) {
+      try {
+        setMe(await api.me());
+        return;
+      } catch {
+        setBoot('waking');
+        await new Promise((r) => setTimeout(r, 3000));
+      }
+    }
+    setBoot('failed');
   }, []);
+
+  useEffect(() => {
+    loadMe();
+  }, [loadMe]);
 
   // Una vez por sesión: el navegador le dice al backend su zona horaria, para
   // que "hoy" sea el día de cada quien y no el del servidor.
@@ -116,7 +133,16 @@ export function App() {
       <div className="app splash">
         <main className="page center">
           <Brand />
-          <p className="muted">{t.loading}</p>
+          {boot === 'failed' ? (
+            <>
+              <p className="muted">{t.offline}</p>
+              <button className="btn" onClick={loadMe}>
+                {t.retry}
+              </button>
+            </>
+          ) : (
+            <p className="muted">{boot === 'waking' ? t.waking : t.loading}</p>
+          )}
         </main>
       </div>
     );
