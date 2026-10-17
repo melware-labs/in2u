@@ -92,6 +92,9 @@ export function App() {
 
       <nav className="nav" aria-label="Principal">
         <div className="nav-inner">
+          <div className="nav-brand" aria-hidden>
+            in2u
+          </div>
           {TABS.map((item) => (
             <button
               key={item.id}
