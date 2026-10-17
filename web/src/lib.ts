@@ -57,6 +57,11 @@ export function parseLocalDate(key: string): Date {
   return new Date(y, m - 1, d);
 }
 
+/** Cantidad de días del mes (month 1-12). */
+export function daysInMonth(year: number, month: number): number {
+  return new Date(year, month, 0).getDate();
+}
+
 /** Días de calendario desde "YYYY-MM-DD" hasta hoy (local); 0 si es hoy. */
 export function daysSince(dateKey: string, now: Date = new Date()): number {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
