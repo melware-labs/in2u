@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api, type CoupleEvent, type Me } from '../api';
 import { locale, t } from '../i18n';
 import { firstName, localIsoDate, monthGrid } from '../lib';
+import { CalendarIcon, ChevronIcon, ClockIcon, PlusCircleIcon } from '../icons';
 import { NewEventSheet } from './NewEventSheet';
 
 const INTL = locale === 'en' ? 'en-US' : 'es-ES';
@@ -72,21 +73,24 @@ export function Calendar({ me }: { me: Me }) {
 
   return (
     <>
-      <div className="row between">
+      <div className="stack" style={{ gap: 4 }}>
         <h1>{t.calendario.title}</h1>
-        <button className="btn small-btn" onClick={() => setCreating(true)} aria-label={t.calendario.new}>
-          + {t.calendario.new}
-        </button>
+        <p className="couple">
+          {firstName(me.name, '')} <span className="heart">♥</span> {partnerName}
+        </p>
       </div>
 
       <section className="card strip">
-        <div className="row between">
-          <button className="btn link" onClick={() => shift(-1)} aria-label={t.calendario.prev}>
-            ‹
-          </button>
+        <div className="cal-head">
+          <span className="badge" aria-hidden>
+            <CalendarIcon size={18} />
+          </span>
           <h2 className="cap">{monthLabel}</h2>
-          <button className="btn link" onClick={() => shift(1)} aria-label={t.calendario.next}>
-            ›
+          <button className="round-btn" onClick={() => shift(-1)} aria-label={t.calendario.prev}>
+            <ChevronIcon dir="left" />
+          </button>
+          <button className="round-btn" onClick={() => shift(1)} aria-label={t.calendario.next}>
+            <ChevronIcon dir="right" />
           </button>
         </div>
 
@@ -124,6 +128,10 @@ export function Calendar({ me }: { me: Me }) {
         </div>
       </section>
 
+      <button className="btn" onClick={() => setCreating(true)}>
+        {t.calendario.new} <PlusCircleIcon />
+      </button>
+
       <p className="kicker cap">
         {selectedLabel}
       </p>
@@ -131,19 +139,21 @@ export function Calendar({ me }: { me: Me }) {
       {dayEvents.map((e) => (
         <article key={e.id} className={`bubble ${!e.mine ? 'sky' : e.visibility === 'los_dos' ? 'coral' : 'yellow'}`}>
           <div className="row between">
-            <div>
+            <div className="stack" style={{ gap: 6 }}>
               <h2>{e.title}</h2>
-              <p className="muted small">
-                {timeLabel(e.startsAt)} – {timeLabel(e.endsAt)} ·{' '}
-                {!e.mine ? t.calendario.partners(partnerName) : e.visibility === 'los_dos' ? t.calendario.shared : t.calendario.mine}
+              <p className="meta">
+                <ClockIcon /> {timeLabel(e.startsAt)} – {timeLabel(e.endsAt)}
               </p>
             </div>
-            {e.mine && (
-              <button className="btn link" onClick={() => remove(e.id)}>
-                {t.calendario.remove}
-              </button>
-            )}
+            <span className="pill">
+              {!e.mine ? t.calendario.partners(partnerName) : e.visibility === 'los_dos' ? t.calendario.shared : t.calendario.mine}
+            </span>
           </div>
+          {e.mine && (
+            <button className="btn link" style={{ alignSelf: 'flex-end', padding: 0 }} onClick={() => remove(e.id)}>
+              {t.calendario.remove}
+            </button>
+          )}
         </article>
       ))}
       {error && <p className="error">{error}</p>}
