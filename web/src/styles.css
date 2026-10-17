@@ -10,7 +10,7 @@
 @import '@fontsource-variable/nunito-sans';
 
 :root {
-  /* Paleta "carmesí" (la de entrada): rojo #AB2222 sobre crema #FDFFE2.
+  /* Paleta "carmesí" (la de entrada): rojo #AB2222 sobre blanco.
      Los demás temas pisan estas variables. */
   --primary: #ab2222;
   --accent: #7f1d1d; /* día de hoy */
@@ -18,13 +18,13 @@
   --nav-bg: #ffffff;
 
   /* Modo día. */
-  --bg: #fdffe2;
+  --bg: #ffffff;
   --surface: #ffffff; /* campos, opciones, días de la semana */
-  --text: #2a2422;
-  --text-2: #7d746b;
-  --gray: #9b9288;
-  --card: #ffffff;
-  --border: #ece8cf;
+  --text: #262222;
+  --text-2: #7a7474;
+  --gray: #9a9494;
+  --card: #f8f7f7;
+  --border: #e8e5e5;
   --nav-item: rgba(44, 44, 44, 0.3);
   --overlay: rgba(44, 44, 44, 0.45);
   --shadow: none; /* tarjetas planas, sin sombra */
@@ -57,16 +57,16 @@
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-  --nav-h: 56px;
+  --nav-h: 64px; /* barra inferior del celular */
   color-scheme: light;
 }
 
-/* Carmesí: los tintes de las tarjetas van en crema tostado, no en rojo
+/* Carmesí: los tintes de las tarjetas van en gris cálido, no en rojo
    aguado (que se vería rosa). Solo de día; de noche se mezclan con el fondo oscuro. */
 :root:not([data-mode='dark']):not([data-theme]),
 :root[data-theme='carmesi']:not([data-mode='dark']) {
-  --primary-soft: #f6f0cf;
-  --accent-soft: #f2ead0;
+  --primary-soft: #f4f1f1;
+  --accent-soft: #f1eeee;
 }
 
 /* Paletas pastel, para quien prefiera otro color. */
@@ -137,7 +137,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
   position: relative;
   width: 100%;
   max-width: 560px;
-  padding: 36px 20px calc(var(--nav-h) + 56px + env(safe-area-inset-bottom));
+  padding: 36px 20px calc(var(--nav-h) + 28px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -241,50 +241,48 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
   flex: none;
 }
 .avatar.partner { background: var(--fill-accent); }
+button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
 .avatars { display: flex; }
 .avatars .avatar + .avatar { margin-left: -12px; }
 
 .couple { font-size: 13px; color: var(--text-2); }
 .couple .heart { color: var(--error); }
 
-/* Barra inferior: píldora flotante con íconos en círculos. */
+/* Barra inferior: ocupa todo el ancho de la pantalla y queda fija abajo. */
 .nav {
   position: fixed;
-  left: 0; right: 0;
-  bottom: calc(16px + env(safe-area-inset-bottom));
-  display: flex;
-  justify-content: center;
-  pointer-events: none;
+  left: 0; right: 0; bottom: 0;
   z-index: 5;
 }
 .nav-inner {
-  pointer-events: auto;
   background: var(--nav-bg);
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  padding: 4px;
+  border-top: 1px solid var(--border);
+  padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
   display: flex;
-  gap: 10px;
+  justify-content: space-around;
+  gap: 2px;
   box-shadow: var(--nav-glow);
 }
 .nav button {
-  height: 40px;
-  min-width: 40px;
+  flex: 1 1 0;
+  min-width: 0;
   border: 0;
-  border-radius: 100px;
-  background: var(--nav-item);
-  color: var(--on-fill);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-2);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 0 8px;
-  font-size: 14px;
+  gap: 2px;
+  padding: 6px 2px 4px;
+  font-size: 11px;
   font-weight: 600;
+  line-height: 1.2;
 }
-.nav button .label { display: none; }
-.nav button[aria-current='page'] { background: var(--fill); color: var(--on-fill); padding: 0 14px 0 10px; }
-.nav button[aria-current='page'] .label { display: inline; }
+.nav button .label { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav button[aria-current='page'] { color: var(--line); background: var(--primary-soft); }
+:root[data-mode='dark'] .nav button[aria-current='page'] { color: var(--text); background: var(--fill); }
 
 /* Ánimo */
 .mood-big { font-size: 46px; line-height: 1; }
@@ -383,7 +381,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
   border: 1px solid; border-radius: var(--radius-sm); box-shadow: var(--shadow);
   padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;
 }
-.bubble.coral { background: var(--error-soft); border-color: var(--error); }
+.bubble.coral { background: var(--primary-soft); border-color: var(--primary); }
 .bubble.yellow { background: var(--pending-soft); border-color: var(--pending); }
 .bubble.sky { background: var(--accent-soft); border-color: var(--accent); }
 .bubble h2 { font-weight: 500; font-size: 17px; }
@@ -392,7 +390,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
   display: inline-block; border: 1px solid; border-radius: 100px;
   padding: 2px 8px; font-size: 12px; font-weight: 500;
 }
-.bubble.coral .pill { border-color: var(--error); background: var(--error-soft); }
+.bubble.coral .pill { border-color: var(--primary); background: var(--surface); }
 .bubble.yellow .pill { border-color: var(--pending); background: var(--pending-soft); }
 .bubble.sky .pill { border-color: var(--accent); background: var(--accent-soft); }
 
@@ -431,7 +429,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 /* Menú "Más": en el celular las secciones extra van en una hoja. */
 .nav button.unread { position: relative; }
 .nav button.unread::after {
-  content: ''; position: absolute; top: 6px; right: 6px;
+  content: ''; position: absolute; top: 4px; right: calc(50% - 16px);
   width: 8px; height: 8px; border-radius: 50%; background: var(--error);
 }
 .nav button.in-more { display: none; }
@@ -526,7 +524,7 @@ textarea.input { resize: vertical; min-height: 44px; }
 .msg.theirs { align-self: flex-start; background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 6px; }
 .msg-time { font-size: 11px; opacity: 0.7; align-self: flex-end; }
 .composer {
-  position: sticky; bottom: calc(var(--nav-h) + 28px + env(safe-area-inset-bottom));
+  position: sticky; bottom: calc(var(--nav-h) + env(safe-area-inset-bottom));
   background: var(--bg); padding: 8px 0; display: flex; flex-direction: column; gap: 6px;
 }
 .composer-row { display: flex; align-items: flex-end; gap: 8px; }
@@ -557,10 +555,6 @@ textarea.input { resize: vertical; min-height: 44px; }
 
 /* Celulares chicos: la barra entra sin desbordar y las marcas de eventos caben en el día. */
 @media (max-width: 400px) {
-  .nav-inner { gap: 4px; }
-  .nav button { min-width: 38px; height: 38px; padding: 0 7px; }
-  .nav button[aria-current='page'] { padding: 0 7px; }
-  .nav button[aria-current='page'] .label { display: none; }
   .dot { width: 7px; }
   .page { padding-left: 14px; padding-right: 14px; }
   .carousel { margin: 0 -14px; padding: 0 14px; scroll-padding: 0 14px; }
@@ -593,9 +587,11 @@ textarea.input { resize: vertical; min-height: 44px; }
   .nav { top: 0; bottom: 0; right: auto; width: var(--side-w); justify-content: stretch; }
   .nav-inner {
     width: 100%;
+    height: 100%;
     flex-direction: column;
+    justify-content: flex-start;
     gap: 6px;
-    border-radius: 0;
+    border-top: 0;
     padding: 28px 16px;
     border-right: 1px solid var(--border);
   }
@@ -607,14 +603,18 @@ textarea.input { resize: vertical; min-height: 44px; }
   }
   .nav button,
   .nav button[aria-current='page'] {
+    flex: none;
+    flex-direction: row;
     justify-content: flex-start;
     height: 44px;
     padding: 0 14px;
     gap: 12px;
+    border-radius: 100px;
+    font-size: 15px;
     background: transparent;
     color: var(--text);
   }
-  .nav button .label { display: inline; }
+  .nav button .label { display: inline; overflow: visible; }
   .nav button:hover { background: var(--primary-soft); }
   .nav button[aria-current='page'] { background: var(--fill); color: var(--on-fill); }
   .nav button.in-more { display: flex; }
