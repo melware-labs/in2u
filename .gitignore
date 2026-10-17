@@ -48,3 +48,7 @@ example
 
 .vercel
 .env*
+!.env.example
+
+# Maven
+backend/target/

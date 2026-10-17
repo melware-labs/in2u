@@ -127,6 +127,19 @@ aprobado con el detalle técnico completo).
 - [x] Preview web (puerto 8081, servidor ya corriendo — no se pudo arrancar uno nuevo por el puerto ocupado, ver lessons.md): pantalla de login carga sin errores de consola, el bundle completo (`entry.bundle`) compila y sirve 200 OK
 - [ ] **No verificado visualmente más allá del login**: Calendario/Consejos/Ciclo/Nosotros necesitan sesión real (mismo límite que Fase B) — pendiente de que Melany las pruebe con su cuenta después de correr las migraciones
 
+## Fase J — Migración a web responsive con Spring Boot + Docker (2026-10-17)
+
+Decisión de Melany: se olvida la app nativa Android/iOS; in2u pasa a ser una web responsive con todas las funciones, backend Spring Boot (Java 21) y Docker. Decisiones tomadas por defecto: frontend React + Vite (paso 2), Postgres propio en Docker en vez de Supabase, SSE en lugar de Supabase Realtime, sesión con cookie + CSRF. El código Expo queda en el repo hasta que la web tenga todas las funciones.
+
+- [x] **Paso 1 — Backend** (`backend/`): Spring Boot 4.1 + Postgres + Flyway (`V1__esquema_inicial.sql` porta las 5 migraciones de Supabase), login con Google (OAuth2) + login de desarrollo (`DEV_LOGIN=true`), pairing por código, check-in de ánimo (uno por día, "hoy" según la zona horaria de cada quien), SSE en tiempo real para la pareja, consejos del día
+- [x] Consejos según el ánimo con **Gemini (plan gratuito de AI Studio)**; sin key, o si Gemini falla / agota la cuota, cae a un respaldo por reglas (`RuleBasedTipper`), así nunca queda vacío
+- [x] `docker-compose.yml` (db + backend) y `backend/Dockerfile` multi-stage; 8 tests (Testcontainers + Postgres real) pasan; verificado de punta a punta con contenedores reales
+- [ ] **Pendiente de Melany**: crear la API key gratis en https://aistudio.google.com/apikey y ponerla en `.env` como `GEMINI_API_KEY`; agregar `http://localhost:8080/login/oauth2/code/google` como redirect URI del OAuth Client de Google
+- [ ] **No verificado**: la llamada real a Gemini (no había key) y `docker compose build` dentro de este sandbox (el proxy del entorno rompe el certificado de Maven dentro del build; fuera de ahí es el Dockerfile estándar)
+- [ ] Paso 2: frontend web responsive (React + Vite): Nosotros + check-in
+- [ ] Paso 3: Calendario, Ciclo (resumen recortado para la pareja) y Perfil
+- [ ] Paso 4: servir el frontend desde la misma imagen / Compose, y desplegar
+
 ## Fase G — Outlook (fast-follow)
 
 - [ ] Repetir el patrón de Fase C con Microsoft Graph API (registro de app en Azure AD)

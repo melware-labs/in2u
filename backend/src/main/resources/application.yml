@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: in2u
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/in2u}
+    username: ${DB_USER:in2u}
+    password: ${DB_PASSWORD:in2u}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:sin-configurar}
+            client-secret: ${GOOGLE_CLIENT_SECRET:sin-configurar}
+            scope: openid,profile,email
+
+server:
+  forward-headers-strategy: framework
+  servlet:
+    session:
+      cookie:
+        same-site: lax
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+in2u:
+  # Adónde vuelve el navegador después de loguearse con Google (el frontend).
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}
+  # Login sin Google para probar en local. NUNCA activarlo en producción.
+  dev-login: ${DEV_LOGIN:false}
+  gemini:
+    # API key gratuita de Google AI Studio (https://aistudio.google.com/apikey).
+    # Sin key, los consejos se eligen igual con reglas según el ánimo.
+    api-key: ${GEMINI_API_KEY:}
+    model: ${GEMINI_MODEL:gemini-flash-latest}
