@@ -116,21 +116,21 @@ export const HeartIcon = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
-// Dos corazones unidos por un lazo, como el trazo rojo de la portada de Devyn.
-const heart = (x: number, y: number, r: number) =>
-  `M${x} ${y + r * 1.1}C${x - r * 1.6} ${y} ${x - r * 1.2} ${y - r * 1.2} ${x} ${y - r * 0.5}` +
-  `C${x + r * 1.2} ${y - r * 1.2} ${x + r * 1.6} ${y} ${x} ${y + r * 1.1}Z`;
-
+// Logo minimalista: dos globitos de mensaje que se cruzan.
 export const HeartsLoop = () => (
-  <svg className="hearts-loop" viewBox="0 0 240 150" fill="none" aria-hidden>
+  <svg className="hearts-loop" viewBox="0 0 120 100" fill="none" aria-hidden>
     <path
-      d="M48 104C30 60 70 10 120 10s92 50 72 94c-14 30-56 42-72 42s-58-12-72-42Z"
+      d="M28 10H52A20 20 0 0 1 72 30V36A20 20 0 0 1 52 56H42L28 68V56A20 20 0 0 1 8 36V30A20 20 0 0 1 28 10Z"
       stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
+      strokeWidth={4}
+      strokeLinejoin="round"
     />
-    <path d={heart(48, 92, 20)} stroke="currentColor" strokeWidth={2} strokeLinejoin="round" />
-    <path d={heart(192, 92, 20)} stroke="currentColor" strokeWidth={2} strokeLinejoin="round" />
-    <path d={heart(120, 76, 14)} fill="currentColor" opacity={0.85} />
+    <path
+      d="M68 36H92A20 20 0 0 1 112 56V62A20 20 0 0 1 92 82V94L78 82H68A20 20 0 0 1 48 62V56A20 20 0 0 1 68 36Z"
+      fill="currentColor"
+      stroke="var(--bg)"
+      strokeWidth={4}
+      strokeLinejoin="round"
+    />
   </svg>
 );
