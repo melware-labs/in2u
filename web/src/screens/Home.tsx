@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { api, type Checkin, type CoupleEvent, type GameState, type Me, type PartnerCycle, type Photo, type TodayTip } from '../api';
 import { Emoji } from '../Emoji';
 import { moodEmoji, t } from '../i18n';
-import { ChatIcon, ClockIcon, PlusCircleIcon } from '../icons';
-import { firstName, localIsoDate, ofTheDay, parseLocalDate, weekDays } from '../lib';
+import { ChatIcon, GameIcon, IdeaIcon, PlusCircleIcon } from '../icons';
+import { firstName, localIsoDate, ofTheDay, weekDays } from '../lib';
 import { DAILY_QUESTIONS } from '../questions';
 import { CARE_TIPS, tipByKey } from '../tips';
 import { PhotoCard } from './Album';
@@ -82,42 +82,6 @@ function PhotoCarousel({
   );
 }
 
-function NextPlanCard({ event, onCalendar }: { event: CoupleEvent | null | undefined; onCalendar: () => void }) {
-  if (event === undefined) return null;
-  if (!event) {
-    return (
-      <section className="card">
-        <p className="kicker">{t.inicio.nextPlan}</p>
-        <h2>{t.inicio.noPlan}</h2>
-        <p className="muted small">{t.inicio.planIdea}</p>
-        <button className="btn secondary small-btn" style={{ alignSelf: 'flex-start' }} onClick={onCalendar}>
-          {t.inicio.createPlan}
-        </button>
-      </section>
-    );
-  }
-  const start = new Date(event.startsAt);
-  const days = Math.round(
-    (parseLocalDate(localIsoDate(start)).getTime() - parseLocalDate(localIsoDate(new Date())).getTime()) / 86_400_000,
-  );
-  return (
-    <button className="bubble coral plan" onClick={onCalendar}>
-      <span className="kicker">{t.inicio.nextPlan}</span>
-      <h2>{event.title}</h2>
-      <span className="meta">
-        <ClockIcon />
-        <span className="cap">
-          {start.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })} ·{' '}
-          {start.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
-        </span>
-      </span>
-      <span className="pill" style={{ alignSelf: 'flex-start' }}>
-        {t.inicio.inDays(days)}
-      </span>
-    </button>
-  );
-}
-
 function CycleCareCard({ partner, cycle }: { partner: string; cycle: PartnerCycle }) {
   if (cycle.visibility === 'nada' || !cycle.hasData) return null;
 
@@ -161,6 +125,15 @@ function greeting(now: Date = new Date()): string {
   return h < 12 ? t.nosotros.greeting.morning : h < 19 ? t.nosotros.greeting.afternoon : t.nosotros.greeting.evening;
 }
 
+/** Lunes de la semana de `now`, a medianoche local. */
+function weekStart(now: Date): Date {
+  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return d;
+}
+
+const hhmm = (iso: string) => new Date(iso).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+
 export function Home({
   me,
   week,
@@ -185,15 +158,23 @@ export function Home({
   onAsk: (question: string) => void;
 }) {
   const partnerName = firstName(me.partner?.name, '—');
+  const myInitial = (firstName(me.name, '·')[0] ?? '·').toUpperCase();
+  const partnerInitial = (partnerName[0] ?? '·').toUpperCase();
   const today = localIsoDate(new Date());
   const mine = week.find((c) => c.mine && c.date === today);
   const partner = week.find((c) => !c.mine && c.date === today);
   const [photos, setPhotos] = useState<Photo[] | null>(null);
-  // undefined = cargando; null = no hay planes de los dos.
-  const [plan, setPlan] = useState<CoupleEvent | null | undefined>(undefined);
+  const [events, setEvents] = useState<CoupleEvent[]>([]);
+  const [selected, setSelected] = useState(today);
   const [game, setGame] = useState<GameState | null>(null);
   const question = ofTheDay(DAILY_QUESTIONS);
   const curated = tip ? tipByKey(tip.tipKey) : undefined;
+
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const d = weekStart(new Date());
+    d.setDate(d.getDate() + i);
+    return d;
+  });
 
   useEffect(() => {
     api.photos().then(setPhotos, () => setPhotos([]));
@@ -204,41 +185,135 @@ export function Home({
   }, [versions.game]);
 
   useEffect(() => {
-    const now = new Date();
-    api.events(now, new Date(now.getTime() + 60 * 86_400_000)).then(
-      (list) => setPlan(list.find((e) => e.visibility === 'los_dos' && new Date(e.endsAt) >= now) ?? null),
-      () => setPlan(null),
-    );
+    const from = weekStart(new Date());
+    api.events(from, new Date(from.getTime() + 60 * 86_400_000)).then(setEvents, () => setEvents([]));
   }, []);
 
+  const eventsOn = (key: string) => events.filter((e) => localIsoDate(new Date(e.startsAt)) === key);
+  const dayEvents = eventsOn(selected);
+  const nextShared = events.find((e) => e.visibility === 'los_dos' && new Date(e.endsAt) >= new Date());
   const pendingFromPartner = game?.questions.some((q) => q.partnerAnswered && q.mySelf == null);
 
   return (
     <>
-      <header className="row between" style={{ marginBottom: 8 }}>
+      <header className="home-head">
         <div className="stack" style={{ gap: 4 }}>
-          <h1>
+          <h1 className="home-title">
             {greeting()}, {firstName(me.name, '')}
           </h1>
           <p className="couple">
             {firstName(me.name, '')} <span className="heart">♥</span> {partnerName}
           </p>
         </div>
-        <div className="avatars">
-          <button className="avatar" aria-label={t.tabs.perfil} title={t.tabs.perfil} onClick={() => onGo('perfil')}>
-            {(firstName(me.name, '·')[0] ?? '·').toUpperCase()}
-          </button>
-          <div className="avatar partner" aria-hidden>
-            {(partnerName[0] ?? '·').toUpperCase()}
-          </div>
-        </div>
+        <button className="profile-btn" aria-label={t.tabs.perfil} title={t.tabs.perfil} onClick={() => onGo('perfil')}>
+          {myInitial}
+        </button>
       </header>
 
-      {photos && <PhotoCarousel photos={photos} onOpen={onOpenPhoto} onAlbum={() => onGo('album')} />}
+      <div className="week-strip" role="tablist" aria-label={t.nosotros.week}>
+        {days.map((d) => {
+          const key = localIsoDate(d);
+          return (
+            <button
+              key={key}
+              role="tab"
+              aria-selected={key === selected}
+              className={`wk-day${key === today ? ' today' : ''}`}
+              onClick={() => setSelected(key)}
+            >
+              <span className="wk-num">{d.getDate()}</span>
+              <span className="wk-name cap">{d.toLocaleDateString(undefined, { weekday: 'short' }).replace('.', '')}</span>
+              <span className={`wk-dot${eventsOn(key).length ? ' on' : ''}`} aria-hidden />
+            </button>
+          );
+        })}
+      </div>
 
       <div className="cols">
         <div className="col">
-          <section className="card coral" aria-label={partnerName}>
+          <section className="stack" style={{ gap: 12 }}>
+            <h2 className="section-title">{selected === today ? t.inicio.scheduleToday : t.inicio.scheduleDay}</h2>
+            {dayEvents.length === 0 ? (
+              <div className="agenda-empty">
+                <p className="muted">{t.inicio.noPlan}</p>
+                {nextShared && (
+                  <p className="small">
+                    {t.inicio.nextPlan}: <strong>{nextShared.title}</strong>
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="agenda">
+                {dayEvents.map((e) => (
+                  <div key={e.id} className="agenda-row">
+                    <span className="agenda-time">{hhmm(e.startsAt)}</span>
+                    <button
+                      className={`event-card ${e.visibility === 'los_dos' ? 'red' : 'navy'}`}
+                      onClick={() => onGo('calendario')}
+                    >
+                      <span className="event-title">{e.title}</span>
+                      <span className="event-foot">
+                        <span className="event-time">
+                          {hhmm(e.startsAt)} – {hhmm(e.endsAt)}
+                        </span>
+                        <span className="mini-avatars" aria-hidden>
+                          <span>{e.visibility === 'los_dos' || e.mine ? myInitial : partnerInitial}</span>
+                          {e.visibility === 'los_dos' && <span>{partnerInitial}</span>}
+                        </span>
+                      </span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {photos && <PhotoCarousel photos={photos} onOpen={onOpenPhoto} onAlbum={() => onGo('album')} />}
+
+          <section className="stack" style={{ gap: 12 }}>
+            <h2 className="section-title">{t.inicio.reminders}</h2>
+            <button className="reminder" onClick={() => onAsk(question)}>
+              <span className="reminder-icon">
+                <ChatIcon />
+              </span>
+              <span className="reminder-text">
+                <span className="reminder-kicker">{t.inicio.questionOfDay}</span>
+                <span className="reminder-title">{question}</span>
+              </span>
+            </button>
+            <button className="reminder" onClick={() => onGo('consejos')}>
+              <span className="reminder-icon">
+                <IdeaIcon />
+              </span>
+              <span className="reminder-text">
+                <span className="reminder-kicker">
+                  {t.inicio.tipOfDay}
+                  {tip && ` · ${tip.kicker}`}
+                </span>
+                <span className="reminder-title">
+                  {tip ? (curated ? curated.title : tip.advice) : t.inicio.tipEmpty(partnerName)}
+                </span>
+              </span>
+            </button>
+            {game && nextQuestion(game) && (
+              <button className="reminder" onClick={() => onGo('juego')}>
+                <span className="reminder-icon">
+                  <GameIcon />
+                </span>
+                <span className="reminder-text">
+                  <span className="reminder-kicker">{t.inicio.game}</span>
+                  <span className="reminder-title">
+                    {pendingFromPartner ? t.inicio.gamePending(partnerName) : t.inicio.gameInvite}
+                  </span>
+                </span>
+              </button>
+            )}
+          </section>
+        </div>
+
+        <div className="col">
+          <h2 className="section-title">{t.inicio.moodToday}</h2>
+          <section className="card" aria-label={partnerName}>
             <p className="kicker">{partnerName}</p>
             {partner ? (
               <div className="mood-row">
@@ -255,7 +330,7 @@ export function Home({
             )}
           </section>
 
-          <section className="card yellow">
+          <section className="card">
             <p className="kicker">{t.nosotros.you}</p>
             {mine ? (
               <div className="mood-row">
@@ -280,46 +355,8 @@ export function Home({
               </>
             )}
           </section>
-          <NextPlanCard event={plan} onCalendar={() => onGo('calendario')} />
 
-          <section className="card sky">
-            <p className="kicker">{t.inicio.questionOfDay}</p>
-            <h2 className="question">{question}</h2>
-            <button className="btn small-btn" style={{ alignSelf: 'flex-start' }} onClick={() => onAsk(question)}>
-              <ChatIcon /> {t.inicio.talkInChat}
-            </button>
-          </section>
-        </div>
-        <div className="col">
           {partnerCycle && <CycleCareCard partner={partnerName} cycle={partnerCycle} />}
-
-          <section className="card yellow">
-            <p className="kicker">
-              {t.inicio.tipOfDay}
-              {tip && ` · ${tip.kicker}`}
-            </p>
-            {tip ? (
-              <>
-                {curated && <h2>{curated.title}</h2>}
-                <p>{tip.advice}</p>
-              </>
-            ) : (
-              <p className="muted">{t.inicio.tipEmpty(partnerName)}</p>
-            )}
-            <button className="btn link" style={{ alignSelf: 'flex-start', paddingLeft: 0 }} onClick={() => onGo('consejos')}>
-              {t.inicio.moreTips}
-            </button>
-          </section>
-
-          {game && nextQuestion(game) && (
-            <section className="card">
-              <p className="kicker">{t.inicio.game}</p>
-              <p>{pendingFromPartner ? t.inicio.gamePending(partnerName) : t.inicio.gameInvite}</p>
-              <button className="btn secondary small-btn" style={{ alignSelf: 'flex-start' }} onClick={() => onGo('juego')}>
-                {t.inicio.play}
-              </button>
-            </section>
-          )}
 
           <section className="card strip">
             <p className="kicker">{t.nosotros.week}</p>
@@ -342,6 +379,10 @@ export function Home({
           </section>
         </div>
       </div>
+
+      <button className="btn big" onClick={() => onGo('calendario')}>
+        {t.inicio.newPlan}
+      </button>
     </>
   );
 }
