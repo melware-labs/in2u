@@ -75,6 +75,47 @@ export const ChevronIcon = ({ dir }: { dir: 'left' | 'right' }) => (
   </Svg>
 );
 
+export const ChatIcon = () => (
+  <Svg>
+    <path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.55L3 20.5l1.45-5.6A8.5 8.5 0 1 1 21 11.5Z" />
+    <path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01" strokeWidth={2.2} />
+  </Svg>
+);
+
+export const AlbumIcon = () => (
+  <Svg>
+    <rect x="3" y="3" width="18" height="18" rx="4" />
+    <circle cx="8.5" cy="8.5" r="1.8" />
+    <path d="m21 15-4.5-4.5L6 21" />
+  </Svg>
+);
+
+export const GameIcon = () => (
+  <Svg>
+    <rect x="3" y="3" width="18" height="18" rx="4" />
+    <path d="M8 8h.01M16 8h.01M12 12h.01M8 16h.01M16 16h.01" strokeWidth={2.6} />
+  </Svg>
+);
+
+export const MoreIcon = () => (
+  <Svg>
+    <path d="M5 12h.01M12 12h.01M19 12h.01" strokeWidth={3} />
+  </Svg>
+);
+
+export const SendIcon = () => (
+  <Svg size={20}>
+    <path d="M21 3 10 14" />
+    <path d="m21 3-6.5 18-4.5-7-7-4.5L21 3Z" />
+  </Svg>
+);
+
+export const HeartIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4 7 4c2.2 0 3.6 1.2 5 3 1.4-1.8 2.8-3 5-3 4 0 6.1 4.2 4.6 7.7C19.5 16.4 12 21 12 21Z" />
+  </svg>
+);
+
 // Dos corazones unidos por un lazo, como el trazo rojo de la portada de Devyn.
 const heart = (x: number, y: number, r: number) =>
   `M${x} ${y + r * 1.1}C${x - r * 1.6} ${y} ${x - r * 1.2} ${y - r * 1.2} ${x} ${y - r * 0.5}` +

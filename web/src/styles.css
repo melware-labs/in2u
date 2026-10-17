@@ -59,6 +59,10 @@
     color-mix(in srgb, var(--primary) 10%, var(--bg)) 100%
   );
 
+  /* Píldora oscura del álbum (como el botón "Let's Go" de la referencia). */
+  --deep: color-mix(in srgb, var(--accent) 55%, #2c2c2c);
+  --on-deep: #ffffff;
+
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -93,6 +97,8 @@
   --glow: none; /* fondo liso, sin difuminado */
   --splash: var(--bg);
   --sheet-glow: none;
+  --deep: color-mix(in srgb, var(--accent) 34%, #1c1a1f);
+  --on-deep: #e6e0ea;
   color-scheme: dark;
 }
 :root[data-mode='dark'] .brand, :root[data-mode='dark'] .hearts-loop { color: color-mix(in srgb, var(--brand) 60%, var(--text-2)); }
@@ -422,6 +428,124 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 }
 .segmented button[aria-checked='true'] { background: var(--fill); color: var(--on-fill); font-weight: 700; }
 
+/* Menú "Más": en el celular las secciones extra van en una hoja. */
+.nav button.unread { position: relative; }
+.nav button.unread::after {
+  content: ''; position: absolute; top: 6px; right: 6px;
+  width: 8px; height: 8px; border-radius: 50%; background: var(--error);
+}
+.nav button.in-more { display: none; }
+.more-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.more-item {
+  display: flex; align-items: center; gap: 12px;
+  border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card);
+  padding: 14px; font-size: 16px; font-weight: 600; color: var(--text); text-align: left;
+}
+.more-item[aria-current='page'] { border-color: var(--line); background: var(--primary-soft); }
+.more-icon {
+  width: 40px; height: 40px; border-radius: 50%; flex: none;
+  background: var(--fill); color: var(--on-fill); display: grid; place-items: center;
+}
+
+/* Álbum: fotos grandes y redondeadas con el título encima. */
+.album-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.photo-card {
+  position: relative; display: block; width: 100%;
+  aspect-ratio: 4 / 5; padding: 0; border: 0; overflow: hidden;
+  border-radius: 20px; background: var(--primary-soft);
+  text-align: left; color: #fff;
+}
+.photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-overlay {
+  position: absolute; inset: auto 0 0 0;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 8px;
+  padding: 40px 12px 12px;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.55));
+}
+.photo-title { font-weight: 700; font-size: 16px; line-height: 1.2; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); }
+.photo-heart {
+  margin-left: auto; flex: none;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: #fff; color: var(--brand); display: grid; place-items: center;
+}
+.photo-empty {
+  flex-direction: row; align-items: center; gap: 14px; text-align: left;
+  color: var(--text); border-style: dashed; border-color: var(--line);
+  background: var(--primary-soft); padding: 22px 18px; font-size: 15px;
+}
+.photo-empty svg { flex: none; width: 32px; height: 32px; color: var(--line); }
+
+.photo-detail { display: flex; flex-direction: column; gap: 22px; }
+.photo-hero {
+  width: 100%; max-height: 70vh; object-fit: cover;
+  border-radius: 28px; background: var(--primary-soft); display: block;
+}
+.photo-text { gap: 14px; }
+.photo-heading { font-size: 32px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; }
+.photo-description { font-size: 16px; line-height: 1.6; white-space: pre-line; }
+.btn.pill-dark { background: var(--deep); color: var(--on-deep); padding: 12px 22px; font-size: 16px; }
+.btn.link.danger { color: var(--error); }
+.sheet-preview { width: 100%; max-height: 260px; object-fit: cover; border-radius: 20px; }
+textarea.input { resize: vertical; min-height: 44px; }
+
+/* Carrusel de Inicio: la siguiente foto asoma por el costado. */
+.carousel {
+  display: flex; gap: 14px;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  margin: 0 -20px; padding: 0 20px;
+  scroll-padding: 0 20px;
+}
+.carousel::-webkit-scrollbar { display: none; }
+.carousel .photo-card.slide { flex: 0 0 84%; aspect-ratio: 16 / 11; scroll-snap-align: start; border-radius: 24px; }
+.carousel .photo-title { font-size: 20px; }
+.dots-row { display: flex; justify-content: center; gap: 6px; }
+.dots-row button {
+  width: 6px; height: 6px; padding: 0; border: 0; border-radius: 100px;
+  background: var(--border); transition: width 0.2s;
+}
+.dots-row button.active { width: 20px; background: var(--fill-accent); }
+
+/* Tarjeta de próximo plan: es un botón que lleva al calendario. */
+.bubble.plan { width: 100%; text-align: left; color: var(--text); font: inherit; }
+.bubble.plan h2 { font-weight: 700; }
+.question { font-size: 19px; font-weight: 700; line-height: 1.35; }
+
+/* Chat */
+.chat { display: flex; flex-direction: column; gap: 12px; min-height: calc(100vh - var(--nav-h) - 120px); }
+.chat-list { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.chat-item { display: flex; flex-direction: column; }
+.chat-empty { text-align: center; margin: auto 0; padding: 40px 0; }
+.chat-day { align-self: center; font-size: 12px; color: var(--text-2); margin: 12px 0 6px; }
+.msg {
+  max-width: 78%; padding: 9px 14px 7px; border-radius: 20px;
+  display: flex; flex-direction: column; gap: 2px; overflow-wrap: anywhere;
+}
+.msg p { white-space: pre-wrap; }
+.msg.mine { align-self: flex-end; background: var(--fill); color: var(--on-fill); border-bottom-right-radius: 6px; }
+.msg.theirs { align-self: flex-start; background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 6px; }
+.msg-time { font-size: 11px; opacity: 0.7; align-self: flex-end; }
+.composer {
+  position: sticky; bottom: calc(var(--nav-h) + 28px + env(safe-area-inset-bottom));
+  background: var(--bg); padding: 8px 0; display: flex; flex-direction: column; gap: 6px;
+}
+.composer-row { display: flex; align-items: flex-end; gap: 8px; }
+.composer textarea { border-radius: 22px; max-height: 140px; resize: none; }
+.send-btn {
+  width: 46px; height: 46px; flex: none; border: 0; border-radius: 50%;
+  background: var(--fill); color: var(--on-fill); display: grid; place-items: center;
+}
+.send-btn:disabled { opacity: 0.45; cursor: default; }
+
+/* Juego */
+.score { flex-direction: row; justify-content: space-around; text-align: center; gap: 12px; }
+.score > div { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.score-num { font-size: 26px; font-weight: 800; }
+.pill.tag { align-self: flex-start; border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+.mark { font-weight: 800; }
+.mark.ok { color: var(--success); }
+.mark.ko { color: var(--error); }
+
 /*
  * Diseño adaptable. Celular: una columna y barra abajo (lo de arriba).
  * Tablet (≥ 720px): más ancho, consejos y perfil en dos columnas.
@@ -439,6 +563,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
   .nav button[aria-current='page'] .label { display: none; }
   .dot { width: 7px; }
   .page { padding-left: 14px; padding-right: 14px; }
+  .carousel { margin: 0 -14px; padding: 0 14px; scroll-padding: 0 14px; }
 }
 
 @media (min-width: 720px) {
@@ -446,6 +571,11 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
   .page.center { max-width: 480px; }
   .grid-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cal-day { min-height: 44px; }
+  .album-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .carousel { margin: 0 -32px; padding: 0 32px; scroll-padding: 0 32px; }
+  .carousel .photo-card.slide { flex-basis: 62%; }
+  .photo-detail { flex-direction: row; align-items: flex-start; gap: 32px; }
+  .photo-detail .photo-hero { width: 55%; flex: none; }
 }
 
 @media (min-width: 1024px) {
@@ -487,4 +617,12 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
   .nav button .label { display: inline; }
   .nav button:hover { background: var(--primary-soft); }
   .nav button[aria-current='page'] { background: var(--fill); color: var(--on-fill); }
+  .nav button.in-more { display: flex; }
+  .nav button.more-btn { display: none; }
+
+  .album-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
+  .carousel { margin: 0; padding: 0; scroll-padding: 0; }
+  .carousel .photo-card.slide { flex-basis: 46%; }
+  .composer { bottom: 0; padding-bottom: 20px; }
+  .chat { min-height: calc(100vh - 96px); max-width: 760px; }
 }
