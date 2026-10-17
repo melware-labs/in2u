@@ -17,7 +17,7 @@ const es = {
     mas: 'Más',
   },
   login: {
-    tagline: 'Donde dos se vuelven un nosotros.',
+    tagline: 'Más conectados, más cerca.',
     google: 'Continuar con Google',
     signup: 'Crear cuenta',
     signin: 'Iniciar sesión',
@@ -274,7 +274,7 @@ const en: typeof es = {
     mas: 'More',
   },
   login: {
-    tagline: 'Where two become an us.',
+    tagline: 'More connected, closer.',
     google: 'Continue with Google',
     signup: 'Sign up',
     signin: 'Sign in',
