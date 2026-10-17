@@ -19,12 +19,20 @@ spring:
             scope: openid,profile,email
             # Detrás del proxy de Vercel, Spring vería el host de Render; en producción se fija a mano.
             redirect-uri: ${OAUTH_REDIRECT_URI:{baseUrl}/login/oauth2/code/{registrationId}}
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: never
+    timeout: 90d
 
 server:
   forward-headers-strategy: framework
   servlet:
     session:
+      timeout: 90d
       cookie:
+        name: JSESSIONID
+        max-age: 90d
         same-site: lax
         # true en producción (https). En local con http debe ser false.
         secure: ${COOKIE_SECURE:false}
