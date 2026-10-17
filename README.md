@@ -87,7 +87,7 @@ La app pasa a ser una web responsive. El backend vive en `backend/`.
 
 ```bash
 cp .env.example .env        # opcional: Google, Gemini
-docker compose up --build   # API en http://localhost:8080
+docker compose up --build   # web + API en http://localhost:8080 (WEB_PORT cambia el puerto)
 ```
 
 - Probar sin Google: `DEV_LOGIN=true` habilita `POST /api/dev/login` (solo local).
@@ -104,3 +104,10 @@ npm run build   # typecheck + build de producción en web/dist
 ```
 
 Con el backend corriendo con `DEV_LOGIN=true`, la pantalla de login en desarrollo permite entrar con cualquier email (útil para probar con dos "personas" en dos navegadores).
+
+### Deploy (Vercel + backend con Docker)
+
+1. Backend en un host con Docker (Render, Fly, Railway...) con `COOKIE_SECURE=true`, `FRONTEND_URL=https://<tu-app>.vercel.app`, `GOOGLE_CLIENT_ID/SECRET`, `GEMINI_API_KEY` y una base Postgres.
+2. En `web/vercel.json` reemplazá `https://TU-BACKEND.example.com` por la URL del backend.
+3. Vercel: importar el repo con *Root Directory* `web`.
+4. En Google Cloud agregá el redirect `https://<tu-app>.vercel.app/login/oauth2/code/google`.

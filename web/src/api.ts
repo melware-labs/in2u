@@ -24,6 +24,50 @@ export type Checkin = {
 
 export type TodayTip = { tipKey: string; kicker: string; advice: string; source: string };
 
+export type CoupleEvent = {
+  id: string;
+  title: string;
+  startsAt: string;
+  endsAt: string;
+  visibility: 'solo_yo' | 'los_dos';
+  mine: boolean;
+  googleSyncEnabled: boolean;
+};
+
+export type Visibility = 'nada' | 'avisos' | 'fase_y_avisos';
+export type Symptom = 'dolor' | 'sangrado' | 'sin_energia' | 'antojos' | 'insomnio';
+export const SYMPTOMS: Symptom[] = ['dolor', 'sangrado', 'sin_energia', 'antojos', 'insomnio'];
+
+export type OwnCycle = {
+  cycleLengthDays: number;
+  periodLengthDays: number;
+  partnerVisibility: Visibility;
+  /** YYYY-MM-DD, el más reciente primero. */
+  periodStarts: string[];
+  today: {
+    dayOfCycle: number;
+    cycleLength: number;
+    phase: 'menstrual' | 'folicular' | 'ovulacion' | 'lutea';
+    nextPeriodDate: string;
+    daysUntilNextPeriod: number;
+    fertileWindowStart: string;
+    fertileWindowEnd: string;
+  } | null;
+  todaySymptoms: Symptom[];
+};
+
+/** Lo que la pareja decidió compartir; los campos ausentes no se enviaron. */
+export type PartnerCycle = {
+  visibility: Visibility;
+  hasData?: boolean;
+  careMode?: boolean;
+  phase?: 'menstrual' | 'folicular' | 'ovulacion' | 'lutea';
+  dayOfCycle?: number;
+  cycleLength?: number;
+  nextPeriodDate?: string;
+  daysUntilNextPeriod?: number;
+};
+
 export class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -81,6 +125,26 @@ export const api = {
   saveMood: (mood: number, note: string) =>
     request<Checkin>('PUT', '/api/mood/today', { mood, note: note.trim() || null }) as Promise<Checkin>,
   todayTip: () => request<TodayTip>('GET', '/api/tips/today'),
+  events: (from: Date, to: Date) =>
+    request<CoupleEvent[]>(
+      'GET',
+      `/api/events?from=${encodeURIComponent(from.toISOString())}&to=${encodeURIComponent(to.toISOString())}`,
+    ) as Promise<CoupleEvent[]>,
+  createEvent: (e: { title: string; startsAt: string; endsAt: string; visibility: string }) =>
+    request<CoupleEvent>('POST', '/api/events', e) as Promise<CoupleEvent>,
+  deleteEvent: (id: string) => request<void>('DELETE', `/api/events/${id}`),
+  cycle: () => request<OwnCycle>('GET', '/api/cycle') as Promise<OwnCycle>,
+  cycleSettings: (cycleLengthDays: number, periodLengthDays: number, partnerVisibility: Visibility) =>
+    request<OwnCycle>('PUT', '/api/cycle/settings', {
+      cycleLengthDays,
+      periodLengthDays,
+      partnerVisibility,
+    }) as Promise<OwnCycle>,
+  addPeriod: (date: string) => request<OwnCycle>('POST', '/api/cycle/periods', { date }) as Promise<OwnCycle>,
+  removePeriod: (date: string) => request<OwnCycle>('DELETE', `/api/cycle/periods/${date}`) as Promise<OwnCycle>,
+  setSymptoms: (symptoms: Symptom[]) =>
+    request<OwnCycle>('PUT', '/api/cycle/symptoms', { symptoms }) as Promise<OwnCycle>,
+  partnerCycle: () => request<PartnerCycle>('GET', '/api/cycle/partner') as Promise<PartnerCycle>,
   devLogin: (email: string, name: string) => request<void>('POST', '/api/dev/login', { email, name }),
   logout: () => request<void>('POST', '/api/logout'),
 };

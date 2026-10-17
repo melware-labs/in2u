@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import app.in2u.user.AppUser;
+import app.in2u.user.AppUserRepository;
 
 @Service
 public class CoupleService {
@@ -23,11 +24,14 @@ public class CoupleService {
 
 	private final JoinAttemptLimiter limiter;
 
+	private final AppUserRepository users;
+
 	private final SecureRandom random = new SecureRandom();
 
-	public CoupleService(CoupleRepository couples, JoinAttemptLimiter limiter) {
+	public CoupleService(CoupleRepository couples, JoinAttemptLimiter limiter, AppUserRepository users) {
 		this.couples = couples;
 		this.limiter = limiter;
+		this.users = users;
 	}
 
 	@Transactional(readOnly = true)
@@ -80,6 +84,11 @@ public class CoupleService {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Código inválido o ya utilizado.");
 		}
 		return couples.findByInviteCode(code).orElseThrow();
+	}
+
+	/** Zona horaria de una persona de la pareja (para calcular su "hoy"). */
+	public java.time.ZoneId zoneOf(UUID userId) {
+		return users.findById(userId).map(AppUser::zone).orElse(java.time.ZoneOffset.UTC);
 	}
 
 	public Optional<UUID> partnerId(AppUser user) {
