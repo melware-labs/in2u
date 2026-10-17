@@ -44,7 +44,7 @@ public class CoupleService {
 	public Couple requirePaired(AppUser user) {
 		return findFor(user).filter(Couple::isPaired)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT,
-					"Primero vinculate con tu pareja."));
+					"Primero vincúlate con tu pareja."));
 	}
 
 	/** Crea el código de invitación; si ya hay uno pendiente, devuelve ese. */
