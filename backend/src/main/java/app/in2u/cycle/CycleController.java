@@ -41,15 +41,28 @@ class CycleController {
 		this.currentUser = currentUser;
 	}
 
+	/**
+	 * El ciclo propio es para quien eligió "mujer" u "otro" en su perfil; con
+	 * "hombre" solo se ve lo que la pareja comparte (GET /partner).
+	 */
+	private app.in2u.user.AppUser tracker(OAuth2User principal) {
+		var user = currentUser.of(principal);
+		if ("hombre".equals(user.getGender())) {
+			throw new org.springframework.web.server.ResponseStatusException(
+					org.springframework.http.HttpStatus.FORBIDDEN, "Aquí ves solo lo que tu pareja elige compartir.");
+		}
+		return user;
+	}
+
 	@GetMapping
 	CycleService.OwnCycle own(@AuthenticationPrincipal OAuth2User principal) {
-		return cycle.own(currentUser.of(principal));
+		return cycle.own(tracker(principal));
 	}
 
 	@PutMapping("/settings")
 	CycleService.OwnCycle settings(@AuthenticationPrincipal OAuth2User principal,
 			@Valid @RequestBody SettingsRequest body) {
-		var user = currentUser.of(principal);
+		var user = tracker(principal);
 		cycle.updateSettings(user, body.cycleLengthDays(), body.periodLengthDays(), body.partnerVisibility());
 		return cycle.own(user);
 	}
@@ -57,14 +70,14 @@ class CycleController {
 	@PostMapping("/periods")
 	CycleService.OwnCycle addPeriod(@AuthenticationPrincipal OAuth2User principal,
 			@Valid @RequestBody PeriodRequest body) {
-		var user = currentUser.of(principal);
+		var user = tracker(principal);
 		cycle.addPeriodStart(user, body.date());
 		return cycle.own(user);
 	}
 
 	@DeleteMapping("/periods/{date}")
 	CycleService.OwnCycle removePeriod(@AuthenticationPrincipal OAuth2User principal, @PathVariable LocalDate date) {
-		var user = currentUser.of(principal);
+		var user = tracker(principal);
 		cycle.removePeriodStart(user, date);
 		return cycle.own(user);
 	}
@@ -72,7 +85,7 @@ class CycleController {
 	@PutMapping("/symptoms")
 	CycleService.OwnCycle symptoms(@AuthenticationPrincipal OAuth2User principal,
 			@Valid @RequestBody SymptomsRequest body) {
-		var user = currentUser.of(principal);
+		var user = tracker(principal);
 		cycle.setTodaySymptoms(user, body.symptoms());
 		return cycle.own(user);
 	}

@@ -121,6 +121,47 @@ class PairingMoodTipsTest {
 	}
 
 	@Test
+	void profile_isAskedFirst_andTogetherSinceIsSharedByTheCouple() throws Exception {
+		mvc.perform(get("/api/me").with(as("lu"))).andExpect(jsonPath("$.profileComplete").value(false));
+
+		// Lu carga sus datos antes de tener pareja: la fecha pasa a la pareja al crear el código.
+		mvc.perform(put("/api/me/profile").with(as("lu")).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+			.content("{\"name\":\"Lu\",\"gender\":\"mujer\",\"birthDate\":\"1998-05-20\",\"togetherSince\":\"2023-02-14\"}"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.profileComplete").value(true))
+			.andExpect(jsonPath("$.age").isNumber());
+		String code = JsonPath.read(mvc.perform(post("/api/couple").with(as("lu")).with(csrf()))
+			.andReturn().getResponse().getContentAsString(), "$.inviteCode");
+		mvc.perform(post("/api/couple/join").with(as("max")).with(csrf())
+			.contentType(MediaType.APPLICATION_JSON).content("{\"code\":\"" + code + "\"}"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.togetherSince").value("2023-02-14"))
+			.andExpect(jsonPath("$.profileComplete").value(false));
+
+		// Max la corrige y Lu ve el cambio.
+		mvc.perform(put("/api/me/profile").with(as("max")).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+			.content("{\"name\":\"Max\",\"gender\":\"hombre\",\"birthDate\":\"1997-03-10\",\"togetherSince\":\"2023-02-10\"}"))
+			.andExpect(status().isOk());
+		mvc.perform(get("/api/me").with(as("lu"))).andExpect(jsonPath("$.togetherSince").value("2023-02-10"));
+
+		// Con género "hombre" no hay ciclo propio: solo lo que Lu comparte.
+		mvc.perform(get("/api/cycle").with(as("max"))).andExpect(status().isForbidden());
+		mvc.perform(post("/api/cycle/periods").with(as("max")).with(csrf())
+			.contentType(MediaType.APPLICATION_JSON).content("{\"date\":\"2026-01-01\"}"))
+			.andExpect(status().isForbidden());
+		mvc.perform(get("/api/cycle").with(as("lu"))).andExpect(status().isOk());
+		mvc.perform(get("/api/cycle/partner").with(as("max"))).andExpect(jsonPath("$.visibility").value("nada"));
+
+		// Fecha de pareja en el futuro o género desconocido: 400.
+		mvc.perform(put("/api/me/profile").with(as("max")).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+			.content("{\"name\":\"Max\",\"gender\":\"hombre\",\"birthDate\":\"1997-03-10\",\"togetherSince\":\"2999-01-01\"}"))
+			.andExpect(status().isBadRequest());
+		mvc.perform(put("/api/me/profile").with(as("max")).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+			.content("{\"name\":\"Max\",\"gender\":\"x\",\"birthDate\":\"1997-03-10\",\"togetherSince\":\"2020-01-01\"}"))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
 	void writesWithoutCsrfAreRejected() throws Exception {
 		mvc.perform(post("/api/couple").with(as("sincsrf"))).andExpect(status().isForbidden());
 	}

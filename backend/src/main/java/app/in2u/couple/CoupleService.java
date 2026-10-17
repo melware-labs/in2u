@@ -44,7 +44,7 @@ public class CoupleService {
 	public Couple requirePaired(AppUser user) {
 		return findFor(user).filter(Couple::isPaired)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT,
-					"Primero vinculate con tu pareja."));
+					"Primero vincúlate con tu pareja."));
 	}
 
 	/** Crea el código de invitación; si ya hay uno pendiente, devuelve ese. */
@@ -57,7 +57,9 @@ public class CoupleService {
 			}
 			return existing.get();
 		}
-		return couples.save(new Couple(newCode(), user.getId()));
+		var couple = new Couple(newCode(), user.getId());
+		couple.setTogetherSince(user.getTogetherSince());
+		return couples.save(couple);
 	}
 
 	@Transactional
@@ -83,7 +85,32 @@ public class CoupleService {
 			limiter.recordFailure(user.getId());
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Código inválido o ya utilizado.");
 		}
-		return couples.findByInviteCode(code).orElseThrow();
+		var couple = couples.findByInviteCode(code).orElseThrow();
+		// Si quien creó el código no cargó la fecha, vale la de quien se une.
+		if (couple.getTogetherSince() == null && user.getTogetherSince() != null) {
+			couple.setTogetherSince(user.getTogetherSince());
+			couples.save(couple);
+		}
+		return couple;
+	}
+
+	/**
+	 * Formulario de bienvenida (y su edición desde Perfil). La fecha de pareja
+	 * se guarda en la pareja si ya existe; si no, queda en la persona hasta
+	 * que cree o se una a una.
+	 */
+	@Transactional
+	public void updateProfile(AppUser user, String name, String gender, java.time.LocalDate birthDate,
+			java.time.LocalDate togetherSince) {
+		user.setDisplayName(name.trim());
+		user.setGender(gender);
+		user.setBirthDate(birthDate);
+		user.setTogetherSince(togetherSince);
+		users.save(user);
+		findFor(user).ifPresent(c -> {
+			c.setTogetherSince(togetherSince);
+			couples.save(c);
+		});
 	}
 
 	/** Zona horaria de una persona de la pareja (para calcular su "hoy"). */
