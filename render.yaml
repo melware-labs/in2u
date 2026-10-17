@@ -25,5 +25,7 @@ services:
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
+      - key: OAUTH_REDIRECT_URI # https://TU-APP.vercel.app/login/oauth2/code/google
+        sync: false
       - key: FRONTEND_URL # https://TU-APP.vercel.app
         sync: false
