@@ -10,7 +10,7 @@ export function TipsScreen({ tip }: { tip: TodayTip | null }) {
       <h1>{t.consejos.title}</h1>
 
       {tip ? (
-        <section className="card" style={{ background: 'var(--selected)' }}>
+        <section className="card sky">
           <p className="kicker">
             {t.consejos.forToday} · {tip.kicker}
           </p>

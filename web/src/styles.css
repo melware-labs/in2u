@@ -1,170 +1,300 @@
-/* Tokens "Nocturne" portados de src/constants/theme.ts. Dark-first. */
+/*
+ * Estilo "Chill Calendar" (Figma: Chill Calendar Mobile App, Community):
+ * fondo blanco, manchas orgánicas celeste y durazno en la cabecera, tarjetas
+ * redondeadas y pasteles (coral, amarillo, celeste), botón píldora con
+ * degradé durazno → celeste. Tipografía Inter, como en el diseño.
+ * Reemplaza al tema oscuro "Nocturne" de la versión anterior.
+ */
+@import '@fontsource-variable/inter';
+
 :root {
-  --bg: #161826;
-  --surface: #232532;
-  --selected: #2b2741;
-  --text: #e9e9ed;
-  --text-2: #b2b6ca;
-  --divider: rgba(233, 233, 237, 0.16);
-  --accent: #9184d9;
-  --accent-2: #a7a1db;
-  --accent-700: #5d5294;
-  --danger: #f08a8a;
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 14px;
-  --nav-h: 64px;
-  color-scheme: dark;
+  --bg: #ffffff;
+  --surface: #f1f4f9; /* paneles y campos */
+  --strip: rgba(205, 205, 205, 0.2); /* franja del calendario */
+  --text: #1e293b;
+  --text-2: #94a3b8;
+  --text-3: #575a61;
+  --sky: #43b8ff;
+  --sky-2: #6bc4ed;
+  --sky-soft: #e0f2fe; /* día seleccionado */
+  --peach: #ffe0ac;
+  --coral: #ff9595;
+  --yellow: #ffe98c;
+  --yellow-tile: #f8eec6;
+  --pink: #ff668b; /* día de hoy */
+  --danger: #d93a4f;
+  --gradient: linear-gradient(104deg, #ffe0ac 11%, #6bc4ed 86%);
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 25px;
+  --nav-h: 68px;
+  color-scheme: light;
 }
 
 * { box-sizing: border-box; }
 
-html, body, #root { height: 100%; }
+html, body, #root { min-height: 100%; }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.45;
+  letter-spacing: 0.2px;
   -webkit-font-smoothing: antialiased;
 }
 
-button, input, textarea { font: inherit; color: inherit; }
+button, input, textarea { font: inherit; color: inherit; letter-spacing: inherit; }
 button { cursor: pointer; }
-:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
 
 h1, h2, h3, p { margin: 0; }
-h1 { font-size: 28px; font-weight: 500; line-height: 1.2; }
-h2 { font-size: 20px; font-weight: 500; }
+h1 { font-size: 24px; font-weight: 600; line-height: 1.25; }
+h2 { font-size: 16px; font-weight: 600; line-height: 1.3; }
+
+/* Manchas de la cabecera: celeste arriba a la derecha, durazno arriba a la izquierda. */
+.blobs {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 190px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.blobs::before, .blobs::after { content: ''; position: absolute; }
+.blobs::before {
+  width: 520px; height: 300px;
+  right: -190px; top: -150px;
+  background: var(--sky);
+  border-radius: 58% 42% 50% 50% / 62% 70% 30% 38%;
+  transform: rotate(-8deg);
+}
+.blobs::after {
+  width: 520px; height: 240px;
+  left: -230px; top: -150px;
+  background: var(--peach);
+  border-radius: 45% 55% 60% 40% / 50% 60% 40% 50%;
+}
 
 .app {
-  min-height: 100%;
+  position: relative;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* Columna única centrada: en celular ocupa todo el ancho, en escritorio queda legible. */
 .page {
+  /* Sin z-index: las hojas (check-in, nuevo evento) viven dentro de .page y deben quedar sobre la barra inferior. */
+  position: relative;
   width: 100%;
   max-width: 560px;
-  padding: 24px 16px calc(var(--nav-h) + 32px + env(safe-area-inset-bottom));
+  padding: 36px 20px calc(var(--nav-h) + 32px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.page.center { justify-content: center; min-height: 100%; padding-bottom: 32px; }
+.page.center { justify-content: center; min-height: 100vh; padding-bottom: 32px; }
 
 .card {
   background: var(--surface);
   border-radius: var(--radius-lg);
-  padding: 16px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
+.card.coral { background: var(--coral); }
+.card.yellow { background: var(--yellow); }
+.card.sky { background: var(--sky-soft); }
+.card.strip { background: var(--strip); }
 
 .muted { color: var(--text-2); }
 .small { font-size: 13px; }
-.kicker { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-2); }
+.kicker { font-size: 13px; font-weight: 600; color: var(--text-3); letter-spacing: 0.3px; }
+.card.coral .muted, .card.yellow .muted, .card.coral .kicker, .card.yellow .kicker { color: rgba(30, 41, 59, 0.72); }
 .error { color: var(--danger); font-size: 14px; }
 
+/* Botón principal: píldora con degradé durazno → celeste, como "Set schedule". */
 .btn {
   border: 0;
-  border-radius: var(--radius-lg);
-  padding: 14px 18px;
-  background: var(--accent);
-  color: #12131f;
-  font-weight: 600;
+  border-radius: 29px;
+  padding: 15px 22px;
+  background: var(--gradient);
+  color: #000;
+  font-weight: 500;
+  font-size: 17px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
 }
-.btn:disabled { opacity: 0.5; cursor: default; }
-.btn.secondary { background: transparent; color: var(--text); border: 1px solid var(--divider); }
-.btn.link { background: none; color: var(--accent-2); padding: 8px; font-weight: 500; }
+.btn:disabled { opacity: 0.45; cursor: default; }
+.btn.secondary { background: var(--surface); color: var(--text); }
+.btn.link { background: none; color: var(--sky-2); padding: 8px; font-weight: 600; font-size: 15px; }
+.btn.small-btn { padding: 8px 16px; font-size: 14px; }
 
 .input {
   width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--divider);
+  background: var(--surface);
+  border: 0;
   border-radius: var(--radius-md);
-  padding: 12px 14px;
+  padding: 13px 16px;
 }
-.input.code { text-align: center; letter-spacing: 0.3em; text-transform: uppercase; font-size: 22px; }
+.input::placeholder { color: var(--text-2); }
+.input.code { text-align: center; letter-spacing: 0.3em; text-transform: uppercase; font-size: 22px; font-weight: 600; }
 
 .row { display: flex; align-items: center; gap: 12px; }
 .row.between { justify-content: space-between; }
 .stack { display: flex; flex-direction: column; gap: 12px; }
 
-.brand { font-size: 40px; font-weight: 600; color: var(--accent-2); letter-spacing: -0.02em; }
+.brand {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 
-/* Barra inferior fija (como las tabs de la app móvil). */
+.avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--sky);
+  color: #fff;
+  font-weight: 700; font-size: 22px;
+  display: grid; place-items: center;
+  box-shadow: 0 0 0 4px #fff;
+  flex: none;
+}
+
+/* Barra inferior. */
 .nav {
   position: fixed;
   left: 0; right: 0; bottom: 0;
   height: calc(var(--nav-h) + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
-  background: var(--surface);
-  border-top: 1px solid var(--divider);
+  background: #fff;
+  border-radius: 22px 22px 0 0;
+  box-shadow: 0 -4px 20px rgba(30, 41, 59, 0.08);
   display: flex;
   justify-content: center;
+  z-index: 5;
 }
-.nav-inner { width: 100%; max-width: 560px; display: flex; }
+.nav-inner { width: 100%; max-width: 560px; display: flex; padding: 0 6px; }
 .nav button {
   flex: 1;
   border: 0;
   background: none;
   color: var(--text-2);
-  font-size: 13px;
+  font-size: 11px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 2px;
 }
-.nav button[aria-current='page'] { color: var(--accent-2); font-weight: 600; }
-.nav .ico { font-size: 20px; }
+.nav button[aria-current='page'] { color: var(--text); font-weight: 600; }
+.nav button[aria-current='page'] .ico { background: var(--sky-soft); }
+.nav .ico { font-size: 19px; width: 44px; height: 28px; border-radius: 14px; display: grid; place-items: center; }
 
 /* Ánimo */
-.mood-big { font-size: 48px; line-height: 1; }
+.mood-big { font-size: 46px; line-height: 1; }
 .mood-row { display: flex; align-items: center; gap: 16px; }
 
-.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
-.week .day { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0; border-radius: var(--radius-md); }
-.week .day.today { background: var(--selected); }
+.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+.week .day { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0; border-radius: 20px; }
+.week .day.today { background: var(--sky-soft); }
+.week .day.today .wd { color: var(--pink); font-weight: 600; }
 .week .wd { font-size: 12px; color: var(--text-2); }
 .week .em { font-size: 20px; line-height: 1.1; min-height: 22px; }
 
 .mood-option {
   display: flex; align-items: center; gap: 14px;
-  width: 100%; padding: 14px 16px;
-  background: var(--surface); border: 1px solid transparent; border-radius: var(--radius-lg);
-  text-align: left; font-size: 17px;
+  width: 100%; padding: 13px 18px;
+  background: #e8e8e8; border: 0; border-radius: var(--radius-md);
+  text-align: left; font-size: 17px; color: var(--text-3);
 }
 .mood-option .em { font-size: 28px; }
-.mood-option[aria-pressed='true'] { background: var(--selected); border-color: var(--accent); }
+.mood-option[aria-pressed='true'] { background: var(--sky); color: #fff; font-weight: 600; }
 
 .sheet-bg {
-  position: fixed; inset: 0; background: rgba(8, 9, 16, 0.7);
+  position: fixed; inset: 0; background: rgba(30, 41, 59, 0.45);
   display: flex; align-items: flex-end; justify-content: center; z-index: 10;
 }
 .sheet {
+  position: relative;
   width: 100%; max-width: 560px; max-height: 100%; overflow: auto;
-  background: var(--bg);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  padding: 20px 16px calc(24px + env(safe-area-inset-bottom));
+  background: #fff;
+  border-radius: 28px 28px 0 0;
+  padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
   display: flex; flex-direction: column; gap: 14px;
 }
+.sheet::before {
+  content: ''; position: absolute; z-index: 0;
+  right: -90px; top: -120px; width: 300px; height: 190px;
+  background: var(--sky);
+  border-radius: 58% 42% 50% 50% / 62% 70% 30% 38%;
+}
+.sheet > * { position: relative; z-index: 1; }
 @media (min-width: 640px) {
   .sheet-bg { align-items: center; }
-  .sheet { border-radius: var(--radius-lg); }
+  .sheet { border-radius: 28px; }
 }
 
 .code-box {
-  font-size: 34px; letter-spacing: 0.25em; text-align: center; font-weight: 600;
-  background: var(--bg); border-radius: var(--radius-md); padding: 16px;
+  font-size: 34px; letter-spacing: 0.25em; text-align: center; font-weight: 700;
+  background: var(--surface); border-radius: var(--radius-lg); padding: 18px;
 }
+
+/* Calendario y ciclo */
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-grid .wd { text-align: center; font-size: 12px; color: var(--text-2); padding: 4px 0; }
+.cal-day {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  min-height: 40px;
+  border: 0;
+  border-radius: 16px;
+  background: none;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+}
+.cal-day.out { opacity: 0.35; }
+.cal-day.today { color: var(--pink); }
+.cal-day.selected { background: var(--sky-soft); }
+.dots { display: flex; gap: 3px; min-height: 6px; }
+.dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; }
+.dot.mine { background: var(--yellow); box-shadow: 0 0 0 1px #e6c84a; }
+.dot.both { background: var(--coral); }
+.dot.partner { background: var(--sky); }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.legend .dot { margin-right: 4px; }
+
+.cal-day.phase-menstrual { background: rgba(255, 149, 149, 0.55); }
+.cal-day.phase-folicular { background: rgba(107, 196, 237, 0.2); }
+.cal-day.phase-ovulacion { background: rgba(255, 224, 172, 0.85); }
+.cal-day.phase-lutea { background: rgba(255, 233, 140, 0.4); }
+.cal-day.today { box-shadow: inset 0 0 0 2px var(--pink); }
+.cal-day.start { box-shadow: inset 0 0 0 2px var(--coral); font-weight: 800; }
+.cal-day.today.start { box-shadow: inset 0 0 0 2px var(--pink); }
+
+/* Eventos: globos de color, como "Schedule Today" y "Reminder". */
+.bubble { border-radius: var(--radius-md); padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; }
+.bubble.coral { background: var(--coral); }
+.bubble.yellow { background: var(--yellow); }
+.bubble.sky { background: #bfe6ff; }
+.bubble .muted { color: rgba(30, 41, 59, 0.7); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  border: 0; border-radius: 999px; background: var(--surface);
+  padding: 8px 14px; font-size: 14px; color: var(--text-3);
+}
+.chip[aria-pressed='true'] { background: var(--sky); color: #fff; font-weight: 600; }
+
+.cap::first-letter { text-transform: uppercase; }

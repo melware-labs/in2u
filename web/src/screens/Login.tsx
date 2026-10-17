@@ -5,7 +5,7 @@ import { t } from '../i18n';
 
 // El login sin Google solo existe si el backend corre con DEV_LOGIN=true;
 // en el build de producción el formulario ni se muestra.
-const SHOW_DEV_LOGIN = import.meta.env.DEV;
+const SHOW_DEV_LOGIN = import.meta.env.DEV || import.meta.env.VITE_DEV_LOGIN === 'true';
 
 export function Login() {
   const [email, setEmail] = useState('');
