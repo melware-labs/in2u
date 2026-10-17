@@ -143,7 +143,7 @@ const es = {
     careMode: (partner: string) => `Cuida un poco más a ${partner} estos días.`,
   },
   inicio: {
-    ourPhotos: 'Nuestras fotos',
+    ourPhotos: 'Nuestros recuerdos',
     seeAll: 'Ver todo',
     addFirstPhoto: 'Guarden aquí sus fotos favoritas',
     addFirstPhotoHint: 'Las fotos que suban al álbum aparecen en este carrusel.',
@@ -361,7 +361,7 @@ const en: typeof es = {
     careMode: (partner: string) => `Take a little extra care of ${partner} these days.`,
   },
   inicio: {
-    ourPhotos: 'Our photos',
+    ourPhotos: 'Our memories',
     seeAll: 'See all',
     addFirstPhoto: 'Keep your favorite photos here',
     addFirstPhotoHint: 'Photos you add to the album show up in this carousel.',
