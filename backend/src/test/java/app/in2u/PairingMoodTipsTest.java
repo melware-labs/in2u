@@ -144,6 +144,14 @@ class PairingMoodTipsTest {
 			.andExpect(status().isOk());
 		mvc.perform(get("/api/me").with(as("lu"))).andExpect(jsonPath("$.togetherSince").value("2023-02-10"));
 
+		// Con género "hombre" no hay ciclo propio: solo lo que Lu comparte.
+		mvc.perform(get("/api/cycle").with(as("max"))).andExpect(status().isForbidden());
+		mvc.perform(post("/api/cycle/periods").with(as("max")).with(csrf())
+			.contentType(MediaType.APPLICATION_JSON).content("{\"date\":\"2026-01-01\"}"))
+			.andExpect(status().isForbidden());
+		mvc.perform(get("/api/cycle").with(as("lu"))).andExpect(status().isOk());
+		mvc.perform(get("/api/cycle/partner").with(as("max"))).andExpect(jsonPath("$.visibility").value("nada"));
+
 		// Fecha de pareja en el futuro o género desconocido: 400.
 		mvc.perform(put("/api/me/profile").with(as("max")).with(csrf()).contentType(MediaType.APPLICATION_JSON)
 			.content("{\"name\":\"Max\",\"gender\":\"hombre\",\"birthDate\":\"1997-03-10\",\"togetherSince\":\"2999-01-01\"}"))
