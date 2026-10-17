@@ -17,7 +17,7 @@ const es = {
     mas: 'Más',
   },
   login: {
-    tagline: 'Un lugar para ustedes dos.',
+    tagline: 'Donde dos se vuelven un nosotros.',
     google: 'Continuar con Google',
     devTitle: 'Entrar sin Google (solo desarrollo)',
     email: 'Email',
@@ -238,7 +238,7 @@ const en: typeof es = {
     mas: 'More',
   },
   login: {
-    tagline: 'A place for the two of you.',
+    tagline: 'Where two become an us.',
     google: 'Continue with Google',
     devTitle: 'Sign in without Google (development only)',
     email: 'Email',
