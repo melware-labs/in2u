@@ -1,0 +1,39 @@
+# Levanta in2u completo en local: `docker compose up --build`
+# API en http://localhost:8080 — copiá .env.example a .env para configurar.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: in2u
+      POSTGRES_USER: in2u
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-in2u}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U in2u -d in2u"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/in2u
+      DB_USER: in2u
+      DB_PASSWORD: ${DB_PASSWORD:-in2u}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-sin-configurar}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-sin-configurar}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-flash-latest}
+      GEMINI_SEND_NOTES: ${GEMINI_SEND_NOTES:-false}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8080}
+      DEV_LOGIN: ${DEV_LOGIN:-false}
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:

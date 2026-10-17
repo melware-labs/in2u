@@ -80,3 +80,16 @@ supabase/
 Ver `tasks/todo.md` para el detalle y el estado de cada fase (A: login +
 pairing, B: ánimo en tiempo real, C: calendario + Google Calendar, D: Outlook,
 E: demo web para el portfolio).
+
+## Backend web (Spring Boot + Docker) — en construcción
+
+La app pasa a ser una web responsive. El backend vive en `backend/`.
+
+```bash
+cp .env.example .env        # opcional: Google, Gemini
+docker compose up --build   # API en http://localhost:8080
+```
+
+- Probar sin Google: `DEV_LOGIN=true` habilita `POST /api/dev/login` (solo local).
+- Consejos con IA gratis: poné `GEMINI_API_KEY` (https://aistudio.google.com/apikey). Sin key, se usan reglas según el ánimo.
+- Tests: `cd backend && TESTCONTAINERS_RYUK_DISABLED=true mvn test` (necesita Docker).

@@ -1,0 +1,101 @@
+package app.in2u.couple;
+
+import java.security.SecureRandom;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import app.in2u.user.AppUser;
+
+@Service
+public class CoupleService {
+
+	// Sin 0/O ni 1/I/L: el código se dicta en voz alta o se copia a mano.
+	private static final String ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+
+	private static final int CODE_LENGTH = 6;
+
+	private final CoupleRepository couples;
+
+	private final JoinAttemptLimiter limiter;
+
+	private final SecureRandom random = new SecureRandom();
+
+	public CoupleService(CoupleRepository couples, JoinAttemptLimiter limiter) {
+		this.couples = couples;
+		this.limiter = limiter;
+	}
+
+	@Transactional(readOnly = true)
+	public Optional<Couple> findFor(AppUser user) {
+		return couples.findByMember(user.getId());
+	}
+
+	/** La pareja ya vinculada de esta persona, o 409 si todavía no tiene. */
+	@Transactional(readOnly = true)
+	public Couple requirePaired(AppUser user) {
+		return findFor(user).filter(Couple::isPaired)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT,
+					"Primero vinculate con tu pareja."));
+	}
+
+	/** Crea el código de invitación; si ya hay uno pendiente, devuelve ese. */
+	@Transactional
+	public Couple create(AppUser user) {
+		Optional<Couple> existing = findFor(user);
+		if (existing.isPresent()) {
+			if (existing.get().isPaired()) {
+				throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya estás vinculada/o con tu pareja.");
+			}
+			return existing.get();
+		}
+		return couples.save(new Couple(newCode(), user.getId()));
+	}
+
+	@Transactional
+	public Couple join(AppUser user, String rawCode) {
+		String code = rawCode == null ? "" : rawCode.trim().toUpperCase();
+		if (limiter.blocked(user.getId())) {
+			throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS,
+					"Demasiados intentos. Prueba de nuevo en unos minutos.");
+		}
+		Optional<Couple> existing = findFor(user);
+		if (existing.isPresent()) {
+			if (existing.get().isPaired()) {
+				throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya estás vinculada/o con tu pareja.");
+			}
+			if (existing.get().getInviteCode().equals(code)) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ese es tu propio código.");
+			}
+			// Tenía su propio código pendiente y se une al de la otra persona.
+			couples.delete(existing.get());
+			couples.flush();
+		}
+		if (couples.claim(code, user.getId()) == 0) {
+			limiter.recordFailure(user.getId());
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Código inválido o ya utilizado.");
+		}
+		return couples.findByInviteCode(code).orElseThrow();
+	}
+
+	public Optional<UUID> partnerId(AppUser user) {
+		return findFor(user).flatMap(c -> c.partnerOf(user.getId()));
+	}
+
+	private String newCode() {
+		String code;
+		do {
+			var sb = new StringBuilder(CODE_LENGTH);
+			for (int i = 0; i < CODE_LENGTH; i++) {
+				sb.append(ALPHABET.charAt(random.nextInt(ALPHABET.length())));
+			}
+			code = sb.toString();
+		}
+		while (couples.existsByInviteCode(code));
+		return code;
+	}
+}
