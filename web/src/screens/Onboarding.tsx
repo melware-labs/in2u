@@ -33,7 +33,7 @@ export function Onboarding({ me, onChange }: { me: Me; onChange: (me: Me) => voi
 
   if (me.state === 'waiting' && me.inviteCode) {
     return (
-      <div className="app">
+      <div className="app splash">
         <main className="page center">
           <h1>{t.onboarding.yourCode}</h1>
           <div className="code-box" aria-label={t.onboarding.yourCode}>
@@ -53,9 +53,10 @@ export function Onboarding({ me, onChange }: { me: Me; onChange: (me: Me) => voi
   }
 
   return (
-    <div className="app">
+    <div className="app splash">
       <main className="page center">
-        <div className="stack">
+        <div className="stack" style={{ alignItems: 'center' }}>
+          <div className="brand">in2u</div>
           <h1>{t.onboarding.title}</h1>
           <p className="muted">{t.onboarding.subtitle}</p>
         </div>

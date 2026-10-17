@@ -6,7 +6,6 @@ import './styles.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <div className="blobs" aria-hidden />
     <App />
   </StrictMode>,
 );
