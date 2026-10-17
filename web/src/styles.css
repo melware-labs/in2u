@@ -1,31 +1,33 @@
 /*
- * Estilo "Devyn" (Figma: Devyn – A Couple Shared Calendar & Communication App,
- * Community): botones píldora, días del calendario como cuadraditos con borde,
- * tarjetas con borde y tinte de color y barra inferior en píldora con íconos
- * en círculos. Todo en Nunito Sans (sans serif).
+ * Botones píldora, días del calendario como cuadraditos con borde, tarjetas
+ * planas con borde y barra inferior en píldora con íconos en círculos. Todo
+ * en Nunito Sans (sans serif).
  *
- * Temas: <html data-theme="rosa|lavanda|menta|celeste|durazno"> elige la
- * paleta pastel y <html data-mode="light|dark"> el modo día/noche (sin
+ * Temas: <html data-theme="carmesi|lavanda|menta|celeste|durazno"> elige la
+ * paleta y <html data-mode="light|dark"> el modo día/noche (sin
  * data-mode se sigue al sistema). Ver theme.ts.
  */
 @import '@fontsource-variable/nunito-sans';
 @import '@fontsource-variable/fredoka';
 
 :root {
-  /* Paleta "rosa" (la del Figma); los demás temas pisan estas cuatro. */
-  --primary: #d9a0b8;
-  --accent: #a66dd4; /* día de hoy */
-  --brand: #e5486a; /* logo y corazones */
-  --nav-bg: #ffe2ee;
+  /* Paleta "carmesí" (la de entrada): rojo #AB2222 sobre blanco.
+     Los demás temas pisan estas variables. */
+  --primary: #ab2222;
+  --accent: #7f1d1d; /* día de hoy */
+  --brand: #ab2222; /* logo y corazones */
+  --nav-bg: #ffffff;
 
   /* Modo día. */
   --bg: #ffffff;
   --surface: #ffffff; /* campos, opciones, días de la semana */
-  --text: #2c2c2c;
-  --text-2: #8a8a8a;
-  --gray: #9d9d9d;
-  --card: #f9fff8; /* Card-BG */
-  --border: #e5e5e5; /* Borders - dividers */
+  --text: #1e2a45; /* azul noche, como el título del diseño */
+  --text-2: #8a93a8;
+  --gray: #a3abbd;
+  --card: #f5f6fa;
+  --border: #e9ebf2;
+  --navy: #1e2a45; /* tarjetas secundarias (planes solo míos, recordatorios) */
+  --on-navy: #ffffff;
   --nav-item: rgba(44, 44, 44, 0.3);
   --overlay: rgba(44, 44, 44, 0.45);
   --shadow: none; /* tarjetas planas, sin sombra */
@@ -34,44 +36,47 @@
   --success-soft: rgba(93, 176, 117, 0.2);
   --pending: #ffd966;
   --pending-soft: rgba(255, 217, 102, 0.2);
-  --error: #ff6b81;
-  --error-soft: rgba(255, 107, 129, 0.2);
+  --error: #d64541;
+  --error-soft: rgba(214, 69, 65, 0.16);
 
   /* Relleno de botones y controles activos; en modo noche se apagan. */
   --fill: var(--primary);
   --fill-accent: var(--accent);
   --on-fill: #ffffff;
   --line: var(--primary); /* borde y texto de botones de contorno */
-  --sheet-glow: linear-gradient(180deg, color-mix(in srgb, var(--primary) 28%, var(--bg)) 0%, var(--bg) 160px);
+  --sheet-glow: none;
   --nav-glow: none;
   --ring: var(--accent); /* borde del día de hoy */
   --primary-soft: color-mix(in srgb, var(--primary) 18%, transparent);
   --accent-soft: color-mix(in srgb, var(--accent) 14%, transparent);
-  --glow: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--primary) 32%, var(--bg)) 0%,
-    color-mix(in srgb, var(--primary) 12%, var(--bg)) 180px,
-    var(--bg) 360px
-  );
-  --splash: linear-gradient(
-    170deg,
-    color-mix(in srgb, var(--primary) 55%, var(--bg)) 0%,
-    color-mix(in srgb, var(--primary) 28%, var(--bg)) 45%,
-    color-mix(in srgb, var(--primary) 10%, var(--bg)) 100%
-  );
+  /* Fondo liso, sin degradés. */
+  --glow: none;
+  --splash: var(--bg);
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --nav-h: 56px;
+  /* Píldora oscura del álbum (como el botón "Let's Go" de la referencia). */
+  --deep: color-mix(in srgb, var(--accent) 55%, #2c2c2c);
+  --on-deep: #ffffff;
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --nav-h: 64px; /* barra inferior del celular */
   color-scheme: light;
 }
 
-/* Paletas pastel. */
-:root[data-theme='lavanda'] { --primary: #b9a3e3; --accent: #e58fb4; --brand: #8a6fd8; --nav-bg: #eee6ff; }
-:root[data-theme='menta'] { --primary: #8fd0b5; --accent: #6aa8e0; --brand: #3e9c78; --nav-bg: #dcf5ea; }
-:root[data-theme='celeste'] { --primary: #9cc8ec; --accent: #a66dd4; --brand: #4a8fd0; --nav-bg: #e1f0fc; }
-:root[data-theme='durazno'] { --primary: #f2b392; --accent: #e07a9a; --brand: #e07850; --nav-bg: #ffebdf; }
+/* Carmesí: los tintes de las tarjetas van en gris cálido, no en rojo
+   aguado (que se vería rosa). Solo de día; de noche se mezclan con el fondo oscuro. */
+:root:not([data-mode='dark']):not([data-theme]),
+:root[data-theme='carmesi']:not([data-mode='dark']) {
+  --primary-soft: #f5f6fa;
+  --accent-soft: #f5f6fa;
+}
+
+/* Paletas pastel, para quien prefiera otro color. */
+:root[data-theme='lavanda'] { --primary: #b9a3e3; --accent: #e58fb4; --brand: #8a6fd8; --nav-bg: #eee6ff; --bg: #ffffff; }
+:root[data-theme='menta'] { --primary: #8fd0b5; --accent: #6aa8e0; --brand: #3e9c78; --nav-bg: #dcf5ea; --bg: #ffffff; }
+:root[data-theme='celeste'] { --primary: #9cc8ec; --accent: #a66dd4; --brand: #4a8fd0; --nav-bg: #e1f0fc; --bg: #ffffff; }
+:root[data-theme='durazno'] { --primary: #f2b392; --accent: #e07a9a; --brand: #e07850; --nav-bg: #ffebdf; --bg: #ffffff; }
 
 /* Modo noche: a mano o, si no se eligió, cuando el sistema está en oscuro. */
 :root[data-mode='dark'] {
@@ -89,14 +94,18 @@
   --fill: color-mix(in srgb, var(--primary) 34%, #1c1a1f);
   --fill-accent: color-mix(in srgb, var(--accent) 34%, #1c1a1f);
   --on-fill: #e6e0ea;
-  --line: color-mix(in srgb, var(--primary) 55%, #1c1a1f);
+  --line: color-mix(in srgb, var(--primary) 60%, #e6e0ea); /* texto de acento legible, sin brillo */
   --ring: color-mix(in srgb, var(--accent) 60%, #1c1a1f);
   --glow: none; /* fondo liso, sin difuminado */
   --splash: var(--bg);
   --sheet-glow: none;
+  --deep: color-mix(in srgb, var(--accent) 34%, #1c1a1f);
+  --on-deep: #e6e0ea;
+  --navy: #2d3350;
+  --on-navy: #e6e0ea;
   color-scheme: dark;
 }
-:root[data-mode='dark'] .brand .two, :root[data-mode='dark'] .hearts-loop { color: color-mix(in srgb, var(--brand) 60%, var(--text-2)); }
+:root[data-mode='dark'] .brand, :root[data-mode='dark'] .hearts-loop { color: color-mix(in srgb, var(--brand) 60%, var(--text-2)); }
 
 * { box-sizing: border-box; }
 
@@ -117,8 +126,8 @@ button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 h1, h2, h3, p { margin: 0; }
-h1 { font-size: 26px; font-weight: 700; line-height: 1.25; letter-spacing: -0.01em; }
-h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
+h1 { font-size: 26px; font-weight: 600; line-height: 1.2; letter-spacing: -0.01em; }
+h2 { font-size: 17px; font-weight: 500; line-height: 1.3; }
 
 .app {
   position: relative;
@@ -133,7 +142,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
   position: relative;
   width: 100%;
   max-width: 560px;
-  padding: 36px 20px calc(var(--nav-h) + 56px + env(safe-area-inset-bottom));
+  padding: 36px 20px calc(var(--nav-h) + 28px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -141,7 +150,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 
 .page.center { justify-content: center; min-height: 100vh; padding-bottom: 32px; }
 
-/* Pantalla de entrada: degradé rosado de la portada de Devyn. */
+/* Pantalla de entrada. */
 .splash {
   background: var(--splash);
 }
@@ -149,26 +158,24 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 
 .card {
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border: 0;
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
-  padding: 14px 16px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 /* Tintes de las tarjetas de estado del diseño. */
-.card.coral { background: var(--primary-soft); border-color: var(--primary); }
-.card.yellow { background: var(--pending-soft); border-color: var(--pending); }
-.card.sky { background: var(--accent-soft); border-color: var(--accent); }
+.card.coral, .card.yellow, .card.sky { background: var(--card); }
 .card.strip { background: var(--card); }
 
 .muted { color: var(--text-2); }
 .small { font-size: 13px; }
-.kicker { font-size: 13px; font-weight: 600; color: var(--text-2); letter-spacing: 0.2px; }
+.kicker { font-size: 13px; font-weight: 500; color: var(--text-2); letter-spacing: 0.2px; }
 .error { color: var(--error); font-size: 14px; }
 
-/* Botón principal: píldora rosa, texto blanco en Nunito Sans Medium. */
+/* Botón principal: píldora del color del tema, texto blanco en Nunito Sans Medium. */
 .btn {
   border: 1px solid transparent;
   border-radius: 100px;
@@ -187,7 +194,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 }
 .btn:disabled { opacity: 0.45; cursor: default; }
 .btn.secondary { background: transparent; border-color: var(--line); color: var(--line); }
-.btn.link { background: none; border: 0; color: var(--line); padding: 8px; font-weight: 600; font-size: 15px; }
+.btn.link { background: none; border: 0; color: var(--line); padding: 8px; font-weight: 500; font-size: 15px; }
 .btn.small-btn { padding: 8px 16px; font-size: 14px; }
 .btn.white { background: var(--surface); color: var(--text); border-color: var(--border); }
 
@@ -210,7 +217,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 }
 .input:focus { border-color: var(--primary); outline: none; }
 .input::placeholder { color: var(--gray); }
-.input.code { text-align: center; letter-spacing: 0.3em; text-transform: uppercase; font-size: 22px; font-weight: 600; }
+.input.code { text-align: center; letter-spacing: 0.3em; text-transform: uppercase; font-size: 22px; font-weight: 500; }
 
 .row { display: flex; align-items: center; gap: 12px; }
 .row.between { justify-content: space-between; }
@@ -218,16 +225,14 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 
 /* Logo: Fredoka redondeada como el isotipo; el "2" toma el color del tema. */
 .brand-lockup { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.brand-mark { width: 104px; height: auto; }
 .brand {
-  font-family: 'Fredoka Variable', 'Fredoka', 'Nunito Sans Variable', sans-serif;
-  font-size: 60px;
+  font-family: 'Fredoka Variable', 'Nunito Sans Variable', system-ui, sans-serif;
+  font-size: 64px;
   font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1;
-  color: var(--text);
+  color: var(--brand);
 }
-.brand .two { color: var(--brand); }
 
 /* Crear cuenta / Iniciar sesión */
 .auth-switch {
@@ -251,61 +256,60 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 }
 .auth-switch button[aria-selected='true'] { background: var(--primary); color: #fff; }
 .tagline { font-weight: 400; color: var(--text-2); font-size: 17px; }
-.hearts-loop { width: 220px; height: auto; color: var(--brand); margin: 0 auto; }
+.hearts-loop { width: 120px; height: auto; color: var(--brand); margin: 0 auto; }
 
 .avatar {
   width: 44px; height: 44px; border-radius: 50%;
   background: var(--fill);
   color: var(--on-fill);
-  font-weight: 700; font-size: 18px;
+  font-weight: 600; font-size: 18px;
   display: grid; place-items: center;
   box-shadow: 0 0 0 3px var(--bg);
   flex: none;
 }
 .avatar.partner { background: var(--fill-accent); }
+button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
 .avatars { display: flex; }
 .avatars .avatar + .avatar { margin-left: -12px; }
 
 .couple { font-size: 13px; color: var(--text-2); }
 .couple .heart { color: var(--error); }
 
-/* Barra inferior: píldora rosada flotante con íconos en círculos. */
+/* Barra inferior: ocupa todo el ancho de la pantalla y queda fija abajo. */
 .nav {
   position: fixed;
-  left: 0; right: 0;
-  bottom: calc(16px + env(safe-area-inset-bottom));
-  display: flex;
-  justify-content: center;
-  pointer-events: none;
+  left: 0; right: 0; bottom: 0;
   z-index: 5;
 }
 .nav-inner {
-  pointer-events: auto;
   background: var(--nav-bg);
-  border-radius: 100px;
-  padding: 4px;
+  border-top: 1px solid var(--border);
+  padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
   display: flex;
-  gap: 10px;
+  justify-content: space-around;
+  gap: 2px;
   box-shadow: var(--nav-glow);
 }
 .nav button {
-  height: 40px;
-  min-width: 40px;
+  flex: 1 1 0;
+  min-width: 0;
   border: 0;
-  border-radius: 100px;
-  background: var(--nav-item);
-  color: var(--on-fill);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-2);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 0 8px;
-  font-size: 14px;
-  font-weight: 600;
+  gap: 2px;
+  padding: 6px 2px 4px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
 }
-.nav button .label { display: none; }
-.nav button[aria-current='page'] { background: var(--fill); color: var(--on-fill); padding: 0 14px 0 10px; }
-.nav button[aria-current='page'] .label { display: inline; }
+.nav button .label { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav button[aria-current='page'] { color: var(--line); background: var(--primary-soft); }
+:root[data-mode='dark'] .nav button[aria-current='page'] { color: var(--text); background: var(--fill); }
 
 /* Ánimo */
 .mood-big { font-size: 46px; line-height: 1; }
@@ -318,7 +322,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
   border: 1px solid var(--border); background: var(--surface);
 }
 .week .day.today { background: var(--fill-accent); border-color: var(--fill-accent); }
-.week .day.today .wd { color: var(--on-fill); font-weight: 600; }
+.week .day.today .wd { color: var(--on-fill); font-weight: 500; }
 .week .wd { font-size: 12px; color: var(--text-2); }
 .week .em { font-size: 20px; line-height: 1.1; min-height: 22px; }
 
@@ -329,7 +333,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
   text-align: left; font-size: 17px; color: var(--text);
 }
 .mood-option .em { font-size: 28px; }
-.mood-option[aria-pressed='true'] { background: var(--fill); border-color: var(--fill); color: var(--on-fill); font-weight: 600; }
+.mood-option[aria-pressed='true'] { background: var(--fill); border-color: var(--fill); color: var(--on-fill); font-weight: 500; }
 
 .sheet-bg {
   position: fixed; inset: 0; background: var(--overlay);
@@ -349,7 +353,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 }
 
 .code-box {
-  font-size: 34px; letter-spacing: 0.25em; text-align: center; font-weight: 700;
+  font-size: 34px; letter-spacing: 0.25em; text-align: center; font-weight: 600;
   background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px;
 }
 
@@ -395,8 +399,8 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 .cal-day.phase-lutea { background: var(--primary-soft); }
 .cal-day.today { box-shadow: inset 0 0 0 2px var(--ring); }
 .cal-day.phase-menstrual.today, .cal-day.phase-folicular.today,
-.cal-day.phase-ovulacion.today, .cal-day.phase-lutea.today { color: var(--ring); font-weight: 700; }
-.cal-day.start { box-shadow: inset 0 0 0 2px var(--error); font-weight: 800; }
+.cal-day.phase-ovulacion.today, .cal-day.phase-lutea.today { color: var(--ring); font-weight: 600; }
+.cal-day.start { box-shadow: inset 0 0 0 2px var(--error); font-weight: 600; }
 .cal-day.today.start { box-shadow: inset 0 0 0 2px var(--ring); }
 
 /* Eventos: tarjetas con borde y tinte, como "Movie Night" y los estados del diseño. */
@@ -404,7 +408,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
   border: 1px solid; border-radius: var(--radius-sm); box-shadow: var(--shadow);
   padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;
 }
-.bubble.coral { background: var(--error-soft); border-color: var(--error); }
+.bubble.coral { background: var(--primary-soft); border-color: var(--primary); }
 .bubble.yellow { background: var(--pending-soft); border-color: var(--pending); }
 .bubble.sky { background: var(--accent-soft); border-color: var(--accent); }
 .bubble h2 { font-weight: 500; font-size: 17px; }
@@ -413,7 +417,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
   display: inline-block; border: 1px solid; border-radius: 100px;
   padding: 2px 8px; font-size: 12px; font-weight: 500;
 }
-.bubble.coral .pill { border-color: var(--error); background: var(--error-soft); }
+.bubble.coral .pill { border-color: var(--primary); background: var(--surface); }
 .bubble.yellow .pill { border-color: var(--pending); background: var(--pending-soft); }
 .bubble.sky .pill { border-color: var(--accent); background: var(--accent-soft); }
 
@@ -422,7 +426,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
   border: 1px solid var(--line); border-radius: 100px; background: var(--surface);
   padding: 7px 14px; font-size: 14px; color: var(--line);
 }
-.chip[aria-pressed='true'] { background: var(--fill); color: var(--on-fill); font-weight: 600; }
+.chip[aria-pressed='true'] { background: var(--fill); color: var(--on-fill); font-weight: 500; }
 
 .cap::first-letter { text-transform: uppercase; }
 
@@ -440,11 +444,274 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
   display: grid; place-items: center; color: #fff;
 }
-.swatch[aria-checked='true'] { color: var(--text); font-weight: 700; }
+.swatch[aria-checked='true'] { color: var(--text); font-weight: 600; }
 .swatch[aria-checked='true'] .circle { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--text); }
 .segmented { display: flex; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 4px; }
 .segmented button {
   flex: 1; border: 0; border-radius: 100px; background: none; padding: 8px 10px;
   font-size: 14px; color: var(--text-2);
 }
-.segmented button[aria-checked='true'] { background: var(--fill); color: var(--on-fill); font-weight: 700; }
+.segmented button[aria-checked='true'] { background: var(--fill); color: var(--on-fill); font-weight: 600; }
+
+/* Inicio, al estilo de la app de calendario: saludo, semana, agenda con tarjetas de color y recordatorios. */
+.home-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.home-title { font-size: 28px; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; max-width: 14em; }
+.profile-btn {
+  width: 52px; height: 52px; flex: none; border: 0; padding: 0;
+  border-radius: 50%; overflow: hidden; background: var(--fill); color: var(--on-fill);
+  font-size: 22px; font-weight: 600; display: grid; place-items: center;
+  box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--border);
+}
+.section-title { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+
+.week-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.wk-day {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 10px 0 8px; border: 0; border-radius: 18px; background: transparent; color: var(--text);
+}
+.wk-num { font-size: 18px; font-weight: 600; line-height: 1.1; }
+.wk-name { font-size: 12px; color: var(--text-2); }
+.wk-dot { width: 5px; height: 5px; border-radius: 50%; background: transparent; margin-top: 2px; }
+.wk-dot.on { background: var(--text-2); }
+.wk-day[aria-selected='true'] { background: var(--primary-soft); }
+:root[data-mode='dark'] .wk-day[aria-selected='true'] { background: var(--surface); }
+.wk-day[aria-selected='true'] .wk-num, .wk-day.today .wk-num { color: var(--line); }
+.wk-day[aria-selected='true'] .wk-dot.on { background: var(--line); }
+
+.agenda { display: flex; flex-direction: column; gap: 12px; }
+.agenda-row { display: flex; align-items: flex-start; gap: 14px; }
+.agenda-time { width: 44px; flex: none; padding-top: 4px; font-size: 13px; color: var(--text-2); }
+.event-card {
+  flex: 1; min-width: 0; min-height: 76px; border: 0; border-radius: var(--radius-lg);
+  padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
+  text-align: left; font: inherit; color: var(--on-fill);
+}
+.event-card.red { background: var(--fill); color: var(--on-fill); }
+.event-card.navy { background: var(--navy); color: var(--on-navy); }
+.event-title { font-size: 15px; font-weight: 600; line-height: 1.3; }
+.event-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.event-time { font-size: 12px; opacity: 0.85; }
+.mini-avatars { display: flex; }
+.mini-avatars span {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92); color: var(--navy);
+  font-size: 11px; font-weight: 600; display: grid; place-items: center;
+}
+.mini-avatars span + span { margin-left: -8px; }
+.agenda-empty { background: var(--card); border-radius: var(--radius-lg); padding: 16px; display: flex; flex-direction: column; gap: 4px; }
+
+.reminder {
+  display: flex; align-items: center; gap: 14px; width: 100%;
+  border: 0; border-radius: var(--radius-lg); background: var(--navy); color: var(--on-navy);
+  padding: 12px 14px; text-align: left; font: inherit;
+}
+.reminder-icon {
+  width: 48px; height: 48px; flex: none; border-radius: 14px;
+  background: rgba(255, 255, 255, 0.16); display: grid; place-items: center;
+}
+.reminder-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.reminder-kicker { font-size: 12px; opacity: 0.75; }
+.reminder-title { font-size: 15px; font-weight: 600; line-height: 1.3; }
+.btn.big { width: 100%; padding: 18px 24px; font-size: 18px; font-weight: 600; margin-top: 4px; }
+
+/* Menú "Más": en el celular las secciones extra van en una hoja. */
+.nav button.unread { position: relative; }
+.nav button.unread::after {
+  content: ''; position: absolute; top: 4px; right: calc(50% - 16px);
+  width: 8px; height: 8px; border-radius: 50%; background: var(--error);
+}
+.nav button.in-more { display: none; }
+.more-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.more-item {
+  display: flex; align-items: center; gap: 12px;
+  border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card);
+  padding: 14px; font-size: 16px; font-weight: 500; color: var(--text); text-align: left;
+}
+.more-item[aria-current='page'] { border-color: var(--line); background: var(--primary-soft); }
+.more-icon {
+  width: 40px; height: 40px; border-radius: 50%; flex: none;
+  background: var(--fill); color: var(--on-fill); display: grid; place-items: center;
+}
+
+/* Álbum: fotos grandes y redondeadas con el título encima. */
+.album-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.photo-card {
+  position: relative; display: block; width: 100%;
+  aspect-ratio: 4 / 5; padding: 0; border: 0; overflow: hidden;
+  border-radius: 20px; background: var(--primary-soft);
+  text-align: left; color: #fff;
+}
+.photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-overlay {
+  position: absolute; inset: auto 0 0 0;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 8px;
+  padding: 40px 12px 12px;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.55));
+}
+.photo-title { font-weight: 600; font-size: 16px; line-height: 1.2; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); }
+.photo-heart {
+  margin-left: auto; flex: none;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: #fff; color: var(--brand); display: grid; place-items: center;
+}
+.photo-empty {
+  flex-direction: row; align-items: center; gap: 14px; text-align: left;
+  color: var(--text); border-style: dashed; border-color: var(--line);
+  background: var(--primary-soft); padding: 22px 18px; font-size: 15px;
+}
+.photo-empty svg { flex: none; width: 32px; height: 32px; color: var(--line); }
+
+.photo-detail { display: flex; flex-direction: column; gap: 22px; }
+.photo-hero {
+  width: 100%; max-height: 70vh; object-fit: cover;
+  border-radius: 28px; background: var(--primary-soft); display: block;
+}
+.photo-text { gap: 14px; }
+.photo-heading { font-size: 32px; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; }
+.photo-description { font-size: 16px; line-height: 1.6; white-space: pre-line; }
+.btn.pill-dark { background: var(--deep); color: var(--on-deep); padding: 12px 22px; font-size: 16px; }
+.btn.link.danger { color: var(--error); }
+.sheet-preview { width: 100%; max-height: 260px; object-fit: cover; border-radius: 20px; }
+textarea.input { resize: vertical; min-height: 44px; }
+
+/* Carrusel de Inicio: la siguiente foto asoma por el costado. */
+.carousel {
+  display: flex; gap: 14px;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  margin: 0 -20px; padding: 0 20px;
+  scroll-padding: 0 20px;
+}
+.carousel::-webkit-scrollbar { display: none; }
+.carousel .photo-card.slide { flex: 0 0 84%; aspect-ratio: 16 / 11; scroll-snap-align: start; border-radius: 24px; }
+.carousel .photo-title { font-size: 20px; }
+.dots-row { display: flex; justify-content: center; gap: 6px; }
+.dots-row button {
+  width: 6px; height: 6px; padding: 0; border: 0; border-radius: 100px;
+  background: var(--border); transition: width 0.2s;
+}
+.dots-row button.active { width: 20px; background: var(--fill-accent); }
+
+/* Tarjeta de próximo plan: es un botón que lleva al calendario. */
+.bubble.plan { width: 100%; text-align: left; color: var(--text); font: inherit; }
+.bubble.plan h2 { font-weight: 600; }
+.question { font-size: 19px; font-weight: 600; line-height: 1.35; }
+
+/* Chat */
+.chat { display: flex; flex-direction: column; gap: 12px; min-height: calc(100vh - var(--nav-h) - 120px); }
+.chat-list { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.chat-item { display: flex; flex-direction: column; }
+.chat-empty { text-align: center; margin: auto 0; padding: 40px 0; }
+.chat-day { align-self: center; font-size: 12px; color: var(--text-2); margin: 12px 0 6px; }
+.msg {
+  max-width: 78%; padding: 9px 14px 7px; border-radius: 20px;
+  display: flex; flex-direction: column; gap: 2px; overflow-wrap: anywhere;
+}
+.msg p { white-space: pre-wrap; }
+.msg.mine { align-self: flex-end; background: var(--fill); color: var(--on-fill); border-bottom-right-radius: 6px; }
+.msg.theirs { align-self: flex-start; background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 6px; }
+.msg-time { font-size: 11px; opacity: 0.7; align-self: flex-end; }
+.composer {
+  position: sticky; bottom: calc(var(--nav-h) + env(safe-area-inset-bottom));
+  background: var(--bg); padding: 8px 0; display: flex; flex-direction: column; gap: 6px;
+}
+.composer-row { display: flex; align-items: flex-end; gap: 8px; }
+.composer textarea { border-radius: 22px; max-height: 140px; resize: none; }
+.send-btn {
+  width: 46px; height: 46px; flex: none; border: 0; border-radius: 50%;
+  background: var(--fill); color: var(--on-fill); display: grid; place-items: center;
+}
+.send-btn:disabled { opacity: 0.45; cursor: default; }
+
+/* Juego */
+.score { flex-direction: row; justify-content: space-around; text-align: center; gap: 12px; }
+.score > div { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.score-num { font-size: 26px; font-weight: 600; }
+.pill.tag { align-self: flex-start; border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+.mark { font-weight: 600; }
+.mark.ok { color: var(--success); }
+.mark.ko { color: var(--error); }
+
+/*
+ * Diseño adaptable. Celular: una columna y barra abajo (lo de arriba).
+ * Tablet (≥ 720px): más ancho, consejos y perfil en dos columnas.
+ * Compu (≥ 1024px): menú fijo a la izquierda y pantallas en dos columnas.
+ */
+.cols, .col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.grid-cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+.nav-brand { display: none; }
+
+/* Celulares chicos: la barra entra sin desbordar y las marcas de eventos caben en el día. */
+@media (max-width: 400px) {
+  .dot { width: 7px; }
+  .page { padding-left: 14px; padding-right: 14px; }
+  .carousel { margin: 0 -14px; padding: 0 14px; scroll-padding: 0 14px; }
+}
+
+@media (min-width: 720px) {
+  .page { max-width: 760px; padding-left: 32px; padding-right: 32px; }
+  .page.center { max-width: 480px; }
+  .grid-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cal-day { min-height: 44px; }
+  .album-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .carousel { margin: 0 -32px; padding: 0 32px; scroll-padding: 0 32px; }
+  .carousel .photo-card.slide { flex-basis: 62%; }
+  .photo-detail { flex-direction: row; align-items: flex-start; gap: 32px; }
+  .photo-detail .photo-hero { width: 55%; flex: none; }
+}
+
+@media (min-width: 1024px) {
+  :root { --side-w: 232px; }
+  .app { padding-left: var(--side-w); }
+  .page { max-width: 1120px; padding: 48px 40px 48px; }
+  .page.center { max-width: 480px; }
+  /* Pantallas de entrada sin menú: centradas en toda la ventana. */
+  .app.splash { padding-left: 0; }
+
+  .cols { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .grid-cards { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+
+  /* La barra de abajo pasa a ser un menú lateral. */
+  .nav { top: 0; bottom: 0; right: auto; width: var(--side-w); justify-content: stretch; }
+  .nav-inner {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 6px;
+    border-top: 0;
+    padding: 28px 16px;
+    border-right: 1px solid var(--border);
+  }
+  .nav-brand {
+    display: block;
+    font-family: 'Fredoka Variable', 'Nunito Sans Variable', system-ui, sans-serif;
+    font-size: 34px; font-weight: 600; letter-spacing: -0.01em;
+    color: var(--brand);
+    padding: 0 12px 20px;
+  }
+  .nav button,
+  .nav button[aria-current='page'] {
+    flex: none;
+    flex-direction: row;
+    justify-content: flex-start;
+    height: 44px;
+    padding: 0 14px;
+    gap: 12px;
+    border-radius: 100px;
+    font-size: 15px;
+    background: transparent;
+    color: var(--text);
+  }
+  .nav button .label { display: inline; overflow: visible; }
+  .nav button:hover { background: var(--primary-soft); }
+  .nav button[aria-current='page'] { background: var(--fill); color: var(--on-fill); }
+  .nav button.in-more { display: flex; }
+  .nav button.more-btn { display: none; }
+
+  .album-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
+  .carousel { margin: 0; padding: 0; scroll-padding: 0; }
+  .carousel .photo-card.slide { flex-basis: 46%; }
+  .composer { bottom: 0; padding-bottom: 20px; }
+  .chat { min-height: calc(100vh - 96px); max-width: 760px; }
+}
