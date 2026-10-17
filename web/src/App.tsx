@@ -11,7 +11,6 @@ import {
   IdeaIcon,
   MoonIcon,
   MoreIcon,
-  UserIcon,
 } from './icons';
 import { localIsoDate } from './lib';
 import { Album } from './screens/Album';
@@ -28,7 +27,10 @@ import { TipsScreen } from './screens/Tips';
 
 type Tab = 'nosotros' | 'calendario' | 'chat' | 'album' | 'juego' | 'consejos' | 'ciclo' | 'perfil';
 
-/** En el celular la barra muestra las primeras cuatro y el resto va en "Más"; en la compu se ven todas. */
+/**
+ * En el celular la barra muestra las primeras cuatro y el resto va en "Más"; en la compu se ven todas.
+ * Perfil no está aquí: se abre tocando la foto de perfil en Inicio.
+ */
 const TABS: { id: Tab; icon: ReactNode; label: string; more?: boolean }[] = [
   { id: 'nosotros', icon: <HomeIcon />, label: t.tabs.nosotros },
   { id: 'calendario', icon: <CalendarIcon />, label: t.tabs.calendario },
@@ -37,7 +39,6 @@ const TABS: { id: Tab; icon: ReactNode; label: string; more?: boolean }[] = [
   { id: 'juego', icon: <GameIcon />, label: t.tabs.juego, more: true },
   { id: 'consejos', icon: <IdeaIcon />, label: t.tabs.consejos, more: true },
   { id: 'ciclo', icon: <MoonIcon />, label: t.tabs.ciclo, more: true },
-  { id: 'perfil', icon: <UserIcon />, label: t.tabs.perfil, more: true },
 ];
 
 export function App() {

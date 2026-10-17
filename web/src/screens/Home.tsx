@@ -10,7 +10,7 @@ import { CARE_TIPS, tipByKey } from '../tips';
 import { PhotoCard } from './Album';
 import { nextQuestion } from './Game';
 
-export type HomeTarget = 'calendario' | 'consejos' | 'album' | 'juego';
+export type HomeTarget = 'calendario' | 'consejos' | 'album' | 'juego' | 'perfil';
 
 /** Carrusel horizontal de fotos del álbum: la tarjeta siguiente asoma y abajo van los puntitos. */
 function PhotoCarousel({
@@ -224,9 +224,13 @@ export function Home({
             {firstName(me.name, '')} <span className="heart">♥</span> {partnerName}
           </p>
         </div>
-        <div className="avatars" aria-hidden>
-          <div className="avatar">{(firstName(me.name, '·')[0] ?? '·').toUpperCase()}</div>
-          <div className="avatar partner">{(partnerName[0] ?? '·').toUpperCase()}</div>
+        <div className="avatars">
+          <button className="avatar" aria-label={t.tabs.perfil} title={t.tabs.perfil} onClick={() => onGo('perfil')}>
+            {(firstName(me.name, '·')[0] ?? '·').toUpperCase()}
+          </button>
+          <div className="avatar partner" aria-hidden>
+            {(partnerName[0] ?? '·').toUpperCase()}
+          </div>
         </div>
       </header>
 
