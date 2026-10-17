@@ -133,7 +133,7 @@ async function classifyWithGemini(params: {
 
   const catalogText = TIP_CATALOG.map((t) => `- ${t.key}: ${t.summary}`).join('\n');
 
-  const prompt = `Sos un asistente que ayuda a una persona a apoyar mejor a su pareja. Te paso el historial reciente de check-ins de ánimo de la pareja (más reciente primero) y un catálogo de consejos disponibles. Elegí el consejo más relevante para el check-in de hoy y escribí una frase corta ("kicker", máximo 12 palabras, en español, sin inventar hechos que no estén en los datos) que resuma lo que está pasando, en el estilo "Raúl viene cansado hace 3 días".
+  const prompt = `Eres un asistente que ayuda a una persona a apoyar mejor a su pareja. Te paso el historial reciente de check-ins de ánimo de la pareja (más reciente primero) y un catálogo de consejos disponibles. Elige el consejo más relevante para el check-in de hoy y escribe una frase corta ("kicker", máximo 12 palabras, en español, sin inventar hechos que no estén en los datos) que resuma lo que está pasando, en el estilo "Raúl viene cansado hace 3 días".
 
 Historial:
 ${history}
@@ -141,7 +141,7 @@ ${history}
 Catálogo de consejos:
 ${catalogText}
 
-Devolvé SOLO el JSON pedido.`;
+Devuelve SOLO el JSON pedido.`;
 
   const body = {
     contents: [{ parts: [{ text: prompt }] }],
