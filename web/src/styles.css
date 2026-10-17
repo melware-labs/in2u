@@ -72,11 +72,7 @@
   --accent-soft: #f5f6fa;
 }
 
-/* Paletas pastel, para quien prefiera otro color. */
-:root[data-theme='lavanda'] { --primary: #b9a3e3; --accent: #e58fb4; --brand: #8a6fd8; --nav-bg: #eee6ff; --bg: #ffffff; }
-:root[data-theme='menta'] { --primary: #8fd0b5; --accent: #6aa8e0; --brand: #3e9c78; --nav-bg: #dcf5ea; --bg: #ffffff; }
-:root[data-theme='celeste'] { --primary: #9cc8ec; --accent: #a66dd4; --brand: #4a8fd0; --nav-bg: #e1f0fc; --bg: #ffffff; }
-:root[data-theme='durazno'] { --primary: #f2b392; --accent: #e07a9a; --brand: #e07850; --nav-bg: #ffebdf; --bg: #ffffff; }
+/* Solo se usa la paleta carmesí. Las demás han sido eliminadas. */
 
 /* Modo noche: a mano o, si no se eligió, cuando el sistema está en oscuro. */
 :root[data-mode='dark'] {
@@ -105,9 +101,17 @@
   --on-navy: #e6e0ea;
   color-scheme: dark;
 }
-:root[data-mode='dark'] .brand, :root[data-mode='dark'] .hearts-loop { color: color-mix(in srgb, var(--brand) 60%, var(--text-2)); }
+:root[data-mode='dark'] .brand, :root[data-mode='dark'] .nav-brand { color: #ffffff; }
+:root[data-mode='dark'] .hearts-loop { color: color-mix(in srgb, var(--brand) 60%, var(--text-2)); }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+/* Evitar que se "subraye" el texto al tocar en pantallas touch. */
+button, a, [role="radio"], [role="button"], .nav button, .mood-option, .more-item, .chip, .cal-day, .wk-day {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
 
 html, body, #root { min-height: 100%; }
 
@@ -335,7 +339,11 @@ button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
   text-align: left; font-size: 17px; color: var(--text);
 }
 .mood-option .em { font-size: 28px; }
+@media (hover: hover) {
+  .mood-option:hover { background: var(--primary-soft); border-color: var(--primary); }
+}
 .mood-option[aria-pressed='true'] { background: var(--fill); border-color: var(--fill); color: var(--on-fill); font-weight: 500; }
+.mood-option[aria-checked='true'] { background: var(--fill); border-color: var(--fill); color: var(--on-fill); font-weight: 500; }
 
 .sheet-bg {
   position: fixed; inset: 0; background: var(--overlay);
@@ -435,19 +443,7 @@ button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
 /* Emojis de iPhone (imágenes del set de Apple, ver Emoji.tsx). */
 .emoji { display: inline-block; width: 1em; height: 1em; vertical-align: -0.12em; object-fit: contain; }
 
-/* Selector de tema y modo en Perfil. */
-.swatches { display: flex; flex-wrap: wrap; gap: 12px; }
-.swatch {
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  border: 0; background: none; padding: 0; font-size: 13px; color: var(--text-2);
-}
-.swatch .circle {
-  width: 40px; height: 40px; border-radius: 50%;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
-  display: grid; place-items: center; color: #fff;
-}
-.swatch[aria-checked='true'] { color: var(--text); font-weight: 600; }
-.swatch[aria-checked='true'] .circle { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--text); }
+/* Selector de modo día/noche en Perfil (el selector de tema/paleta se eliminó). */
 .segmented { display: flex; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 4px; }
 .segmented button {
   flex: 1; border: 0; border-radius: 100px; background: none; padding: 8px 10px;
