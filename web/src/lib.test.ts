@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { Checkin } from './api';
-import { dayNumber, firstName, localIsoDate, ofTheDay, weekDays } from './lib';
+import { dayNumber, daysSince, firstName, localIsoDate, ofTheDay, weekDays } from './lib';
 
 const checkin = (date: string, mine: boolean, mood = 4): Checkin => ({
   id: date + mine,
@@ -98,6 +98,14 @@ describe('ciclo', () => {
     expect(by['2026-10-23'].phase).toBe('ovulacion');
     expect(by['2026-10-27'].phase).toBe('lutea');
     expect(by['2026-11-01'].phase).toBe('lutea');
+  });
+
+  it('daysSince cuenta días de calendario, también cruzando el cambio de horario', () => {
+    const now = new Date(2026, 9, 17, 23, 30);
+    expect(daysSince('2026-10-17', now)).toBe(0);
+    expect(daysSince('2026-10-16', now)).toBe(1);
+    expect(daysSince('2025-10-17', now)).toBe(365);
+    expect(daysSince('2026-03-01', now)).toBe(230);
   });
 });
 

@@ -27,6 +27,9 @@ public class Couple {
 
 	private UUID memberTwo;
 
+	/** Desde cuándo son pareja; compartida, la puede editar cualquiera de los dos. */
+	private java.time.LocalDate togetherSince;
+
 	@Column(nullable = false)
 	private Instant createdAt = Instant.now();
 
@@ -52,6 +55,14 @@ public class Couple {
 
 	public UUID getMemberTwo() {
 		return memberTwo;
+	}
+
+	public java.time.LocalDate getTogetherSince() {
+		return togetherSince;
+	}
+
+	public void setTogetherSince(java.time.LocalDate togetherSince) {
+		this.togetherSince = togetherSince;
 	}
 
 	public boolean isPaired() {

@@ -11,7 +11,20 @@ export type Me = {
   state: 'none' | 'waiting' | 'paired';
   inviteCode: string | null;
   partner: Person | null;
+  gender: Gender | null;
+  /** YYYY-MM-DD */
+  birthDate: string | null;
+  age: number | null;
+  /** YYYY-MM-DD, compartida por la pareja. */
+  togetherSince: string | null;
+  /** false hasta completar el formulario de bienvenida. */
+  profileComplete: boolean;
 };
+
+export type Gender = 'mujer' | 'hombre' | 'otro';
+export const GENDERS: Gender[] = ['mujer', 'hombre', 'otro'];
+
+export type ProfileInput = { name: string; gender: Gender; birthDate: string; togetherSince: string };
 
 export type Checkin = {
   id: string;
@@ -137,6 +150,8 @@ export const api = {
   },
   createCouple: () => request<Me>('POST', '/api/couple') as Promise<Me>,
   joinCouple: (code: string) => request<Me>('POST', '/api/couple/join', { code }) as Promise<Me>,
+  saveProfile: (p: ProfileInput) =>
+    request<Me>('PUT', '/api/me/profile', { ...p, name: p.name.trim() }) as Promise<Me>,
   setTimezone: (timezone: string) => request<Me>('PUT', '/api/me/timezone', { timezone }) as Promise<Me>,
   week: () => request<Checkin[]>('GET', '/api/mood/week') as Promise<Checkin[]>,
   saveMood: (mood: number, note: string) =>
