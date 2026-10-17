@@ -1,7 +1,21 @@
-import { api, type Me } from '../api';
-import { t } from '../i18n';
+import { useState } from 'react';
 
-export function Profile({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
+import { api, type Me } from '../api';
+import { locale, t } from '../i18n';
+import { parseLocalDate } from '../lib';
+import { ProfileForm } from './ProfileForm';
+
+export function Profile({
+  me,
+  onChange,
+  onSignedOut,
+}: {
+  me: Me;
+  onChange: (me: Me) => void;
+  onSignedOut: () => void;
+}) {
+  const [editing, setEditing] = useState(false);
+
   async function signOut() {
     try {
       await api.logout();
@@ -18,6 +32,32 @@ export function Profile({ me, onSignedOut }: { me: Me; onSignedOut: () => void }
         <p className="kicker">{t.perfil.account}</p>
         <h2>{me.name ?? me.email}</h2>
         {me.name && me.email && <p className="muted">{me.email}</p>}
+        {editing ? (
+          <ProfileForm
+            me={me}
+            onCancel={() => setEditing(false)}
+            onSaved={(updated) => {
+              onChange(updated);
+              setEditing(false);
+            }}
+          />
+        ) : (
+          <>
+            <p className="muted small">
+              {[me.gender && t.profile.genders[me.gender], me.age != null && t.profile.age(me.age)]
+                .filter(Boolean)
+                .join(' · ')}
+            </p>
+            {me.togetherSince && (
+              <p className="muted small">
+                {t.nosotros.since(parseLocalDate(me.togetherSince).toLocaleDateString(locale, { dateStyle: 'long' }))}
+              </p>
+            )}
+            <button className="btn secondary" onClick={() => setEditing(true)}>
+              {t.profile.edit}
+            </button>
+          </>
+        )}
       </section>
 
       <section className="card">

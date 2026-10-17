@@ -100,7 +100,7 @@ class CoupleController {
 				|| body.togetherSince().isBefore(body.birthDate())
 				|| body.togetherSince().isAfter(user.today(clock))) {
 			throw new org.springframework.web.server.ResponseStatusException(
-					org.springframework.http.HttpStatus.BAD_REQUEST, "Revisá las fechas.");
+					org.springframework.http.HttpStatus.BAD_REQUEST, "Revisa las fechas.");
 		}
 		couples.updateProfile(user, body.name(), body.gender(), body.birthDate(), body.togetherSince());
 		return build(user);
