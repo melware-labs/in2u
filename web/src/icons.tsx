@@ -132,6 +132,6 @@ export const HeartsLoop = () => (
       strokeWidth={4}
       strokeLinejoin="round"
     />
-    <path d="M80 69C71 63 68 58 68 54a6 6 0 0 1 12-2a6 6 0 0 1 12 2c0 4-3 9-12 15Z" fill="var(--bg)" />
+    <path d="M66 58C55 51 52 46 52 42a7 7 0 0 1 14-2a7 7 0 0 1 14 2c0 4-3 9-14 16Z" fill="currentColor" stroke="var(--bg)" strokeWidth={3} strokeLinejoin="round" />
   </svg>
 );
