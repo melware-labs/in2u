@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { api, GENDERS, type Gender, type Me } from '../api';
+import { DateSelect } from '../DateSelect';
 import { t } from '../i18n';
 import { localIsoDate } from '../lib';
 
@@ -71,30 +72,18 @@ export function ProfileForm({
         {gender && <span className="muted small">{t.profile.genderHint[gender]}</span>}
       </div>
 
-      <label className="stack" style={{ gap: 6 }}>
-        <span className="kicker">{t.profile.birthDate}</span>
-        <input
-          className="input"
-          type="date"
-          min="1900-01-01"
-          max={today}
-          value={birthDate}
-          onChange={(e) => setBirthDate(e.target.value)}
-        />
-      </label>
+      <DateSelect label={t.profile.birthDate} value={birthDate} onChange={setBirthDate} minYear={1920} max={today} />
 
-      <label className="stack" style={{ gap: 6 }}>
-        <span className="kicker">{t.profile.togetherSince}</span>
-        <input
-          className="input"
-          type="date"
-          min={birthDate || '1900-01-01'}
-          max={today}
+      <div className="stack" style={{ gap: 6 }}>
+        <DateSelect
+          label={t.profile.togetherSince}
           value={togetherSince}
-          onChange={(e) => setTogetherSince(e.target.value)}
+          onChange={setTogetherSince}
+          minYear={Number(birthDate.slice(0, 4)) || 1920}
+          max={today}
         />
         <span className="muted small">{t.profile.togetherHint}</span>
-      </label>
+      </div>
 
       <button className="btn" type="submit" disabled={!valid || saving}>
         {saving ? t.profile.saving : onCancel ? t.profile.save : t.profile.continue}
