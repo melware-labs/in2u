@@ -1,7 +1,5 @@
 /**
- * Diccionario ES/EN mínimo (sin librería), portado de src/lib/i18n de la app
- * Expo. El idioma sale del navegador. Se agregan secciones a medida que se
- * portan las pantallas.
+ * Diccionario ES/EN mínimo (sin librería). El idioma sale del navegador.
  */
 const es = {
   loading: 'Cargando…',
