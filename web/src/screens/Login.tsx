@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { api } from '../api';
 import { t } from '../i18n';
+import { HeartsLoop } from '../icons';
 
 // El login sin Google solo existe si el backend corre con DEV_LOGIN=true;
 // en el build de producción el formulario ni se muestra.
@@ -24,11 +25,12 @@ export function Login() {
   }
 
   return (
-    <div className="app">
+    <div className="app splash">
       <main className="page center">
-        <div className="stack" style={{ textAlign: 'center', alignItems: 'center' }}>
+        <div className="stack" style={{ textAlign: 'center', alignItems: 'center', marginBottom: 16 }}>
+          <HeartsLoop />
           <div className="brand">in2u</div>
-          <p className="muted">{t.login.tagline}</p>
+          <p className="tagline">{t.login.tagline}</p>
         </div>
 
         <a className="btn" href="/oauth2/authorization/google">
@@ -36,7 +38,7 @@ export function Login() {
         </a>
 
         {SHOW_DEV_LOGIN && (
-          <form className="card" onSubmit={devLogin}>
+          <form className="card" style={{ textAlign: 'left' }} onSubmit={devLogin}>
             <p className="kicker">{t.login.devTitle}</p>
             <input
               className="input"

@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 
 import { api, type Checkin, type Me, type PartnerCycle, type TodayTip, subscribeToUpdates } from './api';
 import { t } from './i18n';
+import { CalendarIcon, HomeIcon, IdeaIcon, MoonIcon, UserIcon } from './icons';
 import { localIsoDate } from './lib';
 import { Calendar } from './screens/Calendar';
 import { CheckInSheet } from './screens/CheckInSheet';
@@ -14,12 +15,12 @@ import { TipsScreen } from './screens/Tips';
 
 type Tab = 'nosotros' | 'calendario' | 'consejos' | 'ciclo' | 'perfil';
 
-const TABS: { id: Tab; icon: string; label: string }[] = [
-  { id: 'nosotros', icon: '💞', label: t.tabs.nosotros },
-  { id: 'calendario', icon: '📅', label: t.tabs.calendario },
-  { id: 'consejos', icon: '💡', label: t.tabs.consejos },
-  { id: 'ciclo', icon: '🌙', label: t.tabs.ciclo },
-  { id: 'perfil', icon: '👤', label: t.tabs.perfil },
+const TABS: { id: Tab; icon: ReactNode; label: string }[] = [
+  { id: 'nosotros', icon: <HomeIcon />, label: t.tabs.nosotros },
+  { id: 'calendario', icon: <CalendarIcon />, label: t.tabs.calendario },
+  { id: 'consejos', icon: <IdeaIcon />, label: t.tabs.consejos },
+  { id: 'ciclo', icon: <MoonIcon />, label: t.tabs.ciclo },
+  { id: 'perfil', icon: <UserIcon />, label: t.tabs.perfil },
 ];
 
 export function App() {
@@ -65,8 +66,9 @@ export function App() {
 
   if (me === undefined) {
     return (
-      <div className="app">
+      <div className="app splash">
         <main className="page center">
+          <div className="brand">in2u</div>
           <p className="muted">{t.loading}</p>
         </main>
       </div>
@@ -94,12 +96,12 @@ export function App() {
             <button
               key={item.id}
               aria-current={tab === item.id ? 'page' : undefined}
+              aria-label={item.label}
+              title={item.label}
               onClick={() => setTab(item.id)}
             >
-              <span className="ico" aria-hidden>
-                {item.icon}
-              </span>
-              {item.label}
+              {item.icon}
+              <span className="label">{item.label}</span>
             </button>
           ))}
         </div>
