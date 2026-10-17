@@ -30,6 +30,14 @@ public class AppUser {
 	@Column(nullable = false)
 	private String timezone = "UTC";
 
+	/** 'mujer', 'hombre' u 'otro'. */
+	private String gender;
+
+	private java.time.LocalDate birthDate;
+
+	/** Fecha de pareja cargada antes de vincularse (después vive en couples). */
+	private java.time.LocalDate togetherSince;
+
 	@Column(nullable = false)
 	private Instant createdAt = Instant.now();
 
@@ -73,6 +81,35 @@ public class AppUser {
 
 	public void setTimezone(String timezone) {
 		this.timezone = timezone;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public java.time.LocalDate getBirthDate() {
+		return birthDate;
+	}
+
+	public void setBirthDate(java.time.LocalDate birthDate) {
+		this.birthDate = birthDate;
+	}
+
+	public java.time.LocalDate getTogetherSince() {
+		return togetherSince;
+	}
+
+	public void setTogetherSince(java.time.LocalDate togetherSince) {
+		this.togetherSince = togetherSince;
+	}
+
+	/** Completó el formulario de bienvenida (nombre, género, nacimiento). */
+	public boolean hasProfile() {
+		return displayName != null && !displayName.isBlank() && gender != null && birthDate != null;
 	}
 
 	public java.time.ZoneId zone() {
