@@ -22,9 +22,19 @@ class CoupleController {
 	record Person(String name, String avatarUrl) {
 	}
 
-	/** state: "none" (sin código), "waiting" (esperando a la pareja) o "paired". */
+	/**
+	 * state: "none" (sin código), "waiting" (esperando a la pareja) o "paired".
+	 * profileComplete: false mientras falte el formulario de bienvenida.
+	 */
 	record MeResponse(String name, String email, String avatarUrl, String timezone, String state, String inviteCode,
-			Person partner) {
+			Person partner, String gender, java.time.LocalDate birthDate, Integer age,
+			java.time.LocalDate togetherSince, boolean profileComplete) {
+	}
+
+	record ProfileRequest(@NotBlank @jakarta.validation.constraints.Size(max = 60) String name,
+			@NotBlank @jakarta.validation.constraints.Pattern(regexp = "mujer|hombre|otro") String gender,
+			@jakarta.validation.constraints.NotNull @jakarta.validation.constraints.Past java.time.LocalDate birthDate,
+			@jakarta.validation.constraints.NotNull java.time.LocalDate togetherSince) {
 	}
 
 	record JoinRequest(@NotBlank String code) {
@@ -39,10 +49,13 @@ class CoupleController {
 
 	private final AppUserRepository users;
 
-	CoupleController(CoupleService couples, CurrentUser currentUser, AppUserRepository users) {
+	private final java.time.Clock clock;
+
+	CoupleController(CoupleService couples, CurrentUser currentUser, AppUserRepository users, java.time.Clock clock) {
 		this.couples = couples;
 		this.currentUser = currentUser;
 		this.users = users;
+		this.clock = clock;
 	}
 
 	@GetMapping("/me")
@@ -80,13 +93,30 @@ class CoupleController {
 		return build(user);
 	}
 
+	@org.springframework.web.bind.annotation.PutMapping("/me/profile")
+	MeResponse profile(@AuthenticationPrincipal OAuth2User principal, @Valid @RequestBody ProfileRequest body) {
+		var user = currentUser.of(principal);
+		if (body.birthDate().isBefore(java.time.LocalDate.of(1900, 1, 1))
+				|| body.togetherSince().isBefore(body.birthDate())
+				|| body.togetherSince().isAfter(user.today(clock))) {
+			throw new org.springframework.web.server.ResponseStatusException(
+					org.springframework.http.HttpStatus.BAD_REQUEST, "Revisá las fechas.");
+		}
+		couples.updateProfile(user, body.name(), body.gender(), body.birthDate(), body.togetherSince());
+		return build(user);
+	}
+
 	private MeResponse build(AppUser user) {
 		var couple = couples.findFor(user);
 		String state = couple.isEmpty() ? "none" : couple.get().isPaired() ? "paired" : "waiting";
 		Person partner = couple.flatMap(c -> c.partnerOf(user.getId())).flatMap(users::findById)
 			.map(p -> new Person(p.getDisplayName(), p.getAvatarUrl()))
 			.orElse(null);
+		Integer age = user.getBirthDate() == null ? null
+				: java.time.Period.between(user.getBirthDate(), user.today(clock)).getYears();
+		var togetherSince = couple.map(Couple::getTogetherSince).orElse(user.getTogetherSince());
 		return new MeResponse(user.getDisplayName(), user.getEmail(), user.getAvatarUrl(), user.getTimezone(), state,
-				couple.map(Couple::getInviteCode).orElse(null), partner);
+				couple.map(Couple::getInviteCode).orElse(null), partner, user.getGender(), user.getBirthDate(), age,
+				togetherSince, user.hasProfile() && togetherSince != null);
 	}
 }
