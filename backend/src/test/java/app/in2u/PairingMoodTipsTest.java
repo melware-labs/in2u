@@ -73,10 +73,11 @@ class PairingMoodTipsTest {
 			.andExpect(jsonPath("$.state").value("paired"))
 			.andExpect(jsonPath("$.partner.name").value("ana"));
 
-		// Un tercero no puede usar un código ya usado.
+		// Un tercero no puede usar un código ya usado, y el mensaje llega al cliente.
 		mvc.perform(post("/api/couple/join").with(as("intruso")).with(csrf())
 			.contentType(MediaType.APPLICATION_JSON).content("{\"code\":\"" + code + "\"}"))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("Código inválido o ya utilizado."));
 
 		// Ana registra un mal día; Raúl lo ve y recibe un consejo.
 		mvc.perform(put("/api/mood/today").with(as("ana")).with(csrf())

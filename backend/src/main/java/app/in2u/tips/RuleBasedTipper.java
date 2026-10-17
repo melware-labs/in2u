@@ -19,11 +19,11 @@ public final class RuleBasedTipper {
 
 		if (today.getMood() <= 2) {
 			return new TipSuggestion("preguntar-antes-de-resolver", authorName + " tuvo un día pesado",
-					"Pregúntale si quiere que la/lo escuches o que la/lo ayudes a resolver algo. Hoy escuchar vale más que arreglar.",
+					"Pregúntale qué necesita: que la persona sea escuchada o que busquen juntos una solución. Hoy escuchar vale más que arreglar.",
 					"reglas");
 		}
 		if (lowDays >= 3 || (today.getMood() == 3 && lowDays >= 2)) {
-			return new TipSuggestion("avisar-cuando-volves", authorName + " viene cansada/o hace varios días",
+			return new TipSuggestion("avisar-cuando-volves", authorName + " viene con poca energía hace varios días",
 					"Hoy suma lo predecible: avisa cuándo llegas y ofrece quitarle una tarea de encima.", "reglas");
 		}
 		if (today.getMood() >= 4 && wasLowBefore) {

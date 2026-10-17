@@ -93,3 +93,14 @@ docker compose up --build   # API en http://localhost:8080
 - Probar sin Google: `DEV_LOGIN=true` habilita `POST /api/dev/login` (solo local).
 - Consejos con IA gratis: poné `GEMINI_API_KEY` (https://aistudio.google.com/apikey). Sin key, se usan reglas según el ánimo.
 - Tests: `cd backend && TESTCONTAINERS_RYUK_DISABLED=true mvn test` (necesita Docker).
+
+### Frontend web (`web/`)
+
+```bash
+cd web && npm install
+npm run dev     # http://localhost:5173 (proxy a la API en :8080)
+npm test        # vitest
+npm run build   # typecheck + build de producción en web/dist
+```
+
+Con el backend corriendo con `DEV_LOGIN=true`, la pantalla de login en desarrollo permite entrar con cualquier email (útil para probar con dos "personas" en dos navegadores).
