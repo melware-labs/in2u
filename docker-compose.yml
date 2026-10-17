@@ -41,7 +41,11 @@ services:
       retries: 5
 
   web:
-    build: ./web
+    build:
+      context: ./web
+      args:
+        # Muestra el login de prueba en la pantalla de entrada (solo si DEV_LOGIN=true).
+        VITE_DEV_LOGIN: ${DEV_LOGIN:-false}
     depends_on:
       backend:
         condition: service_healthy
