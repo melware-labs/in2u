@@ -115,3 +115,30 @@ export function cycleGrid(
     return { ...cell, phase, isRegisteredStart: startSet.has(cell.dateKey) };
   });
 }
+
+/** Número de día local desde 1970: sirve para rotar contenido "del día" igual para los dos. */
+export function dayNumber(now: Date = new Date()): number {
+  return Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86_400_000);
+}
+
+/** Elige el elemento del día de una lista, el mismo para toda la pareja. */
+export function ofTheDay<T>(items: T[], now: Date = new Date()): T {
+  return items[dayNumber(now) % items.length];
+}
+
+/**
+ * Achica una foto en el navegador antes de subirla (lado mayor 1600 px, JPEG),
+ * así pesa unos cientos de KB en vez de varios MB.
+ */
+export async function resizeImage(file: File, maxSide = 1600, quality = 0.85): Promise<Blob> {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  return new Promise((resolve, reject) =>
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob'))), 'image/jpeg', quality),
+  );
+}

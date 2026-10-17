@@ -1,13 +1,13 @@
 /**
- * Tema de colores (paletas pastel) y modo día/noche. Se guarda en este
+ * Tema de colores (carmesí de entrada, o una paleta pastel) y modo día/noche. Se guarda en este
  * navegador; "auto" sigue el modo del sistema.
  */
-export type ThemeName = 'rosa' | 'lavanda' | 'menta' | 'celeste' | 'durazno';
+export type ThemeName = 'carmesi' | 'lavanda' | 'menta' | 'celeste' | 'durazno';
 export type Mode = 'auto' | 'light' | 'dark';
 
 /** Color de muestra de cada paleta (su --primary en styles.css). */
 export const THEMES: { id: ThemeName; color: string }[] = [
-  { id: 'rosa', color: '#d9a0b8' },
+  { id: 'carmesi', color: '#ab2222' },
   { id: 'lavanda', color: '#b9a3e3' },
   { id: 'menta', color: '#8fd0b5' },
   { id: 'celeste', color: '#9cc8ec' },
@@ -36,7 +36,7 @@ function write(key: string, value: string) {
 
 export function savedTheme(): ThemeName {
   const v = read(THEME_KEY);
-  return THEMES.some((t) => t.id === v) ? (v as ThemeName) : 'rosa';
+  return THEMES.some((t) => t.id === v) ? (v as ThemeName) : 'carmesi'; // incluye a quien tenía guardado el viejo "rosa"
 }
 
 export function savedMode(): Mode {

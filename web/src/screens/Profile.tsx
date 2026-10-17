@@ -29,45 +29,47 @@ export function Profile({
     <>
       <h1>{t.perfil.title}</h1>
 
-      <section className="card">
-        <p className="kicker">{t.perfil.account}</p>
-        <h2>{me.name ?? me.email}</h2>
-        {me.name && me.email && <p className="muted">{me.email}</p>}
-        {editing ? (
-          <ProfileForm
-            me={me}
-            onCancel={() => setEditing(false)}
-            onSaved={(updated) => {
-              onChange(updated);
-              setEditing(false);
-            }}
-          />
-        ) : (
-          <>
-            <p className="muted small">
-              {[me.gender && t.profile.genders[me.gender], me.age != null && t.profile.age(me.age)]
-                .filter(Boolean)
-                .join(' · ')}
-            </p>
-            {me.togetherSince && (
+      <div className="grid-cards">
+        <section className="card">
+          <p className="kicker">{t.perfil.account}</p>
+          <h2>{me.name ?? me.email}</h2>
+          {me.name && me.email && <p className="muted">{me.email}</p>}
+          {editing ? (
+            <ProfileForm
+              me={me}
+              onCancel={() => setEditing(false)}
+              onSaved={(updated) => {
+                onChange(updated);
+                setEditing(false);
+              }}
+            />
+          ) : (
+            <>
               <p className="muted small">
-                {t.nosotros.since(parseLocalDate(me.togetherSince).toLocaleDateString(locale, { dateStyle: 'long' }))}
+                {[me.gender && t.profile.genders[me.gender], me.age != null && t.profile.age(me.age)]
+                  .filter(Boolean)
+                  .join(' · ')}
               </p>
-            )}
-            <button className="btn secondary" onClick={() => setEditing(true)}>
-              {t.profile.edit}
-            </button>
-          </>
-        )}
-      </section>
+              {me.togetherSince && (
+                <p className="muted small">
+                  {t.nosotros.since(parseLocalDate(me.togetherSince).toLocaleDateString(locale, { dateStyle: 'long' }))}
+                </p>
+              )}
+              <button className="btn secondary" onClick={() => setEditing(true)}>
+                {t.profile.edit}
+              </button>
+            </>
+          )}
+        </section>
 
-      <section className="card">
-        <p className="kicker">{t.perfil.partner}</p>
-        <h2>{me.partner?.name ?? '—'}</h2>
-        <p className="muted small">
-          {t.perfil.coupleCode}: {me.inviteCode}
-        </p>
-      </section>
+        <section className="card">
+          <p className="kicker">{t.perfil.partner}</p>
+          <h2>{me.partner?.name ?? '—'}</h2>
+          <p className="muted small">
+            {t.perfil.coupleCode}: {me.inviteCode}
+          </p>
+        </section>
+      </div>
 
       <ThemePicker />
 

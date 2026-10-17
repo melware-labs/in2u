@@ -75,21 +75,63 @@ export const ChevronIcon = ({ dir }: { dir: 'left' | 'right' }) => (
   </Svg>
 );
 
-// Dos corazones unidos por un lazo, como el trazo rojo de la portada de Devyn.
-const heart = (x: number, y: number, r: number) =>
-  `M${x} ${y + r * 1.1}C${x - r * 1.6} ${y} ${x - r * 1.2} ${y - r * 1.2} ${x} ${y - r * 0.5}` +
-  `C${x + r * 1.2} ${y - r * 1.2} ${x + r * 1.6} ${y} ${x} ${y + r * 1.1}Z`;
+export const ChatIcon = () => (
+  <Svg>
+    <path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.55L3 20.5l1.45-5.6A8.5 8.5 0 1 1 21 11.5Z" />
+    <path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01" strokeWidth={2.2} />
+  </Svg>
+);
 
+export const AlbumIcon = () => (
+  <Svg>
+    <rect x="3" y="3" width="18" height="18" rx="4" />
+    <circle cx="8.5" cy="8.5" r="1.8" />
+    <path d="m21 15-4.5-4.5L6 21" />
+  </Svg>
+);
+
+export const GameIcon = () => (
+  <Svg>
+    <rect x="3" y="3" width="18" height="18" rx="4" />
+    <path d="M8 8h.01M16 8h.01M12 12h.01M8 16h.01M16 16h.01" strokeWidth={2.6} />
+  </Svg>
+);
+
+export const MoreIcon = () => (
+  <Svg>
+    <path d="M5 12h.01M12 12h.01M19 12h.01" strokeWidth={3} />
+  </Svg>
+);
+
+export const SendIcon = () => (
+  <Svg size={20}>
+    <path d="M21 3 10 14" />
+    <path d="m21 3-6.5 18-4.5-7-7-4.5L21 3Z" />
+  </Svg>
+);
+
+export const HeartIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4 7 4c2.2 0 3.6 1.2 5 3 1.4-1.8 2.8-3 5-3 4 0 6.1 4.2 4.6 7.7C19.5 16.4 12 21 12 21Z" />
+  </svg>
+);
+
+// Logo minimalista: dos globitos de mensaje que se cruzan.
 export const HeartsLoop = () => (
-  <svg className="hearts-loop" viewBox="0 0 240 150" fill="none" aria-hidden>
+  <svg className="hearts-loop" viewBox="0 0 120 100" fill="none" aria-hidden>
     <path
-      d="M48 104C30 60 70 10 120 10s92 50 72 94c-14 30-56 42-72 42s-58-12-72-42Z"
+      d="M28 10H52A20 20 0 0 1 72 30V36A20 20 0 0 1 52 56H42L28 68V56A20 20 0 0 1 8 36V30A20 20 0 0 1 28 10Z"
       stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
+      strokeWidth={4}
+      strokeLinejoin="round"
     />
-    <path d={heart(48, 92, 20)} stroke="currentColor" strokeWidth={2} strokeLinejoin="round" />
-    <path d={heart(192, 92, 20)} stroke="currentColor" strokeWidth={2} strokeLinejoin="round" />
-    <path d={heart(120, 76, 14)} fill="currentColor" opacity={0.85} />
+    <path
+      d="M68 36H92A20 20 0 0 1 112 56V62A20 20 0 0 1 92 82V94L78 82H68A20 20 0 0 1 48 62V56A20 20 0 0 1 68 36Z"
+      fill="currentColor"
+      stroke="var(--bg)"
+      strokeWidth={4}
+      strokeLinejoin="round"
+    />
+    <path d="M80 69C71 63 68 58 68 54a6 6 0 0 1 12-2a6 6 0 0 1 12 2c0 4-3 9-12 15Z" fill="var(--bg)" />
   </svg>
 );

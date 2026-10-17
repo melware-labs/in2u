@@ -25,13 +25,15 @@ export function TipsScreen({ tip }: { tip: TodayTip | null }) {
       )}
 
       <p className="kicker">{t.consejos.general}</p>
-      {TIPS.map((item) => (
-        <article key={item.key} className="card">
-          <p className="kicker">{item.kicker}</p>
-          <h2>{item.title}</h2>
-          <p className="muted">{item.body}</p>
-        </article>
-      ))}
+      <div className="grid-cards">
+        {TIPS.map((item) => (
+          <article key={item.key} className="card">
+            <p className="kicker">{item.kicker}</p>
+            <h2>{item.title}</h2>
+            <p className="muted">{item.body}</p>
+          </article>
+        ))}
+      </div>
     </>
   );
 }
