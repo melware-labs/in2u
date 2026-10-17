@@ -4,7 +4,7 @@ import { api, type Checkin, type CoupleEvent, type GameState, type Me, type Part
 import { Emoji } from '../Emoji';
 import { locale, moodEmoji, t } from '../i18n';
 import { ChatIcon, GameIcon, IdeaIcon, PlusCircleIcon } from '../icons';
-import { daysSince, firstName, localIsoDate, ofTheDay, parseLocalDate, weekDays } from '../lib';
+import { daysSince, firstName, localIsoDate, ofTheDay, parseLocalDate } from '../lib';
 import { DAILY_QUESTIONS } from '../questions';
 import { CARE_TIPS, tipByKey } from '../tips';
 import { PhotoCard } from './Album';
@@ -123,7 +123,7 @@ export function CycleCareCard({ partner, cycle }: { partner: string; cycle: Part
 function DaysTogetherCard({ since }: { since: string }) {
   const days = daysSince(since);
   return (
-    <section className="card sky">
+    <section className="card">
       <p className="kicker">
         {t.nosotros.since(parseLocalDate(since).toLocaleDateString(locale, { dateStyle: 'long' }))}
       </p>
@@ -224,23 +224,44 @@ export function Home({
 
       {me.togetherSince && <DaysTogetherCard since={me.togetherSince} />}
 
-      <div className="week-strip" role="tablist" aria-label={t.nosotros.week}>
-        {days.map((d) => {
-          const key = localIsoDate(d);
-          return (
-            <button
-              key={key}
-              role="tab"
-              aria-selected={key === selected}
-              className={`wk-day${key === today ? ' today' : ''}`}
-              onClick={() => setSelected(key)}
-            >
-              <span className="wk-num">{d.getDate()}</span>
-              <span className="wk-name cap">{d.toLocaleDateString(undefined, { weekday: 'short' }).replace('.', '')}</span>
-              <span className={`wk-dot${eventsOn(key).length ? ' on' : ''}`} aria-hidden />
-            </button>
-          );
-        })}
+      <div className="week-strip-wrap">
+        <div className="week-strip" role="tablist" aria-label={t.nosotros.week}>
+          {days.map((d) => {
+            const key = localIsoDate(d);
+            const partnerCheckin = week.find((c) => !c.mine && c.date === key);
+            const myCheckin = week.find((c) => c.mine && c.date === key);
+            const hasEvents = eventsOn(key).length > 0;
+            return (
+              <button
+                key={key}
+                role="tab"
+                aria-selected={key === selected}
+                className={`wk-day${key === today ? ' today' : ''}`}
+                onClick={() => setSelected(key)}
+              >
+                <span className="wk-num">{d.getDate()}</span>
+                <span className="wk-name cap">{d.toLocaleDateString(undefined, { weekday: 'short' }).replace('.', '')}</span>
+                <div className="wk-moods" aria-hidden>
+                  <span className="wk-em" title={`${partnerName}: ${partnerCheckin ? t.moods[partnerCheckin.mood] : 'Sin registro'}`}>
+                    {partnerCheckin ? <Emoji char={moodEmoji(partnerCheckin.mood)} /> : <span className="wk-empty-dot" />}
+                  </span>
+                  <span className="wk-em" title={`${t.nosotros.you}: ${myCheckin ? t.moods[myCheckin.mood] : 'Sin registro'}`}>
+                    {myCheckin ? <Emoji char={moodEmoji(myCheckin.mood)} /> : <span className="wk-empty-dot" />}
+                  </span>
+                </div>
+                {hasEvents && <span className="wk-dot on" aria-hidden />}
+              </button>
+            );
+          })}
+        </div>
+        <div className="wk-legend">
+          <span className="wk-legend-item">
+            <span className="wk-badge">{partnerInitial}</span> {partnerName}
+          </span>
+          <span className="wk-legend-item">
+            <span className="wk-badge mine">{myInitial}</span> {t.nosotros.you}
+          </span>
+        </div>
       </div>
 
       <div className="cols">
@@ -372,25 +393,7 @@ export function Home({
 
           {partnerCycle && <CycleCareCard partner={partnerName} cycle={partnerCycle} />}
 
-          <section className="card strip">
-            <p className="kicker">{t.nosotros.week}</p>
-            <div className="week">
-              {weekDays(week).map((d) => (
-                <div key={d.date} className={`day${d.isToday ? ' today' : ''}`}>
-                  <span className="wd">{t.weekdays[d.weekday]}</span>
-                  <span className="em" aria-label={d.partner ? t.moods[d.partner.mood] : undefined}>
-                    {d.partner ? <Emoji char={moodEmoji(d.partner.mood)} /> : '·'}
-                  </span>
-                  <span className="em" aria-label={d.mine ? t.moods[d.mine.mood] : undefined}>
-                    {d.mine ? <Emoji char={moodEmoji(d.mine.mood)} /> : '·'}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <p className="muted small">
-              {partnerName} · {t.nosotros.you}
-            </p>
-          </section>
+
         </div>
       </div>
 

@@ -1,5 +1,8 @@
 package app.in2u.config;
 
+import java.time.Duration;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -10,12 +13,13 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 
 /**
- * Sesión con cookie (login con Google vía OAuth2) + CSRF en modo SPA: el
- * frontend lee la cookie XSRF-TOKEN y la manda en el header X-XSRF-TOKEN.
- * Las rutas /api/** responden 401 en vez de redirigir al login de Google,
- * para que el frontend decida qué mostrar.
+ * Sesión con cookie persistente en Postgres (Spring Session JDBC) + CSRF en modo SPA:
+ * el frontend lee la cookie XSRF-TOKEN y la manda en el header X-XSRF-TOKEN.
+ * La cookie de sesión dura 90 días para que la cuenta se mantenga abierta al cerrar la app.
  */
 @Configuration
 public class SecurityConfig {
@@ -41,5 +45,16 @@ public class SecurityConfig {
 	@Bean
 	SecurityContextRepository securityContextRepository() {
 		return new HttpSessionSecurityContextRepository();
+	}
+
+	@Bean
+	CookieSerializer cookieSerializer(@Value("${server.servlet.session.cookie.secure:false}") boolean secure) {
+		var serializer = new DefaultCookieSerializer();
+		serializer.setCookieName("JSESSIONID");
+		serializer.setCookieMaxAge((int) Duration.ofDays(90).toSeconds());
+		serializer.setSameSite("Lax");
+		serializer.setUseSecureCookie(secure);
+		serializer.setUseHttpOnlyCookie(true);
+		return serializer;
 	}
 }
