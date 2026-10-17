@@ -21,10 +21,13 @@ public class CoupleService {
 
 	private final CoupleRepository couples;
 
+	private final JoinAttemptLimiter limiter;
+
 	private final SecureRandom random = new SecureRandom();
 
-	public CoupleService(CoupleRepository couples) {
+	public CoupleService(CoupleRepository couples, JoinAttemptLimiter limiter) {
 		this.couples = couples;
+		this.limiter = limiter;
 	}
 
 	@Transactional(readOnly = true)
@@ -56,6 +59,10 @@ public class CoupleService {
 	@Transactional
 	public Couple join(AppUser user, String rawCode) {
 		String code = rawCode == null ? "" : rawCode.trim().toUpperCase();
+		if (limiter.blocked(user.getId())) {
+			throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS,
+					"Demasiados intentos. Prueba de nuevo en unos minutos.");
+		}
 		Optional<Couple> existing = findFor(user);
 		if (existing.isPresent()) {
 			if (existing.get().isPaired()) {
@@ -69,6 +76,7 @@ public class CoupleService {
 			couples.flush();
 		}
 		if (couples.claim(code, user.getId()) == 0) {
+			limiter.recordFailure(user.getId());
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Código inválido o ya utilizado.");
 		}
 		return couples.findByInviteCode(code).orElseThrow();

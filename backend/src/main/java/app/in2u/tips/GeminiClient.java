@@ -20,8 +20,10 @@ import app.in2u.mood.MoodCheckin;
 
 /**
  * Elige el consejo con Gemini (plan gratuito de Google AI Studio, sin
- * tarjeta). Privacidad: la nota del check-in, potencialmente íntima, viaja a
- * la API de Google; la key vive solo en el backend (variable de entorno).
+ * tarjeta). Privacidad: en el plan gratuito Google puede usar lo que se envía
+ * para mejorar sus productos, así que por defecto solo viajan los números del
+ * ánimo y NO las notas escritas (son íntimas). Enviarlas es opt-in con
+ * GEMINI_SEND_NOTES=true. La key vive solo en el backend.
  */
 @Component
 public class GeminiClient {
@@ -58,7 +60,7 @@ public class GeminiClient {
 				.uri("/v1beta/models/{model}:generateContent", config.model())
 				// La key va en header, no en la URL, para que no quede en logs.
 				.header("x-goog-api-key", config.apiKey())
-				.body(requestBody(authorName, recent))
+				.body(requestBody(authorName, recent, config.sendNotes()))
 				.retrieve()
 				.body(JsonNode.class);
 			return parse(response, authorName);
@@ -70,11 +72,11 @@ public class GeminiClient {
 		}
 	}
 
-	static Map<String, Object> requestBody(String authorName, List<MoodCheckin> recent) {
+	static Map<String, Object> requestBody(String authorName, List<MoodCheckin> recent, boolean sendNotes) {
 		String history = java.util.stream.IntStream.range(0, recent.size()).mapToObj(i -> {
 			MoodCheckin c = recent.get(i);
 			String when = i == 0 ? "Hoy" : "hace " + i + " check-in(s)";
-			String note = c.getNote() == null ? "" : " · nota: \"" + c.getNote().replace("\"", "'") + "\"";
+			String note = !sendNotes || c.getNote() == null ? "" : " · nota: \"" + c.getNote().replace("\"", "'") + "\"";
 			return when + " · ánimo " + c.getMood() + "/6" + note;
 		}).collect(Collectors.joining("\n"));
 		String catalog = TipCatalog.ENTRIES.stream().map(e -> "- " + e.key() + ": " + e.summary())

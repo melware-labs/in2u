@@ -35,6 +35,8 @@ class DevLoginController {
 
 	DevLoginController(SecurityContextRepository contextRepository) {
 		this.contextRepository = contextRepository;
+		org.slf4j.LoggerFactory.getLogger(DevLoginController.class)
+			.warn("DEV_LOGIN activo: cualquiera puede entrar con cualquier email. No usar en producción.");
 	}
 
 	record DevLoginRequest(@NotBlank @Email String email, String name) {

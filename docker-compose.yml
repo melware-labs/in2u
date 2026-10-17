@@ -28,6 +28,8 @@ services:
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-sin-configurar}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       GEMINI_MODEL: ${GEMINI_MODEL:-gemini-flash-latest}
+      GEMINI_SEND_NOTES: ${GEMINI_SEND_NOTES:-false}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8080}
       DEV_LOGIN: ${DEV_LOGIN:-false}
     ports:
