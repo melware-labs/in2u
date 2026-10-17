@@ -160,7 +160,7 @@ empezar cada sesión nueva sobre este proyecto.
 - **El build de Vercel puede servir un bundle con texto/código viejo aunque
   el código fuente en git ya esté corregido** — pasó justo después de que
   esta sesión arregló el voseo y la otra sesión (concurrente) commiteara
-  encima: el deploy siguiente seguía mostrando "no tenés pareja vinculada"
+  encima: el deploy siguiente seguía mostrando "no tienes pareja vinculada"
   en pantalla. No era un problema de caché del navegador (probado con
   `location.reload(true)`, sin efecto) ni de la CDN — era el propio bundle
   JS el que tenía el string viejo, confirmado descargando el `.js` real con
