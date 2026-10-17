@@ -4,6 +4,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
+ARG VITE_DEV_LOGIN=false
 RUN npm run build
 
 # Etapa 2: nginx sirve los estáticos y reenvía la API al backend.
