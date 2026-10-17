@@ -48,3 +48,55 @@ describe('helpers', () => {
     expect(firstName(null, 'Tu pareja')).toBe('Tu pareja');
   });
 });
+
+import { cycleGrid, monthGrid, parseLocalDate, phaseForOffset } from './lib';
+
+describe('monthGrid', () => {
+  it('empieza en lunes y termina en domingo, con semanas completas', () => {
+    const cells = monthGrid(2026, 9); // octubre 2026: el 1 es jueves, el 31 sábado
+    expect(cells[0].dateKey).toBe('2026-09-28'); // lunes
+    expect(cells[cells.length - 1].dateKey).toBe('2026-11-01'); // domingo
+    expect(cells.length % 7).toBe(0);
+    expect(cells.filter((c) => c.inMonth)).toHaveLength(31);
+  });
+
+  it('un mes que empieza en domingo arranca seis días antes', () => {
+    const cells = monthGrid(2026, 1); // febrero 2026: el 1 es domingo
+    expect(cells[0].dateKey).toBe('2026-01-26');
+  });
+
+  it('marca el día de hoy', () => {
+    const cells = monthGrid(2026, 9, new Date(2026, 9, 17));
+    expect(cells.filter((c) => c.isToday).map((c) => c.dateKey)).toEqual(['2026-10-17']);
+  });
+});
+
+describe('parseLocalDate', () => {
+  it('no corre el día por la zona horaria', () => {
+    const d = parseLocalDate('2026-10-17');
+    expect([d.getFullYear(), d.getMonth(), d.getDate()]).toEqual([2026, 9, 17]);
+  });
+});
+
+describe('ciclo', () => {
+  // Mismos límites que CyclePhaseCalculatorTest.java para un ciclo de 29 días con 5 de período.
+  it('phaseForOffset coincide con el backend', () => {
+    const at = (d: number) => phaseForOffset(d, 29, 5);
+    expect([at(0), at(4)]).toEqual(['menstrual', 'menstrual']);
+    expect([at(5), at(12)]).toEqual(['folicular', 'folicular']);
+    expect([at(13), at(16)]).toEqual(['ovulacion', 'ovulacion']);
+    expect([at(17), at(28)]).toEqual(['lutea', 'lutea']);
+  });
+
+  it('cycleGrid usa el período registrado más reciente como ancla y no extrapola hacia atrás', () => {
+    const cells = cycleGrid(2026, 9, ['2026-10-10'], 29, 5, new Date(2026, 9, 17));
+    const by = Object.fromEntries(cells.map((c) => [c.dateKey, c]));
+    expect(by['2026-10-09'].phase).toBeNull();
+    expect(by['2026-10-10'].phase).toBe('menstrual');
+    expect(by['2026-10-10'].isRegisteredStart).toBe(true);
+    expect(by['2026-10-15'].phase).toBe('folicular');
+    expect(by['2026-10-23'].phase).toBe('ovulacion');
+    expect(by['2026-10-27'].phase).toBe('lutea');
+    expect(by['2026-11-01'].phase).toBe('lutea');
+  });
+});
