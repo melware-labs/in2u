@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { api, SYMPTOMS, type Me, type OwnCycle, type Symptom, type Visibility } from '../api';
 import { locale, t } from '../i18n';
+import { ChevronIcon, MoonIcon } from '../icons';
 import { cycleGrid, firstName, localIsoDate, parseLocalDate } from '../lib';
 
 const INTL = locale === 'en' ? 'en-US' : 'es-ES';
@@ -97,10 +98,17 @@ export function Cycle({ me }: { me: Me }) {
       </section>
 
       <section className="card strip">
-        <div className="row between">
-          <button className="btn link" onClick={() => shift(-1)} aria-label={t.calendario.prev}>‹</button>
+        <div className="cal-head">
+          <span className="badge" aria-hidden>
+            <MoonIcon />
+          </span>
           <h2 className="cap">{monthLabel}</h2>
-          <button className="btn link" onClick={() => shift(1)} aria-label={t.calendario.next}>›</button>
+          <button className="round-btn" onClick={() => shift(-1)} aria-label={t.calendario.prev}>
+            <ChevronIcon dir="left" />
+          </button>
+          <button className="round-btn" onClick={() => shift(1)} aria-label={t.calendario.next}>
+            <ChevronIcon dir="right" />
+          </button>
         </div>
         <div className="cal-grid">
           {t.weekdaysMonFirst.map((w, i) => (

@@ -1,4 +1,5 @@
 import type { Checkin, Me, PartnerCycle } from '../api';
+import { Emoji } from '../Emoji';
 import { moodEmoji, t } from '../i18n';
 import { firstName, localIsoDate, weekDays } from '../lib';
 import { CARE_TIPS } from '../tips';
@@ -65,13 +66,17 @@ export function Home({
   return (
     <>
       <header className="row between" style={{ marginBottom: 8 }}>
-        <h1 style={{ maxWidth: 230 }}>
-          {greeting()},
-          <br />
-          {firstName(me.name, '')}
-        </h1>
-        <div className="avatar" aria-hidden>
-          {(firstName(me.name, '·')[0] ?? '·').toUpperCase()}
+        <div className="stack" style={{ gap: 4 }}>
+          <h1>
+            {greeting()}, {firstName(me.name, '')}
+          </h1>
+          <p className="couple">
+            {firstName(me.name, '')} <span className="heart">♥</span> {partnerName}
+          </p>
+        </div>
+        <div className="avatars" aria-hidden>
+          <div className="avatar">{(firstName(me.name, '·')[0] ?? '·').toUpperCase()}</div>
+          <div className="avatar partner">{(partnerName[0] ?? '·').toUpperCase()}</div>
         </div>
       </header>
 
@@ -80,7 +85,7 @@ export function Home({
         {partner ? (
           <div className="mood-row">
             <span className="mood-big" aria-hidden>
-              {moodEmoji(partner.mood)}
+              <Emoji char={moodEmoji(partner.mood)} />
             </span>
             <div>
               <h2>{t.moods[partner.mood]}</h2>
@@ -97,7 +102,7 @@ export function Home({
         {mine ? (
           <div className="mood-row">
             <span className="mood-big" aria-hidden>
-              {moodEmoji(mine.mood)}
+              <Emoji char={moodEmoji(mine.mood)} />
             </span>
             <div style={{ flex: 1 }}>
               <h2>{t.moods[mine.mood]}</h2>
@@ -127,10 +132,10 @@ export function Home({
             <div key={d.date} className={`day${d.isToday ? ' today' : ''}`}>
               <span className="wd">{t.weekdays[d.weekday]}</span>
               <span className="em" aria-label={d.partner ? t.moods[d.partner.mood] : undefined}>
-                {d.partner ? moodEmoji(d.partner.mood) : '·'}
+                {d.partner ? <Emoji char={moodEmoji(d.partner.mood)} /> : '·'}
               </span>
               <span className="em" aria-label={d.mine ? t.moods[d.mine.mood] : undefined}>
-                {d.mine ? moodEmoji(d.mine.mood) : '·'}
+                {d.mine ? <Emoji char={moodEmoji(d.mine.mood)} /> : '·'}
               </span>
             </div>
           ))}
