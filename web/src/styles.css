@@ -8,6 +8,7 @@
  * data-mode se sigue al sistema). Ver theme.ts.
  */
 @import '@fontsource-variable/nunito-sans';
+@import '@fontsource/baloo-2/800.css';
 
 :root {
   /* Paleta "carmesí" (la de entrada): rojo #AB2222 sobre blanco.
@@ -125,8 +126,8 @@ button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 h1, h2, h3, p { margin: 0; }
-h1 { font-size: 26px; font-weight: 800; line-height: 1.2; letter-spacing: -0.01em; }
-h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
+h1 { font-size: 26px; font-weight: 600; line-height: 1.2; letter-spacing: -0.01em; }
+h2 { font-size: 17px; font-weight: 500; line-height: 1.3; }
 
 .app {
   position: relative;
@@ -171,7 +172,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 
 .muted { color: var(--text-2); }
 .small { font-size: 13px; }
-.kicker { font-size: 13px; font-weight: 600; color: var(--text-2); letter-spacing: 0.2px; }
+.kicker { font-size: 13px; font-weight: 500; color: var(--text-2); letter-spacing: 0.2px; }
 .error { color: var(--error); font-size: 14px; }
 
 /* Botón principal: píldora del color del tema, texto blanco en Nunito Sans Medium. */
@@ -193,7 +194,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 }
 .btn:disabled { opacity: 0.45; cursor: default; }
 .btn.secondary { background: transparent; border-color: var(--line); color: var(--line); }
-.btn.link { background: none; border: 0; color: var(--line); padding: 8px; font-weight: 600; font-size: 15px; }
+.btn.link { background: none; border: 0; color: var(--line); padding: 8px; font-weight: 500; font-size: 15px; }
 .btn.small-btn { padding: 8px 16px; font-size: 14px; }
 .btn.white { background: var(--surface); color: var(--text); border-color: var(--border); }
 
@@ -216,7 +217,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 }
 .input:focus { border-color: var(--primary); outline: none; }
 .input::placeholder { color: var(--gray); }
-.input.code { text-align: center; letter-spacing: 0.3em; text-transform: uppercase; font-size: 22px; font-weight: 600; }
+.input.code { text-align: center; letter-spacing: 0.3em; text-transform: uppercase; font-size: 22px; font-weight: 500; }
 
 .row { display: flex; align-items: center; gap: 12px; }
 .row.between { justify-content: space-between; }
@@ -224,9 +225,10 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 
 /* Logo en sans serif redondeada, del color de la marca. */
 .brand {
-  font-size: 56px;
+  font-family: 'Baloo 2', 'Nunito Sans Variable', system-ui, sans-serif;
+  font-size: 64px;
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.01em;
   line-height: 1;
   color: var(--brand);
 }
@@ -237,7 +239,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
   width: 44px; height: 44px; border-radius: 50%;
   background: var(--fill);
   color: var(--on-fill);
-  font-weight: 700; font-size: 18px;
+  font-weight: 600; font-size: 18px;
   display: grid; place-items: center;
   box-shadow: 0 0 0 3px var(--bg);
   flex: none;
@@ -279,7 +281,7 @@ button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
   gap: 2px;
   padding: 6px 2px 4px;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.2;
 }
 .nav button .label { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -297,7 +299,7 @@ button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
   border: 1px solid var(--border); background: var(--surface);
 }
 .week .day.today { background: var(--fill-accent); border-color: var(--fill-accent); }
-.week .day.today .wd { color: var(--on-fill); font-weight: 600; }
+.week .day.today .wd { color: var(--on-fill); font-weight: 500; }
 .week .wd { font-size: 12px; color: var(--text-2); }
 .week .em { font-size: 20px; line-height: 1.1; min-height: 22px; }
 
@@ -308,7 +310,7 @@ button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
   text-align: left; font-size: 17px; color: var(--text);
 }
 .mood-option .em { font-size: 28px; }
-.mood-option[aria-pressed='true'] { background: var(--fill); border-color: var(--fill); color: var(--on-fill); font-weight: 600; }
+.mood-option[aria-pressed='true'] { background: var(--fill); border-color: var(--fill); color: var(--on-fill); font-weight: 500; }
 
 .sheet-bg {
   position: fixed; inset: 0; background: var(--overlay);
@@ -328,7 +330,7 @@ button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
 }
 
 .code-box {
-  font-size: 34px; letter-spacing: 0.25em; text-align: center; font-weight: 700;
+  font-size: 34px; letter-spacing: 0.25em; text-align: center; font-weight: 600;
   background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px;
 }
 
@@ -374,8 +376,8 @@ button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
 .cal-day.phase-lutea { background: var(--primary-soft); }
 .cal-day.today { box-shadow: inset 0 0 0 2px var(--ring); }
 .cal-day.phase-menstrual.today, .cal-day.phase-folicular.today,
-.cal-day.phase-ovulacion.today, .cal-day.phase-lutea.today { color: var(--ring); font-weight: 700; }
-.cal-day.start { box-shadow: inset 0 0 0 2px var(--error); font-weight: 800; }
+.cal-day.phase-ovulacion.today, .cal-day.phase-lutea.today { color: var(--ring); font-weight: 600; }
+.cal-day.start { box-shadow: inset 0 0 0 2px var(--error); font-weight: 600; }
 .cal-day.today.start { box-shadow: inset 0 0 0 2px var(--ring); }
 
 /* Eventos: tarjetas con borde y tinte, como "Movie Night" y los estados del diseño. */
@@ -401,7 +403,7 @@ button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
   border: 1px solid var(--line); border-radius: 100px; background: var(--surface);
   padding: 7px 14px; font-size: 14px; color: var(--line);
 }
-.chip[aria-pressed='true'] { background: var(--fill); color: var(--on-fill); font-weight: 600; }
+.chip[aria-pressed='true'] { background: var(--fill); color: var(--on-fill); font-weight: 500; }
 
 .cap::first-letter { text-transform: uppercase; }
 
@@ -419,32 +421,32 @@ button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
   display: grid; place-items: center; color: #fff;
 }
-.swatch[aria-checked='true'] { color: var(--text); font-weight: 700; }
+.swatch[aria-checked='true'] { color: var(--text); font-weight: 600; }
 .swatch[aria-checked='true'] .circle { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--text); }
 .segmented { display: flex; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 4px; }
 .segmented button {
   flex: 1; border: 0; border-radius: 100px; background: none; padding: 8px 10px;
   font-size: 14px; color: var(--text-2);
 }
-.segmented button[aria-checked='true'] { background: var(--fill); color: var(--on-fill); font-weight: 700; }
+.segmented button[aria-checked='true'] { background: var(--fill); color: var(--on-fill); font-weight: 600; }
 
 /* Inicio, al estilo de la app de calendario: saludo, semana, agenda con tarjetas de color y recordatorios. */
 .home-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.home-title { font-size: 28px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; max-width: 14em; }
+.home-title { font-size: 28px; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; max-width: 14em; }
 .profile-btn {
   width: 52px; height: 52px; flex: none; border: 0; padding: 0;
-  border-radius: 18px; background: var(--fill); color: var(--on-fill);
-  font-size: 22px; font-weight: 800; display: grid; place-items: center;
+  border-radius: 50%; overflow: hidden; background: var(--fill); color: var(--on-fill);
+  font-size: 22px; font-weight: 600; display: grid; place-items: center;
   box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--border);
 }
-.section-title { font-size: 18px; font-weight: 800; letter-spacing: -0.01em; }
+.section-title { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
 
 .week-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
 .wk-day {
   display: flex; flex-direction: column; align-items: center; gap: 2px;
   padding: 10px 0 8px; border: 0; border-radius: 18px; background: transparent; color: var(--text);
 }
-.wk-num { font-size: 18px; font-weight: 800; line-height: 1.1; }
+.wk-num { font-size: 18px; font-weight: 600; line-height: 1.1; }
 .wk-name { font-size: 12px; color: var(--text-2); }
 .wk-dot { width: 5px; height: 5px; border-radius: 50%; background: transparent; margin-top: 2px; }
 .wk-dot.on { background: var(--text-2); }
@@ -463,14 +465,14 @@ button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
 }
 .event-card.red { background: var(--fill); color: var(--on-fill); }
 .event-card.navy { background: var(--navy); color: var(--on-navy); }
-.event-title { font-size: 15px; font-weight: 700; line-height: 1.3; }
+.event-title { font-size: 15px; font-weight: 600; line-height: 1.3; }
 .event-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .event-time { font-size: 12px; opacity: 0.85; }
 .mini-avatars { display: flex; }
 .mini-avatars span {
   width: 24px; height: 24px; border-radius: 50%;
   background: rgba(255, 255, 255, 0.92); color: var(--navy);
-  font-size: 11px; font-weight: 800; display: grid; place-items: center;
+  font-size: 11px; font-weight: 600; display: grid; place-items: center;
 }
 .mini-avatars span + span { margin-left: -8px; }
 .agenda-empty { background: var(--card); border-radius: var(--radius-lg); padding: 16px; display: flex; flex-direction: column; gap: 4px; }
@@ -486,8 +488,8 @@ button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
 }
 .reminder-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .reminder-kicker { font-size: 12px; opacity: 0.75; }
-.reminder-title { font-size: 15px; font-weight: 700; line-height: 1.3; }
-.btn.big { width: 100%; padding: 18px 24px; font-size: 18px; font-weight: 700; margin-top: 4px; }
+.reminder-title { font-size: 15px; font-weight: 600; line-height: 1.3; }
+.btn.big { width: 100%; padding: 18px 24px; font-size: 18px; font-weight: 600; margin-top: 4px; }
 
 /* Menú "Más": en el celular las secciones extra van en una hoja. */
 .nav button.unread { position: relative; }
@@ -500,7 +502,7 @@ button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
 .more-item {
   display: flex; align-items: center; gap: 12px;
   border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card);
-  padding: 14px; font-size: 16px; font-weight: 600; color: var(--text); text-align: left;
+  padding: 14px; font-size: 16px; font-weight: 500; color: var(--text); text-align: left;
 }
 .more-item[aria-current='page'] { border-color: var(--line); background: var(--primary-soft); }
 .more-icon {
@@ -523,7 +525,7 @@ button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
   padding: 40px 12px 12px;
   background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.55));
 }
-.photo-title { font-weight: 700; font-size: 16px; line-height: 1.2; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); }
+.photo-title { font-weight: 600; font-size: 16px; line-height: 1.2; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); }
 .photo-heart {
   margin-left: auto; flex: none;
   width: 24px; height: 24px; border-radius: 50%;
@@ -542,7 +544,7 @@ button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
   border-radius: 28px; background: var(--primary-soft); display: block;
 }
 .photo-text { gap: 14px; }
-.photo-heading { font-size: 32px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; }
+.photo-heading { font-size: 32px; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; }
 .photo-description { font-size: 16px; line-height: 1.6; white-space: pre-line; }
 .btn.pill-dark { background: var(--deep); color: var(--on-deep); padding: 12px 22px; font-size: 16px; }
 .btn.link.danger { color: var(--error); }
@@ -569,8 +571,8 @@ textarea.input { resize: vertical; min-height: 44px; }
 
 /* Tarjeta de próximo plan: es un botón que lleva al calendario. */
 .bubble.plan { width: 100%; text-align: left; color: var(--text); font: inherit; }
-.bubble.plan h2 { font-weight: 700; }
-.question { font-size: 19px; font-weight: 700; line-height: 1.35; }
+.bubble.plan h2 { font-weight: 600; }
+.question { font-size: 19px; font-weight: 600; line-height: 1.35; }
 
 /* Chat */
 .chat { display: flex; flex-direction: column; gap: 12px; min-height: calc(100vh - var(--nav-h) - 120px); }
@@ -601,9 +603,9 @@ textarea.input { resize: vertical; min-height: 44px; }
 /* Juego */
 .score { flex-direction: row; justify-content: space-around; text-align: center; gap: 12px; }
 .score > div { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-.score-num { font-size: 26px; font-weight: 800; }
+.score-num { font-size: 26px; font-weight: 600; }
 .pill.tag { align-self: flex-start; border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
-.mark { font-weight: 800; }
+.mark { font-weight: 600; }
 .mark.ok { color: var(--success); }
 .mark.ko { color: var(--error); }
 
@@ -660,7 +662,8 @@ textarea.input { resize: vertical; min-height: 44px; }
   }
   .nav-brand {
     display: block;
-    font-size: 30px; font-weight: 800; letter-spacing: -0.03em;
+    font-family: 'Baloo 2', 'Nunito Sans Variable', system-ui, sans-serif;
+    font-size: 34px; font-weight: 800; letter-spacing: -0.01em;
     color: var(--brand);
     padding: 0 12px 20px;
   }
