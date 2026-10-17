@@ -1,5 +1,6 @@
 import { api, type Me } from '../api';
 import { t } from '../i18n';
+import { ThemePicker } from './ThemePicker';
 
 export function Profile({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
   async function signOut() {
@@ -27,6 +28,8 @@ export function Profile({ me, onSignedOut }: { me: Me; onSignedOut: () => void }
           {t.perfil.coupleCode}: {me.inviteCode}
         </p>
       </section>
+
+      <ThemePicker />
 
       <button className="btn secondary" onClick={signOut}>
         {t.perfil.signOut}
