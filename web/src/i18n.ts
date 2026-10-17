@@ -71,8 +71,8 @@ const es = {
     partner: 'Pareja',
     signOut: 'Cerrar sesión',
     theme: 'Color de la app',
-    themes: { rosa: 'Rosa', lavanda: 'Lavanda', menta: 'Menta', celeste: 'Celeste', durazno: 'Durazno' } as Record<
-      'rosa' | 'lavanda' | 'menta' | 'celeste' | 'durazno',
+    themes: { carmesi: 'Carmesí', lavanda: 'Lavanda', menta: 'Menta', celeste: 'Celeste', durazno: 'Durazno' } as Record<
+      'carmesi' | 'lavanda' | 'menta' | 'celeste' | 'durazno',
       string
     >,
     mode: 'Modo',
@@ -287,7 +287,7 @@ const en: typeof es = {
     partner: 'Partner',
     signOut: 'Sign out',
     theme: 'App color',
-    themes: { rosa: 'Pink', lavanda: 'Lavender', menta: 'Mint', celeste: 'Sky', durazno: 'Peach' },
+    themes: { carmesi: 'Crimson', lavanda: 'Lavender', menta: 'Mint', celeste: 'Sky', durazno: 'Peach' },
     mode: 'Mode',
     modes: { auto: 'Automatic', light: 'Day', dark: 'Night' },
   },

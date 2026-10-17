@@ -1,30 +1,30 @@
 /*
- * Estilo "Devyn" (Figma: Devyn – A Couple Shared Calendar & Communication App,
- * Community): botones píldora, días del calendario como cuadraditos con borde,
- * tarjetas con borde y tinte de color y barra inferior en píldora con íconos
- * en círculos. Todo en Nunito Sans (sans serif).
+ * Botones píldora, días del calendario como cuadraditos con borde, tarjetas
+ * planas con borde y barra inferior en píldora con íconos en círculos. Todo
+ * en Nunito Sans (sans serif).
  *
- * Temas: <html data-theme="rosa|lavanda|menta|celeste|durazno"> elige la
- * paleta pastel y <html data-mode="light|dark"> el modo día/noche (sin
+ * Temas: <html data-theme="carmesi|lavanda|menta|celeste|durazno"> elige la
+ * paleta y <html data-mode="light|dark"> el modo día/noche (sin
  * data-mode se sigue al sistema). Ver theme.ts.
  */
 @import '@fontsource-variable/nunito-sans';
 
 :root {
-  /* Paleta "rosa" (la del Figma); los demás temas pisan estas cuatro. */
-  --primary: #d9a0b8;
-  --accent: #a66dd4; /* día de hoy */
-  --brand: #e5486a; /* logo y corazones */
-  --nav-bg: #ffe2ee;
+  /* Paleta "carmesí" (la de entrada): rojo #AB2222 sobre crema #FDFFE2.
+     Los demás temas pisan estas variables. */
+  --primary: #ab2222;
+  --accent: #7f1d1d; /* día de hoy */
+  --brand: #ab2222; /* logo y corazones */
+  --nav-bg: #ffffff;
 
   /* Modo día. */
-  --bg: #ffffff;
+  --bg: #fdffe2;
   --surface: #ffffff; /* campos, opciones, días de la semana */
-  --text: #2c2c2c;
-  --text-2: #8a8a8a;
-  --gray: #9d9d9d;
-  --card: #f9fff8; /* Card-BG */
-  --border: #e5e5e5; /* Borders - dividers */
+  --text: #2a2422;
+  --text-2: #7d746b;
+  --gray: #9b9288;
+  --card: #ffffff;
+  --border: #ece8cf;
   --nav-item: rgba(44, 44, 44, 0.3);
   --overlay: rgba(44, 44, 44, 0.45);
   --shadow: none; /* tarjetas planas, sin sombra */
@@ -33,31 +33,22 @@
   --success-soft: rgba(93, 176, 117, 0.2);
   --pending: #ffd966;
   --pending-soft: rgba(255, 217, 102, 0.2);
-  --error: #ff6b81;
-  --error-soft: rgba(255, 107, 129, 0.2);
+  --error: #d64541;
+  --error-soft: rgba(214, 69, 65, 0.16);
 
   /* Relleno de botones y controles activos; en modo noche se apagan. */
   --fill: var(--primary);
   --fill-accent: var(--accent);
   --on-fill: #ffffff;
   --line: var(--primary); /* borde y texto de botones de contorno */
-  --sheet-glow: linear-gradient(180deg, color-mix(in srgb, var(--primary) 28%, var(--bg)) 0%, var(--bg) 160px);
+  --sheet-glow: none;
   --nav-glow: none;
   --ring: var(--accent); /* borde del día de hoy */
   --primary-soft: color-mix(in srgb, var(--primary) 18%, transparent);
   --accent-soft: color-mix(in srgb, var(--accent) 14%, transparent);
-  --glow: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--primary) 32%, var(--bg)) 0%,
-    color-mix(in srgb, var(--primary) 12%, var(--bg)) 180px,
-    var(--bg) 360px
-  );
-  --splash: linear-gradient(
-    170deg,
-    color-mix(in srgb, var(--primary) 55%, var(--bg)) 0%,
-    color-mix(in srgb, var(--primary) 28%, var(--bg)) 45%,
-    color-mix(in srgb, var(--primary) 10%, var(--bg)) 100%
-  );
+  /* Fondo liso, sin degradés. */
+  --glow: none;
+  --splash: var(--bg);
 
   /* Píldora oscura del álbum (como el botón "Let's Go" de la referencia). */
   --deep: color-mix(in srgb, var(--accent) 55%, #2c2c2c);
@@ -70,11 +61,19 @@
   color-scheme: light;
 }
 
-/* Paletas pastel. */
-:root[data-theme='lavanda'] { --primary: #b9a3e3; --accent: #e58fb4; --brand: #8a6fd8; --nav-bg: #eee6ff; }
-:root[data-theme='menta'] { --primary: #8fd0b5; --accent: #6aa8e0; --brand: #3e9c78; --nav-bg: #dcf5ea; }
-:root[data-theme='celeste'] { --primary: #9cc8ec; --accent: #a66dd4; --brand: #4a8fd0; --nav-bg: #e1f0fc; }
-:root[data-theme='durazno'] { --primary: #f2b392; --accent: #e07a9a; --brand: #e07850; --nav-bg: #ffebdf; }
+/* Carmesí: los tintes de las tarjetas van en crema tostado, no en rojo
+   aguado (que se vería rosa). Solo de día; de noche se mezclan con el fondo oscuro. */
+:root:not([data-mode='dark']):not([data-theme]),
+:root[data-theme='carmesi']:not([data-mode='dark']) {
+  --primary-soft: #f6f0cf;
+  --accent-soft: #f2ead0;
+}
+
+/* Paletas pastel, para quien prefiera otro color. */
+:root[data-theme='lavanda'] { --primary: #b9a3e3; --accent: #e58fb4; --brand: #8a6fd8; --nav-bg: #eee6ff; --bg: #ffffff; --card: #f9fff8; --border: #e5e5e5; }
+:root[data-theme='menta'] { --primary: #8fd0b5; --accent: #6aa8e0; --brand: #3e9c78; --nav-bg: #dcf5ea; --bg: #ffffff; --card: #f9fff8; --border: #e5e5e5; }
+:root[data-theme='celeste'] { --primary: #9cc8ec; --accent: #a66dd4; --brand: #4a8fd0; --nav-bg: #e1f0fc; --bg: #ffffff; --card: #f9fff8; --border: #e5e5e5; }
+:root[data-theme='durazno'] { --primary: #f2b392; --accent: #e07a9a; --brand: #e07850; --nav-bg: #ffebdf; --bg: #ffffff; --card: #f9fff8; --border: #e5e5e5; }
 
 /* Modo noche: a mano o, si no se eligió, cuando el sistema está en oscuro. */
 :root[data-mode='dark'] {
@@ -146,7 +145,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 
 .page.center { justify-content: center; min-height: 100vh; padding-bottom: 32px; }
 
-/* Pantalla de entrada: degradé rosado de la portada de Devyn. */
+/* Pantalla de entrada. */
 .splash {
   background: var(--splash);
 }
@@ -173,7 +172,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 .kicker { font-size: 13px; font-weight: 600; color: var(--text-2); letter-spacing: 0.2px; }
 .error { color: var(--error); font-size: 14px; }
 
-/* Botón principal: píldora rosa, texto blanco en Nunito Sans Medium. */
+/* Botón principal: píldora del color del tema, texto blanco en Nunito Sans Medium. */
 .btn {
   border: 1px solid transparent;
   border-radius: 100px;
@@ -248,7 +247,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 .couple { font-size: 13px; color: var(--text-2); }
 .couple .heart { color: var(--error); }
 
-/* Barra inferior: píldora rosada flotante con íconos en círculos. */
+/* Barra inferior: píldora flotante con íconos en círculos. */
 .nav {
   position: fixed;
   left: 0; right: 0;
@@ -261,6 +260,7 @@ h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 .nav-inner {
   pointer-events: auto;
   background: var(--nav-bg);
+  border: 1px solid var(--border);
   border-radius: 100px;
   padding: 4px;
   display: flex;
