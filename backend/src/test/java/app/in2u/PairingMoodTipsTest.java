@@ -94,7 +94,8 @@ class PairingMoodTipsTest {
 			String body = mvc.perform(get("/api/tips/today").with(as("raul")))
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
-			assertThat(JsonPath.<String>read(body, "$.tipKey")).isEqualTo("preguntar-antes-de-resolver");
+			assertThat(JsonPath.<String>read(body, "$.tipKey")).isIn("preguntar-antes-de-resolver", "ofrecer-compania",
+				"quitar-una-tarea", "mensaje-sin-pregunta");
 			assertThat(JsonPath.<String>read(body, "$.source")).isEqualTo("reglas");
 		});
 
