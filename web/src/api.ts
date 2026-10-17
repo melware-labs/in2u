@@ -68,6 +68,22 @@ export type PartnerCycle = {
   daysUntilNextPeriod?: number;
 };
 
+export type ChatMessage = { id: string; body: string; createdAt: string; mine: boolean };
+
+export type Photo = { id: string; title: string | null; description: string | null; createdAt: string; mine: boolean };
+
+export type GameQuestionState = {
+  questionKey: string;
+  mySelf: number | null;
+  myGuess: number | null;
+  partnerAnswered: boolean;
+  /** Solo llegan cuando yo ya respondí esa pregunta. */
+  partnerSelf: number | null;
+  partnerGuess: number | null;
+};
+
+export type GameState = { questions: GameQuestionState[]; myScore: number; partnerScore: number; rounds: number };
+
 export class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -84,14 +100,15 @@ function xsrfToken(): string {
 
 async function request<T>(method: string, path: string, body?: unknown): Promise<T | null> {
   const headers: Record<string, string> = {};
-  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  const raw = body instanceof Blob;
+  if (body !== undefined) headers['Content-Type'] = raw ? body.type : 'application/json';
   if (method !== 'GET') headers['X-XSRF-TOKEN'] = xsrfToken();
 
   const res = await fetch(path, {
     method,
     headers,
     credentials: 'same-origin',
-    body: body === undefined ? undefined : JSON.stringify(body),
+    body: body === undefined ? undefined : raw ? body : JSON.stringify(body),
   });
   if (!res.ok) {
     let message = `Error ${res.status}`;
@@ -145,19 +162,43 @@ export const api = {
   setSymptoms: (symptoms: Symptom[]) =>
     request<OwnCycle>('PUT', '/api/cycle/symptoms', { symptoms }) as Promise<OwnCycle>,
   partnerCycle: () => request<PartnerCycle>('GET', '/api/cycle/partner') as Promise<PartnerCycle>,
+  chat: (before?: string) =>
+    request<ChatMessage[]>('GET', `/api/chat${before ? `?before=${encodeURIComponent(before)}` : ''}`) as Promise<
+      ChatMessage[]
+    >,
+  sendChat: (body: string) => request<ChatMessage>('POST', '/api/chat', { body }) as Promise<ChatMessage>,
+  photos: () => request<Photo[]>('GET', '/api/album') as Promise<Photo[]>,
+  /** La foto ya achicada (ver lib/resizeImage); título y descripción opcionales. */
+  uploadPhoto: (image: Blob, title: string, description: string) => {
+    const q = new URLSearchParams();
+    if (title.trim()) q.set('title', title.trim());
+    if (description.trim()) q.set('description', description.trim());
+    return request<Photo>('POST', `/api/album?${q}`, image) as Promise<Photo>;
+  },
+  describePhoto: (id: string, title: string, description: string) =>
+    request<Photo>('PUT', `/api/album/${id}`, { title, description }) as Promise<Photo>,
+  deletePhoto: (id: string) => request<void>('DELETE', `/api/album/${id}`),
+  game: () => request<GameState>('GET', '/api/game') as Promise<GameState>,
+  answerGame: (questionKey: string, self: number, guess: number) =>
+    request<GameState>('POST', '/api/game/answers', { questionKey, self, guess }) as Promise<GameState>,
   devLogin: (email: string, name: string) => request<void>('POST', '/api/dev/login', { email, name }),
   logout: () => request<void>('POST', '/api/logout'),
 };
 
 /**
- * Tiempo real: el backend avisa por SSE cuando cambia un check-in o llega un
- * consejo. EventSource reconecta solo si se corta la conexión.
+ * Tiempo real: el backend avisa por SSE cuando cambia un check-in, llega un
+ * consejo o un mensaje, o cambia el álbum o el juego.
+ * EventSource reconecta solo si se corta la conexión.
  */
-export function subscribeToUpdates(onChange: () => void): () => void {
+export type UpdateKind = 'mood' | 'tip' | 'chat' | 'album' | 'game' | 'open';
+
+export function subscribeToUpdates(onChange: (kind: UpdateKind) => void): () => void {
   const source = new EventSource('/api/mood/stream');
-  source.addEventListener('mood', onChange);
-  source.addEventListener('tip', onChange);
-  // Al reconectar pudimos perdernos eventos: se refresca todo.
-  source.addEventListener('open', onChange);
+  // "open": al reconectar pudimos perdernos eventos, así que se refresca todo.
+  for (const kind of ['mood', 'tip', 'chat', 'album', 'game', 'open'] as const) {
+    source.addEventListener(kind, () => onChange(kind));
+  }
   return () => source.close();
 }
+
+export const photoUrl = (id: string) => `/api/album/${id}/image`;

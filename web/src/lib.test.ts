@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { Checkin } from './api';
-import { firstName, localIsoDate, weekDays } from './lib';
+import { dayNumber, firstName, localIsoDate, ofTheDay, weekDays } from './lib';
 
 const checkin = (date: string, mine: boolean, mood = 4): Checkin => ({
   id: date + mine,
@@ -98,5 +98,17 @@ describe('ciclo', () => {
     expect(by['2026-10-23'].phase).toBe('ovulacion');
     expect(by['2026-10-27'].phase).toBe('lutea');
     expect(by['2026-11-01'].phase).toBe('lutea');
+  });
+});
+
+describe('ofTheDay', () => {
+  it('da lo mismo todo el día y cambia al día siguiente', () => {
+    const items = ['a', 'b', 'c'];
+    const morning = new Date(2026, 9, 17, 7);
+    const night = new Date(2026, 9, 17, 23, 59);
+    const tomorrow = new Date(2026, 9, 18, 7);
+    expect(ofTheDay(items, morning)).toBe(ofTheDay(items, night));
+    expect(dayNumber(tomorrow)).toBe(dayNumber(morning) + 1);
+    expect(ofTheDay(items, tomorrow)).not.toBe(ofTheDay(items, morning));
   });
 });

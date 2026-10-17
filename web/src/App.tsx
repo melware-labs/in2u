@@ -2,25 +2,42 @@ import { type ReactNode, useCallback, useEffect, useState } from 'react';
 
 import { api, type Checkin, type Me, type PartnerCycle, type TodayTip, subscribeToUpdates } from './api';
 import { t } from './i18n';
-import { CalendarIcon, HomeIcon, IdeaIcon, MoonIcon, UserIcon } from './icons';
+import {
+  AlbumIcon,
+  CalendarIcon,
+  ChatIcon,
+  GameIcon,
+  HomeIcon,
+  IdeaIcon,
+  MoonIcon,
+  MoreIcon,
+  UserIcon,
+} from './icons';
 import { localIsoDate } from './lib';
+import { Album } from './screens/Album';
 import { Calendar } from './screens/Calendar';
+import { Chat } from './screens/Chat';
 import { CheckInSheet } from './screens/CheckInSheet';
 import { Cycle } from './screens/Cycle';
+import { Game } from './screens/Game';
 import { Home } from './screens/Home';
 import { Login } from './screens/Login';
 import { Onboarding } from './screens/Onboarding';
 import { Profile } from './screens/Profile';
 import { TipsScreen } from './screens/Tips';
 
-type Tab = 'nosotros' | 'calendario' | 'consejos' | 'ciclo' | 'perfil';
+type Tab = 'nosotros' | 'calendario' | 'chat' | 'album' | 'juego' | 'consejos' | 'ciclo' | 'perfil';
 
-const TABS: { id: Tab; icon: ReactNode; label: string }[] = [
+/** En el celular la barra muestra las primeras cuatro y el resto va en "Más"; en la compu se ven todas. */
+const TABS: { id: Tab; icon: ReactNode; label: string; more?: boolean }[] = [
   { id: 'nosotros', icon: <HomeIcon />, label: t.tabs.nosotros },
   { id: 'calendario', icon: <CalendarIcon />, label: t.tabs.calendario },
-  { id: 'consejos', icon: <IdeaIcon />, label: t.tabs.consejos },
-  { id: 'ciclo', icon: <MoonIcon />, label: t.tabs.ciclo },
-  { id: 'perfil', icon: <UserIcon />, label: t.tabs.perfil },
+  { id: 'chat', icon: <ChatIcon />, label: t.tabs.chat },
+  { id: 'album', icon: <AlbumIcon />, label: t.tabs.album },
+  { id: 'juego', icon: <GameIcon />, label: t.tabs.juego, more: true },
+  { id: 'consejos', icon: <IdeaIcon />, label: t.tabs.consejos, more: true },
+  { id: 'ciclo', icon: <MoonIcon />, label: t.tabs.ciclo, more: true },
+  { id: 'perfil', icon: <UserIcon />, label: t.tabs.perfil, more: true },
 ];
 
 export function App() {
@@ -31,6 +48,13 @@ export function App() {
   const [tip, setTip] = useState<TodayTip | null>(null);
   const [partnerCycle, setPartnerCycle] = useState<PartnerCycle | null>(null);
   const [checkingIn, setCheckingIn] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  // Contadores que cambian con cada aviso en tiempo real, para que cada pantalla recargue lo suyo.
+  const [versions, setVersions] = useState({ chat: 0, album: 0, game: 0 });
+  const [chatUnread, setChatUnread] = useState(false);
+  const [photoFocus, setPhotoFocus] = useState<string | null>(null);
+  const [chatDraft, setChatDraft] = useState<string | null>(null);
+  const clearDraft = useCallback(() => setChatDraft(null), []);
 
   useEffect(() => {
     api.me().then(setMe, () => setMe(null));
@@ -61,8 +85,28 @@ export function App() {
   useEffect(() => {
     if (!paired) return;
     refresh().catch(() => undefined);
-    return subscribeToUpdates(() => refresh().catch(() => undefined));
+    return subscribeToUpdates((kind) => {
+      if (kind === 'chat' || kind === 'album' || kind === 'game') {
+        setVersions((v) => ({ ...v, [kind]: v[kind] + 1 }));
+        if (kind === 'chat') setChatUnread(true);
+        return;
+      }
+      if (kind === 'open') setVersions((v) => ({ chat: v.chat + 1, album: v.album + 1, game: v.game + 1 }));
+      refresh().catch(() => undefined);
+    });
   }, [paired, refresh]);
+
+  // Estando en el chat no hay nada "sin leer".
+  useEffect(() => {
+    if (tab === 'chat') setChatUnread(false);
+  }, [tab, versions.chat]);
+
+  const go = useCallback((next: Tab) => {
+    setTab(next);
+    setMoreOpen(false);
+    if (next !== 'album') setPhotoFocus(null);
+    window.scrollTo({ top: 0 });
+  }, []);
 
   if (me === undefined) {
     return (
@@ -82,9 +126,38 @@ export function App() {
     <div className="app">
       <main className="page">
         {tab === 'nosotros' && (
-          <Home me={me} week={week} partnerCycle={partnerCycle} onCheckIn={() => setCheckingIn(true)} />
+          <Home
+            me={me}
+            week={week}
+            tip={tip}
+            partnerCycle={partnerCycle}
+            versions={versions}
+            onCheckIn={() => setCheckingIn(true)}
+            onGo={go}
+            onOpenPhoto={(id) => {
+              go('album');
+              setPhotoFocus(id);
+            }}
+            onAsk={(question) => {
+              setChatDraft(question);
+              go('chat');
+            }}
+          />
         )}
         {tab === 'calendario' && <Calendar me={me} />}
+        {tab === 'chat' && <Chat me={me} version={versions.chat} draft={chatDraft} onDraftUsed={clearDraft} />}
+        {tab === 'album' && (
+          <Album
+            me={me}
+            version={versions.album}
+            focus={photoFocus}
+            onFocus={(id) => {
+              setPhotoFocus(id);
+              window.scrollTo({ top: 0 });
+            }}
+          />
+        )}
+        {tab === 'juego' && <Game me={me} version={versions.game} />}
         {tab === 'consejos' && <TipsScreen tip={tip} />}
         {tab === 'ciclo' && <Cycle me={me} />}
         {tab === 'perfil' && <Profile me={me} onSignedOut={() => setMe(null)} />}
@@ -98,17 +171,49 @@ export function App() {
           {TABS.map((item) => (
             <button
               key={item.id}
+              className={`${item.more ? 'in-more' : ''}${item.id === 'chat' && chatUnread ? ' unread' : ''}`}
               aria-current={tab === item.id ? 'page' : undefined}
               aria-label={item.label}
               title={item.label}
-              onClick={() => setTab(item.id)}
+              onClick={() => go(item.id)}
             >
               {item.icon}
               <span className="label">{item.label}</span>
             </button>
           ))}
+          <button
+            className="more-btn"
+            aria-current={TABS.some((i) => i.more && i.id === tab) ? 'page' : undefined}
+            aria-label={t.tabs.mas}
+            aria-expanded={moreOpen}
+            title={t.tabs.mas}
+            onClick={() => setMoreOpen(true)}
+          >
+            <MoreIcon />
+            <span className="label">{TABS.find((i) => i.more && i.id === tab)?.label ?? t.tabs.mas}</span>
+          </button>
         </div>
       </nav>
+
+      {moreOpen && (
+        <div className="sheet-bg" onClick={() => setMoreOpen(false)}>
+          <div className="sheet" role="dialog" aria-modal="true" aria-label={t.tabs.mas} onClick={(e) => e.stopPropagation()}>
+            <div className="more-grid">
+              {TABS.filter((i) => i.more).map((item) => (
+                <button
+                  key={item.id}
+                  className="more-item"
+                  aria-current={tab === item.id ? 'page' : undefined}
+                  onClick={() => go(item.id)}
+                >
+                  <span className="more-icon">{item.icon}</span>
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {checkingIn && (
         <CheckInSheet
