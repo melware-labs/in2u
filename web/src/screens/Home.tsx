@@ -1,10 +1,10 @@
 import type { Checkin, Me, PartnerCycle } from '../api';
 import { Emoji } from '../Emoji';
-import { moodEmoji, t } from '../i18n';
-import { firstName, localIsoDate, weekDays } from '../lib';
+import { locale, moodEmoji, t } from '../i18n';
+import { daysSince, firstName, localIsoDate, parseLocalDate, weekDays } from '../lib';
 import { CARE_TIPS } from '../tips';
 
-function CycleCareCard({ partner, cycle }: { partner: string; cycle: PartnerCycle }) {
+export function CycleCareCard({ partner, cycle }: { partner: string; cycle: PartnerCycle }) {
   if (cycle.visibility === 'nada' || !cycle.hasData) return null;
 
   if (cycle.visibility === 'avisos') {
@@ -39,6 +39,18 @@ function CycleCareCard({ partner, cycle }: { partner: string; cycle: PartnerCycl
         </>
       )}
     </>
+  );
+}
+
+function DaysTogetherCard({ since }: { since: string }) {
+  const days = daysSince(since);
+  return (
+    <section className="card sky">
+      <p className="kicker">
+        {t.nosotros.since(parseLocalDate(since).toLocaleDateString(locale, { dateStyle: 'long' }))}
+      </p>
+      <h2>{days > 0 ? t.nosotros.daysTogether(days) : t.nosotros.firstDay}</h2>
+    </section>
   );
 }
 
@@ -79,6 +91,8 @@ export function Home({
           <div className="avatar partner">{(partnerName[0] ?? '·').toUpperCase()}</div>
         </div>
       </header>
+
+      {me.togetherSince && <DaysTogetherCard since={me.togetherSince} />}
 
       <section className="card coral" aria-label={partnerName}>
         <p className="kicker">{partnerName}</p>
