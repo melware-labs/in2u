@@ -1,6 +1,7 @@
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 
 import { api, type Checkin, type Me, type PartnerCycle, type TodayTip, subscribeToUpdates } from './api';
+import { Brand } from './Brand';
 import { t } from './i18n';
 import { CalendarIcon, HomeIcon, IdeaIcon, MoonIcon, UserIcon } from './icons';
 import { localIsoDate } from './lib';
@@ -69,7 +70,7 @@ export function App() {
     return (
       <div className="app splash">
         <main className="page center">
-          <div className="brand">in2u</div>
+          <Brand />
           <p className="muted">{t.loading}</p>
         </main>
       </div>
@@ -83,7 +84,7 @@ export function App() {
       <div className="app splash">
         <main className="page center">
           <div className="stack" style={{ alignItems: 'center' }}>
-            <div className="brand">in2u</div>
+            <Brand />
             <h1>{t.profile.title}</h1>
             <p className="muted">{t.profile.subtitle}</p>
           </div>
