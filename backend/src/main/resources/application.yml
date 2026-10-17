@@ -24,6 +24,8 @@ server:
     session:
       cookie:
         same-site: lax
+        # true en producción (https). En local con http debe ser false.
+        secure: ${COOKIE_SECURE:false}
 
 management:
   endpoints:
@@ -41,3 +43,6 @@ in2u:
     # Sin key, los consejos se eligen igual con reglas según el ánimo.
     api-key: ${GEMINI_API_KEY:}
     model: ${GEMINI_MODEL:gemini-flash-latest}
+    # Las notas del check-in son íntimas y el plan gratuito de Google puede usar
+    # los datos enviados: por defecto NO se mandan, solo los números del ánimo.
+    send-notes: ${GEMINI_SEND_NOTES:false}

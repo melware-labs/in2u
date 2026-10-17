@@ -123,4 +123,23 @@ class PairingMoodTipsTest {
 	void writesWithoutCsrfAreRejected() throws Exception {
 		mvc.perform(post("/api/couple").with(as("sincsrf"))).andExpect(status().isForbidden());
 	}
+
+	@Test
+	void guessingInviteCodesIsRateLimited() throws Exception {
+		for (int i = 0; i < 8; i++) {
+			mvc.perform(post("/api/couple/join").with(as("adivino")).with(csrf())
+				.contentType(MediaType.APPLICATION_JSON).content("{\"code\":\"AAAAA" + i + "\"}"))
+				.andExpect(status().isBadRequest());
+		}
+		mvc.perform(post("/api/couple/join").with(as("adivino")).with(csrf())
+			.contentType(MediaType.APPLICATION_JSON).content("{\"code\":\"ZZZZZZ\"}"))
+			.andExpect(status().isTooManyRequests());
+	}
+
+	@Test
+	void devLoginEndpointDoesNotExistByDefault() throws Exception {
+		mvc.perform(post("/api/dev/login").with(csrf())
+			.contentType(MediaType.APPLICATION_JSON).content("{\"email\":\"a@b.com\"}"))
+			.andExpect(status().isNotFound());
+	}
 }
