@@ -4,9 +4,9 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://TU-BACKEND.example.com/api/:path*" },
-    { "source": "/oauth2/:path*", "destination": "https://TU-BACKEND.example.com/oauth2/:path*" },
-    { "source": "/login/oauth2/:path*", "destination": "https://TU-BACKEND.example.com/login/oauth2/:path*" },
+    { "source": "/api/:path*", "destination": "https://in2u-backend.onrender.com/api/:path*" },
+    { "source": "/oauth2/:path*", "destination": "https://in2u-backend.onrender.com/oauth2/:path*" },
+    { "source": "/login/oauth2/:path*", "destination": "https://in2u-backend.onrender.com/login/oauth2/:path*" },
     { "source": "/((?!api/|oauth2/|login/oauth2/).*)", "destination": "/index.html" }
   ]
 }
