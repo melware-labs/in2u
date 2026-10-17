@@ -11,6 +11,7 @@ import { Home } from './screens/Home';
 import { Login } from './screens/Login';
 import { Onboarding } from './screens/Onboarding';
 import { Profile } from './screens/Profile';
+import { ProfileForm } from './screens/ProfileForm';
 import { TipsScreen } from './screens/Tips';
 
 type Tab = 'nosotros' | 'calendario' | 'consejos' | 'ciclo' | 'perfil';
@@ -76,6 +77,21 @@ export function App() {
   }
 
   if (me === null) return <Login />;
+  // Lo primero al crear la cuenta (y para las cuentas viejas que no lo tienen).
+  if (!me.profileComplete) {
+    return (
+      <div className="app splash">
+        <main className="page center">
+          <div className="stack" style={{ alignItems: 'center' }}>
+            <div className="brand">in2u</div>
+            <h1>{t.profile.title}</h1>
+            <p className="muted">{t.profile.subtitle}</p>
+          </div>
+          <ProfileForm me={me} onSaved={setMe} />
+        </main>
+      </div>
+    );
+  }
   if (me.state !== 'paired') return <Onboarding me={me} onChange={setMe} />;
 
   return (
@@ -87,7 +103,7 @@ export function App() {
         {tab === 'calendario' && <Calendar me={me} />}
         {tab === 'consejos' && <TipsScreen tip={tip} />}
         {tab === 'ciclo' && <Cycle me={me} />}
-        {tab === 'perfil' && <Profile me={me} onSignedOut={() => setMe(null)} />}
+        {tab === 'perfil' && <Profile me={me} onChange={setMe} onSignedOut={() => setMe(null)} />}
       </main>
 
       <nav className="nav" aria-label="Principal">

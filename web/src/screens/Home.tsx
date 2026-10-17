@@ -1,6 +1,6 @@
 import type { Checkin, Me, PartnerCycle } from '../api';
-import { moodEmoji, t } from '../i18n';
-import { firstName, localIsoDate, weekDays } from '../lib';
+import { locale, moodEmoji, t } from '../i18n';
+import { daysSince, firstName, localIsoDate, parseLocalDate, weekDays } from '../lib';
 import { CARE_TIPS } from '../tips';
 
 function CycleCareCard({ partner, cycle }: { partner: string; cycle: PartnerCycle }) {
@@ -41,6 +41,18 @@ function CycleCareCard({ partner, cycle }: { partner: string; cycle: PartnerCycl
   );
 }
 
+function DaysTogetherCard({ since }: { since: string }) {
+  const days = daysSince(since);
+  return (
+    <section className="card sky">
+      <p className="kicker">
+        {t.nosotros.since(parseLocalDate(since).toLocaleDateString(locale, { dateStyle: 'long' }))}
+      </p>
+      <h2>{days > 0 ? t.nosotros.daysTogether(days) : t.nosotros.firstDay}</h2>
+    </section>
+  );
+}
+
 function greeting(now: Date = new Date()): string {
   const h = now.getHours();
   return h < 12 ? t.nosotros.greeting.morning : h < 19 ? t.nosotros.greeting.afternoon : t.nosotros.greeting.evening;
@@ -78,6 +90,8 @@ export function Home({
           <div className="avatar partner">{(partnerName[0] ?? '·').toUpperCase()}</div>
         </div>
       </header>
+
+      {me.togetherSince && <DaysTogetherCard since={me.togetherSince} />}
 
       <section className="card coral" aria-label={partnerName}>
         <p className="kicker">{partnerName}</p>
