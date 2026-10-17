@@ -49,7 +49,7 @@ class CycleController {
 		var user = currentUser.of(principal);
 		if ("hombre".equals(user.getGender())) {
 			throw new org.springframework.web.server.ResponseStatusException(
-					org.springframework.http.HttpStatus.FORBIDDEN, "Acá ves solo lo que tu pareja elige compartir.");
+					org.springframework.http.HttpStatus.FORBIDDEN, "Aquí ves solo lo que tu pareja elige compartir.");
 		}
 		return user;
 	}

@@ -35,9 +35,9 @@ const es = {
     gender: 'Género',
     genders: { mujer: 'Mujer', hombre: 'Hombre', otro: 'Otro' } as Record<'mujer' | 'hombre' | 'otro', string>,
     genderHint: {
-      mujer: 'Vas a poder registrar tu ciclo y elegir qué ve tu pareja.',
-      hombre: 'Del ciclo de tu pareja vas a ver solo lo que ella elija compartir.',
-      otro: 'Vas a poder registrar tu ciclo y elegir qué ve tu pareja.',
+      mujer: 'Podrás registrar tu ciclo y elegir qué ve tu pareja.',
+      hombre: 'Del ciclo de tu pareja verás solo lo que ella elija compartir.',
+      otro: 'Podrás registrar tu ciclo y elegir qué ve tu pareja.',
     } as Record<'mujer' | 'hombre' | 'otro', string>,
     birthDate: 'Fecha de nacimiento',
     age: (years: number) => `${years} años`,
@@ -150,7 +150,7 @@ const es = {
     notShared: (partner: string) => `${partner} eligió no compartir su ciclo por ahora.`,
     nothingToday: (partner: string) => `Hoy no hay avisos del ciclo de ${partner}.`,
     noDataYet: (partner: string) => `${partner} todavía no registró su ciclo.`,
-    sheDecides: (partner: string) => `${partner} decide qué se ve acá desde su pestaña Ciclo.`,
+    sheDecides: (partner: string) => `${partner} decide qué se ve aquí desde su pestaña Ciclo.`,
   },
   cuidar: {
     title: 'Cómo cuidarla estos días',
