@@ -43,6 +43,7 @@ const es = {
     copied: 'Copiado',
     refresh: 'Ya lo ingresó',
   },
+  date: { day: 'Día', month: 'Mes', year: 'Año' },
   profile: {
     title: 'Cuéntanos de ti',
     subtitle: 'Solo te lo pedimos una vez. Lo puedes cambiar después en Perfil.',
@@ -300,6 +301,7 @@ const en: typeof es = {
     copied: 'Copied',
     refresh: 'They entered it',
   },
+  date: { day: 'Day', month: 'Month', year: 'Year' },
   profile: {
     title: 'Tell us about you',
     subtitle: "We only ask once. You can change it later in Profile.",

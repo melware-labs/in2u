@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { Checkin } from './api';
-import { dayNumber, daysSince, firstName, localIsoDate, ofTheDay, weekDays } from './lib';
+import { dayNumber, daysInMonth, daysSince, firstName, localIsoDate, ofTheDay, weekDays } from './lib';
 
 const checkin = (date: string, mine: boolean, mood = 4): Checkin => ({
   id: date + mine,
@@ -118,5 +118,11 @@ describe('ofTheDay', () => {
     expect(ofTheDay(items, morning)).toBe(ofTheDay(items, night));
     expect(dayNumber(tomorrow)).toBe(dayNumber(morning) + 1);
     expect(ofTheDay(items, tomorrow)).not.toBe(ofTheDay(items, morning));
+  });
+
+  it('daysInMonth contempla febrero bisiesto', () => {
+    expect(daysInMonth(2024, 2)).toBe(29);
+    expect(daysInMonth(2023, 2)).toBe(28);
+    expect(daysInMonth(2026, 10)).toBe(31);
   });
 });
