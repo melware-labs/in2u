@@ -111,3 +111,6 @@ Con el backend corriendo con `DEV_LOGIN=true`, la pantalla de login en desarroll
 2. En `web/vercel.json` reemplazá `https://TU-BACKEND.example.com` por la URL del backend.
 3. Vercel: importar el repo con *Root Directory* `web`.
 4. En Google Cloud agregá el redirect `https://<tu-app>.vercel.app/login/oauth2/code/google`.
+
+Atajo en Render: *New > Blueprint* con este repo lee `render.yaml` y pide solo los valores secretos.
+`DB_URL` en formato JDBC: `jdbc:postgresql://HOST/BASE?sslmode=require` (host, base, usuario y clave salen de Neon).
