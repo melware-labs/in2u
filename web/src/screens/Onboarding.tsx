@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { api, type Me } from '../api';
+import { Brand } from '../Brand';
 import { t } from '../i18n';
 
 export function Onboarding({ me, onChange }: { me: Me; onChange: (me: Me) => void }) {
@@ -56,7 +57,7 @@ export function Onboarding({ me, onChange }: { me: Me; onChange: (me: Me) => voi
     <div className="app splash">
       <main className="page center">
         <div className="stack" style={{ alignItems: 'center' }}>
-          <div className="brand">in2u</div>
+          <Brand />
           <h1>{t.onboarding.title}</h1>
           <p className="muted">{t.onboarding.subtitle}</p>
         </div>

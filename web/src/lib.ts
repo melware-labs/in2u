@@ -57,6 +57,13 @@ export function parseLocalDate(key: string): Date {
   return new Date(y, m - 1, d);
 }
 
+/** Días de calendario desde "YYYY-MM-DD" hasta hoy (local); 0 si es hoy. */
+export function daysSince(dateKey: string, now: Date = new Date()): number {
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  // round: absorbe el día de 23 o 25 h de los cambios de horario.
+  return Math.round((today.getTime() - parseLocalDate(dateKey).getTime()) / 86_400_000);
+}
+
 // ---- Ciclo ----
 
 export type CyclePhase = 'menstrual' | 'folicular' | 'ovulacion' | 'lutea';

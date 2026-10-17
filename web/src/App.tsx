@@ -1,6 +1,7 @@
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 
 import { api, type Checkin, type Me, type PartnerCycle, type TodayTip, subscribeToUpdates } from './api';
+import { Brand } from './Brand';
 import { t } from './i18n';
 import {
   AlbumIcon,
@@ -17,12 +18,13 @@ import { Album } from './screens/Album';
 import { Calendar } from './screens/Calendar';
 import { Chat } from './screens/Chat';
 import { CheckInSheet } from './screens/CheckInSheet';
-import { Cycle } from './screens/Cycle';
+import { Cycle, PartnerCycleScreen } from './screens/Cycle';
 import { Game } from './screens/Game';
 import { Home } from './screens/Home';
 import { Login } from './screens/Login';
 import { Onboarding } from './screens/Onboarding';
 import { Profile } from './screens/Profile';
+import { ProfileForm } from './screens/ProfileForm';
 import { TipsScreen } from './screens/Tips';
 
 type Tab = 'nosotros' | 'calendario' | 'chat' | 'album' | 'juego' | 'consejos' | 'ciclo' | 'perfil';
@@ -78,9 +80,9 @@ export function App() {
     setPartnerCycle(pc);
   }, []);
 
-  // El ciclo de la pareja no llega por SSE: se vuelve a pedir al volver a "Nosotros".
+  // El ciclo de la pareja no llega por SSE: se vuelve a pedir al volver a "Nosotros" o "Ciclo".
   useEffect(() => {
-    if (paired && tab === 'nosotros') api.partnerCycle().then(setPartnerCycle, () => undefined);
+    if (paired && (tab === 'nosotros' || tab === 'ciclo')) api.partnerCycle().then(setPartnerCycle, () => undefined);
   }, [paired, tab]);
 
   useEffect(() => {
@@ -113,7 +115,7 @@ export function App() {
     return (
       <div className="app splash">
         <main className="page center">
-          <div className="brand">in2u</div>
+          <Brand />
           <p className="muted">{t.loading}</p>
         </main>
       </div>
@@ -121,6 +123,21 @@ export function App() {
   }
 
   if (me === null) return <Login />;
+  // Lo primero al crear la cuenta (y para las cuentas viejas que no lo tienen).
+  if (!me.profileComplete) {
+    return (
+      <div className="app splash">
+        <main className="page center">
+          <div className="stack" style={{ alignItems: 'center' }}>
+            <Brand />
+            <h1>{t.profile.title}</h1>
+            <p className="muted">{t.profile.subtitle}</p>
+          </div>
+          <ProfileForm me={me} onSaved={setMe} />
+        </main>
+      </div>
+    );
+  }
   if (me.state !== 'paired') return <Onboarding me={me} onChange={setMe} />;
 
   return (
@@ -160,8 +177,9 @@ export function App() {
         )}
         {tab === 'juego' && <Game me={me} version={versions.game} />}
         {tab === 'consejos' && <TipsScreen tip={tip} />}
-        {tab === 'ciclo' && <Cycle me={me} />}
-        {tab === 'perfil' && <Profile me={me} onSignedOut={() => setMe(null)} />}
+        {tab === 'ciclo' &&
+          (me.gender === 'hombre' ? <PartnerCycleScreen me={me} cycle={partnerCycle} /> : <Cycle me={me} />)}
+        {tab === 'perfil' && <Profile me={me} onChange={setMe} onSignedOut={() => setMe(null)} />}
       </main>
 
       <nav className="nav" aria-label="Principal">

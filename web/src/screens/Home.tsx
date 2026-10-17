@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 
 import { api, type Checkin, type CoupleEvent, type GameState, type Me, type PartnerCycle, type Photo, type TodayTip } from '../api';
 import { Emoji } from '../Emoji';
-import { moodEmoji, t } from '../i18n';
+import { locale, moodEmoji, t } from '../i18n';
 import { ChatIcon, GameIcon, IdeaIcon, PlusCircleIcon } from '../icons';
-import { firstName, localIsoDate, ofTheDay, weekDays } from '../lib';
+import { daysSince, firstName, localIsoDate, ofTheDay, parseLocalDate, weekDays } from '../lib';
 import { DAILY_QUESTIONS } from '../questions';
 import { CARE_TIPS, tipByKey } from '../tips';
 import { PhotoCard } from './Album';
@@ -82,7 +82,7 @@ function PhotoCarousel({
   );
 }
 
-function CycleCareCard({ partner, cycle }: { partner: string; cycle: PartnerCycle }) {
+export function CycleCareCard({ partner, cycle }: { partner: string; cycle: PartnerCycle }) {
   if (cycle.visibility === 'nada' || !cycle.hasData) return null;
 
   if (cycle.visibility === 'avisos') {
@@ -117,6 +117,18 @@ function CycleCareCard({ partner, cycle }: { partner: string; cycle: PartnerCycl
         </>
       )}
     </>
+  );
+}
+
+function DaysTogetherCard({ since }: { since: string }) {
+  const days = daysSince(since);
+  return (
+    <section className="card sky">
+      <p className="kicker">
+        {t.nosotros.since(parseLocalDate(since).toLocaleDateString(locale, { dateStyle: 'long' }))}
+      </p>
+      <h2>{days > 0 ? t.nosotros.daysTogether(days) : t.nosotros.firstDay}</h2>
+    </section>
   );
 }
 
@@ -209,6 +221,8 @@ export function Home({
           {myInitial}
         </button>
       </header>
+
+      {me.togetherSince && <DaysTogetherCard since={me.togetherSince} />}
 
       <div className="week-strip" role="tablist" aria-label={t.nosotros.week}>
         {days.map((d) => {
