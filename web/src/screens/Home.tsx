@@ -65,13 +65,17 @@ export function Home({
   return (
     <>
       <header className="row between" style={{ marginBottom: 8 }}>
-        <h1 style={{ maxWidth: 230 }}>
-          {greeting()},
-          <br />
-          {firstName(me.name, '')}
-        </h1>
-        <div className="avatar" aria-hidden>
-          {(firstName(me.name, '·')[0] ?? '·').toUpperCase()}
+        <div className="stack" style={{ gap: 4 }}>
+          <h1>
+            {greeting()}, {firstName(me.name, '')}
+          </h1>
+          <p className="couple">
+            {firstName(me.name, '')} <span className="heart">♥</span> {partnerName}
+          </p>
+        </div>
+        <div className="avatars" aria-hidden>
+          <div className="avatar">{(firstName(me.name, '·')[0] ?? '·').toUpperCase()}</div>
+          <div className="avatar partner">{(partnerName[0] ?? '·').toUpperCase()}</div>
         </div>
       </header>
 
