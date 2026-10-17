@@ -1,5 +1,5 @@
 # Blueprint de Render: crea el backend desde backend/Dockerfile.
-# Las variables con sync:false las completás vos en el panel (son secretas).
+# Las variables con sync:false las completas tú en el panel (son secretas).
 services:
   - type: web
     name: in2u-backend

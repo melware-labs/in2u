@@ -1,6 +1,6 @@
-# Levanta in2u completo: `docker compose up --build` y abrí http://localhost:8080
+# Levanta in2u completo: `docker compose up --build` y abre http://localhost:8080
 # (nginx sirve la web y reenvía /api al backend; el backend no se expone solo).
-# Copiá .env.example a .env para configurar Google, Gemini, etc.
+# Copia .env.example a .env para configurar Google, Gemini, etc.
 services:
   db:
     image: postgres:16-alpine
