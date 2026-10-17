@@ -80,70 +80,75 @@ export function Home({
         </div>
       </header>
 
-      <section className="card coral" aria-label={partnerName}>
-        <p className="kicker">{partnerName}</p>
-        {partner ? (
-          <div className="mood-row">
-            <span className="mood-big" aria-hidden>
-              <Emoji char={moodEmoji(partner.mood)} />
-            </span>
-            <div>
-              <h2>{t.moods[partner.mood]}</h2>
-              {partner.note && <p className="muted">“{partner.note}”</p>}
-            </div>
-          </div>
-        ) : (
-          <p className="muted">{t.nosotros.partnerNoCheckinYet(partnerName)}</p>
-        )}
-      </section>
+      <div className="cols">
+        <div className="col">
+          <section className="card coral" aria-label={partnerName}>
+            <p className="kicker">{partnerName}</p>
+            {partner ? (
+              <div className="mood-row">
+                <span className="mood-big" aria-hidden>
+                  <Emoji char={moodEmoji(partner.mood)} />
+                </span>
+                <div>
+                  <h2>{t.moods[partner.mood]}</h2>
+                  {partner.note && <p className="muted">“{partner.note}”</p>}
+                </div>
+              </div>
+            ) : (
+              <p className="muted">{t.nosotros.partnerNoCheckinYet(partnerName)}</p>
+            )}
+          </section>
 
-      <section className="card yellow">
-        <p className="kicker">{t.nosotros.you}</p>
-        {mine ? (
-          <div className="mood-row">
-            <span className="mood-big" aria-hidden>
-              <Emoji char={moodEmoji(mine.mood)} />
-            </span>
-            <div style={{ flex: 1 }}>
-              <h2>{t.moods[mine.mood]}</h2>
-              {mine.note && <p className="muted">“{mine.note}”</p>}
-            </div>
-            <button className="btn secondary small-btn" onClick={onCheckIn}>
-              {t.nosotros.change}
-            </button>
-          </div>
-        ) : (
-          <>
-            <h2>{t.nosotros.checkInPrompt}</h2>
-            <p className="muted small">{t.nosotros.tapToChoose(partnerName)}</p>
-            <button className="btn" onClick={onCheckIn}>
-              {t.nosotros.checkInPrompt}
-            </button>
-          </>
-        )}
-      </section>
-
-      {partnerCycle && <CycleCareCard partner={partnerName} cycle={partnerCycle} />}
-
-      <section className="card strip">
-        <p className="kicker">{t.nosotros.week}</p>
-        <div className="week">
-          {weekDays(week).map((d) => (
-            <div key={d.date} className={`day${d.isToday ? ' today' : ''}`}>
-              <span className="wd">{t.weekdays[d.weekday]}</span>
-              <span className="em" aria-label={d.partner ? t.moods[d.partner.mood] : undefined}>
-                {d.partner ? <Emoji char={moodEmoji(d.partner.mood)} /> : '·'}
-              </span>
-              <span className="em" aria-label={d.mine ? t.moods[d.mine.mood] : undefined}>
-                {d.mine ? <Emoji char={moodEmoji(d.mine.mood)} /> : '·'}
-              </span>
-            </div>
-          ))}
+          <section className="card yellow">
+            <p className="kicker">{t.nosotros.you}</p>
+            {mine ? (
+              <div className="mood-row">
+                <span className="mood-big" aria-hidden>
+                  <Emoji char={moodEmoji(mine.mood)} />
+                </span>
+                <div style={{ flex: 1 }}>
+                  <h2>{t.moods[mine.mood]}</h2>
+                  {mine.note && <p className="muted">“{mine.note}”</p>}
+                </div>
+                <button className="btn secondary small-btn" onClick={onCheckIn}>
+                  {t.nosotros.change}
+                </button>
+              </div>
+            ) : (
+              <>
+                <h2>{t.nosotros.checkInPrompt}</h2>
+                <p className="muted small">{t.nosotros.tapToChoose(partnerName)}</p>
+                <button className="btn" onClick={onCheckIn}>
+                  {t.nosotros.checkInPrompt}
+                </button>
+              </>
+            )}
+          </section>
         </div>
-        <p className="muted small">
-          {partnerName} · {t.nosotros.you}
-        </p>
-      </section>
+        <div className="col">
+          {partnerCycle && <CycleCareCard partner={partnerName} cycle={partnerCycle} />}
+
+          <section className="card strip">
+            <p className="kicker">{t.nosotros.week}</p>
+            <div className="week">
+              {weekDays(week).map((d) => (
+                <div key={d.date} className={`day${d.isToday ? ' today' : ''}`}>
+                  <span className="wd">{t.weekdays[d.weekday]}</span>
+                  <span className="em" aria-label={d.partner ? t.moods[d.partner.mood] : undefined}>
+                    {d.partner ? <Emoji char={moodEmoji(d.partner.mood)} /> : '·'}
+                  </span>
+                  <span className="em" aria-label={d.mine ? t.moods[d.mine.mood] : undefined}>
+                    {d.mine ? <Emoji char={moodEmoji(d.mine.mood)} /> : '·'}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <p className="muted small">
+              {partnerName} · {t.nosotros.you}
+            </p>
+          </section>
+        </div>
+      </div>
     </>
   );
 }
