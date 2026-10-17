@@ -1,0 +1,29 @@
+# Blueprint de Render: crea el backend desde backend/Dockerfile.
+# Las variables con sync:false las completás vos en el panel (son secretas).
+services:
+  - type: web
+    name: in2u-backend
+    runtime: docker
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: DEV_LOGIN
+        value: "false"
+      - key: DB_URL # jdbc:postgresql://HOST/BASE?sslmode=require
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: FRONTEND_URL # https://TU-APP.vercel.app
+        sync: false
