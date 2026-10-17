@@ -3,7 +3,7 @@ import { locale, moodEmoji, t } from '../i18n';
 import { daysSince, firstName, localIsoDate, parseLocalDate, weekDays } from '../lib';
 import { CARE_TIPS } from '../tips';
 
-function CycleCareCard({ partner, cycle }: { partner: string; cycle: PartnerCycle }) {
+export function CycleCareCard({ partner, cycle }: { partner: string; cycle: PartnerCycle }) {
   if (cycle.visibility === 'nada' || !cycle.hasData) return null;
 
   if (cycle.visibility === 'avisos') {

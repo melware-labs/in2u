@@ -1,12 +1,45 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { api, SYMPTOMS, type Me, type OwnCycle, type Symptom, type Visibility } from '../api';
+import { api, SYMPTOMS, type Me, type OwnCycle, type PartnerCycle, type Symptom, type Visibility } from '../api';
 import { locale, t } from '../i18n';
 import { ChevronIcon, MoonIcon } from '../icons';
 import { cycleGrid, firstName, localIsoDate, parseLocalDate } from '../lib';
+import { CycleCareCard } from './Home';
 
 const INTL = locale === 'en' ? 'en-US' : 'es-ES';
 const fmt = (key: string) => parseLocalDate(key).toLocaleDateString(INTL, { day: 'numeric', month: 'short' });
+
+/**
+ * Con género "hombre" no hay ciclo propio: la pestaña muestra solo lo que la
+ * pareja eligió compartir (ella lo controla desde su pestaña Ciclo).
+ */
+export function PartnerCycleScreen({ me, cycle }: { me: Me; cycle: PartnerCycle | null }) {
+  const partnerName = firstName(me.partner?.name, '—');
+  const shared = cycle && cycle.visibility !== 'nada' && cycle.hasData;
+  const showsSomething = shared && (cycle.visibility === 'fase_y_avisos' || cycle.careMode);
+  return (
+    <>
+      <h1>{t.ciclo.title}</h1>
+      {!cycle ? (
+        <p className="muted">{t.loading}</p>
+      ) : showsSomething ? (
+        <CycleCareCard partner={partnerName} cycle={cycle} />
+      ) : (
+        <section className="card">
+          <p className="kicker">{t.ciclo.partnerCycle(partnerName)}</p>
+          <p className="muted">
+            {cycle.visibility === 'nada'
+              ? t.ciclo.notShared(partnerName)
+              : cycle.hasData
+                ? t.ciclo.nothingToday(partnerName)
+                : t.ciclo.noDataYet(partnerName)}
+          </p>
+        </section>
+      )}
+      <p className="muted small">{t.ciclo.sheDecides(partnerName)}</p>
+    </>
+  );
+}
 
 export function Cycle({ me }: { me: Me }) {
   const now = new Date();

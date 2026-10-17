@@ -6,7 +6,7 @@ import { CalendarIcon, HomeIcon, IdeaIcon, MoonIcon, UserIcon } from './icons';
 import { localIsoDate } from './lib';
 import { Calendar } from './screens/Calendar';
 import { CheckInSheet } from './screens/CheckInSheet';
-import { Cycle } from './screens/Cycle';
+import { Cycle, PartnerCycleScreen } from './screens/Cycle';
 import { Home } from './screens/Home';
 import { Login } from './screens/Login';
 import { Onboarding } from './screens/Onboarding';
@@ -54,9 +54,9 @@ export function App() {
     setPartnerCycle(pc);
   }, []);
 
-  // El ciclo de la pareja no llega por SSE: se vuelve a pedir al volver a "Nosotros".
+  // El ciclo de la pareja no llega por SSE: se vuelve a pedir al volver a "Nosotros" o "Ciclo".
   useEffect(() => {
-    if (paired && tab === 'nosotros') api.partnerCycle().then(setPartnerCycle, () => undefined);
+    if (paired && (tab === 'nosotros' || tab === 'ciclo')) api.partnerCycle().then(setPartnerCycle, () => undefined);
   }, [paired, tab]);
 
   useEffect(() => {
@@ -102,7 +102,8 @@ export function App() {
         )}
         {tab === 'calendario' && <Calendar me={me} />}
         {tab === 'consejos' && <TipsScreen tip={tip} />}
-        {tab === 'ciclo' && <Cycle me={me} />}
+        {tab === 'ciclo' &&
+          (me.gender === 'hombre' ? <PartnerCycleScreen me={me} cycle={partnerCycle} /> : <Cycle me={me} />)}
         {tab === 'perfil' && <Profile me={me} onChange={setMe} onSignedOut={() => setMe(null)} />}
       </main>
 

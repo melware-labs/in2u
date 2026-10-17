@@ -68,6 +68,7 @@ export function ProfileForm({
             </button>
           ))}
         </div>
+        {gender && <span className="muted small">{t.profile.genderHint[gender]}</span>}
       </div>
 
       <label className="stack" style={{ gap: 6 }}>
