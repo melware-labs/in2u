@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { api, type Checkin, type Me } from '../api';
+import { Emoji } from '../Emoji';
 import { MOODS, t } from '../i18n';
 import { firstName } from '../lib';
 
@@ -49,7 +50,7 @@ export function CheckInSheet({
           {MOODS.map((m) => (
             <button key={m.mood} className="mood-option" aria-pressed={mood === m.mood} onClick={() => setMood(m.mood)}>
               <span className="em" aria-hidden>
-                {m.emoji}
+                <Emoji char={m.emoji} />
               </span>
               {t.moods[m.mood]}
             </button>
