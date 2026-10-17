@@ -4,6 +4,7 @@ import { api, type Me } from '../api';
 import { locale, t } from '../i18n';
 import { parseLocalDate } from '../lib';
 import { ProfileForm } from './ProfileForm';
+import { ThemePicker } from './ThemePicker';
 
 export function Profile({
   me,
@@ -67,6 +68,8 @@ export function Profile({
           {t.perfil.coupleCode}: {me.inviteCode}
         </p>
       </section>
+
+      <ThemePicker />
 
       <button className="btn secondary" onClick={signOut}>
         {t.perfil.signOut}
