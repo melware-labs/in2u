@@ -28,7 +28,7 @@ public class SecurityConfig {
 	SecurityFilterChain securityFilterChain(HttpSecurity http, In2uProperties props) throws Exception {
 		http
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/actuator/health", "/api/dev/login").permitAll()
+				.requestMatchers("/actuator/health", "/api/dev/login", "/api/push/public-key").permitAll()
 				.requestMatchers("/api/**").authenticated()
 				.anyRequest().permitAll())
 			.oauth2Login(login -> login.defaultSuccessUrl(props.frontendUrl(), true))
