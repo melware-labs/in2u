@@ -111,7 +111,7 @@ function xsrfToken(): string {
   return match ? decodeURIComponent(match[1]) : '';
 }
 
-async function request<T>(method: string, path: string, body?: unknown): Promise<T | null> {
+async function request<T>(method: string, path: string, body?: unknown, signal?: AbortSignal): Promise<T | null> {
   const headers: Record<string, string> = {};
   const raw = body instanceof Blob;
   if (body !== undefined) headers['Content-Type'] = raw ? body.type : 'application/json';
@@ -122,6 +122,7 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
     headers,
     credentials: 'same-origin',
     body: body === undefined ? undefined : raw ? body : JSON.stringify(body),
+    signal,
   });
   if (!res.ok) {
     let message = `Error ${res.status}`;
@@ -139,13 +140,20 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
 }
 
 export const api = {
-  /** null si no hay sesión (401). */
-  async me(): Promise<Me | null> {
+  /**
+   * null si no hay sesión (401). Se corta a los `timeoutMs`: el backend gratis de
+   * Render se duerme y al despertar puede dejar la petición colgada.
+   */
+  async me(timeoutMs = 20000): Promise<Me | null> {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
-      return (await request<Me>('GET', '/api/me')) ?? null;
+      return (await request<Me>('GET', '/api/me', undefined, ctrl.signal)) ?? null;
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) return null;
       throw e;
+    } finally {
+      clearTimeout(timer);
     }
   },
   createCouple: () => request<Me>('POST', '/api/couple') as Promise<Me>,
