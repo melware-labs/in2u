@@ -1,6 +1,6 @@
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 
-import { api, ApiError, type Checkin, type Me, type PartnerCycle, type TodayTip, subscribeToUpdates } from './api';
+import { api, type Checkin, type Me, type PartnerCycle, type TodayTip, subscribeToUpdates } from './api';
 import { Brand } from './Brand';
 import { t } from './i18n';
 import {
@@ -61,36 +61,26 @@ export function App() {
   const [chatDraft, setChatDraft] = useState<string | null>(null);
   const clearDraft = useCallback(() => setChatDraft(null), []);
 
-  useEffect(() => {
-    let cancelled = false;
-    async function initSession() {
-      // Obtenemos la sesión actual. Si el servidor está despertando (en el plan
-      // gratuito de Render puede tardar unos segundos), reintentamos para no cerrar
-      // la sesión erróneamente por un timeout o 502/503 temporal.
-      for (let attempt = 0; attempt < 3; attempt++) {
-        try {
-          const user = await api.me();
-          if (!cancelled) setMe(user);
-          return;
-        } catch (err) {
-          if (err instanceof ApiError && err.status === 401) {
-            // Usuario sin sesión: se muestra la pantalla de login.
-            if (!cancelled) setMe(null);
-            return;
-          }
-          if (attempt < 2) {
-            await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
-          } else {
-            if (!cancelled) setMe(null);
-          }
-        }
+  // Al abrir: si el servidor está dormido la primera petición falla o se corta;
+  // se reintenta unas veces y, si sigue sin responder, se ofrece reintentar.
+  const [boot, setBoot] = useState<'loading' | 'waking' | 'failed'>('loading');
+  const loadMe = useCallback(async () => {
+    setBoot('loading');
+    for (let attempt = 0; attempt < 4; attempt++) {
+      try {
+        setMe(await api.me());
+        return;
+      } catch {
+        setBoot('waking');
+        await new Promise((r) => setTimeout(r, 3000));
       }
     }
-    initSession();
-    return () => {
-      cancelled = true;
-    };
+    setBoot('failed');
   }, []);
+
+  useEffect(() => {
+    loadMe();
+  }, [loadMe]);
 
   // Una vez por sesión: el navegador le dice al backend su zona horaria, para
   // que "hoy" sea el día de cada quien y no el del servidor.
@@ -145,7 +135,16 @@ export function App() {
       <div className="app splash">
         <main className="page center">
           <Brand />
-          <p className="muted">{t.loading}</p>
+          {boot === 'failed' ? (
+            <>
+              <p className="muted">{t.offline}</p>
+              <button className="btn" onClick={loadMe}>
+                {t.retry}
+              </button>
+            </>
+          ) : (
+            <p className="muted">{boot === 'waking' ? t.waking : t.loading}</p>
+          )}
         </main>
       </div>
     );
