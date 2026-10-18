@@ -59,11 +59,15 @@ class AlbumController {
 
 	private final MoodStream stream;
 
-	AlbumController(AlbumPhotoRepository photos, CoupleService couples, CurrentUser currentUser, MoodStream stream) {
+	private final app.in2u.push.PushNotificationService pushNotifications;
+
+	AlbumController(AlbumPhotoRepository photos, CoupleService couples, CurrentUser currentUser, MoodStream stream,
+			app.in2u.push.PushNotificationService pushNotifications) {
 		this.photos = photos;
 		this.couples = couples;
 		this.currentUser = currentUser;
 		this.stream = stream;
+		this.pushNotifications = pushNotifications;
 	}
 
 	@GetMapping
@@ -98,6 +102,11 @@ class AlbumController {
 		var saved = photos.save(new AlbumPhoto(couple.getId(), user.getId(), clean(title, 80, "El título"),
 				clean(description, 500, "La descripción"), type, data));
 		stream.publish(couple.getId(), "album");
+		String uploaderName = user.getDisplayName() != null && !user.getDisplayName().isBlank()
+				? user.getDisplayName()
+				: "Tu pareja";
+		pushNotifications.notifyPartner(couple.getId(), user.getId(), "in2u",
+				uploaderName + " subió una foto nueva al álbum", "/");
 		return toResponse(saved, user.getId());
 	}
 

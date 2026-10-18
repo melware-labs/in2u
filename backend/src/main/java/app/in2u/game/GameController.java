@@ -59,11 +59,15 @@ class GameController {
 
 	private final MoodStream stream;
 
-	GameController(GameAnswerRepository answers, CoupleService couples, CurrentUser currentUser, MoodStream stream) {
+	private final app.in2u.push.PushNotificationService pushNotifications;
+
+	GameController(GameAnswerRepository answers, CoupleService couples, CurrentUser currentUser, MoodStream stream,
+			app.in2u.push.PushNotificationService pushNotifications) {
 		this.answers = answers;
 		this.couples = couples;
 		this.currentUser = currentUser;
 		this.stream = stream;
+		this.pushNotifications = pushNotifications;
 	}
 
 	@GetMapping
@@ -115,6 +119,11 @@ class GameController {
 		}
 		answers.save(new GameAnswer(couple.getId(), user.getId(), body.questionKey(), body.self(), body.guess()));
 		stream.publish(couple.getId(), "game");
+		String senderName = user.getDisplayName() != null && !user.getDisplayName().isBlank()
+				? user.getDisplayName()
+				: "Tu pareja";
+		pushNotifications.notifyPartner(couple.getId(), user.getId(), "in2u",
+				senderName + " respondió la pregunta de hoy en el juego", "/");
 		return state(principal);
 	}
 }
