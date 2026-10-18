@@ -61,12 +61,14 @@ export function App() {
   const [chatDraft, setChatDraft] = useState<string | null>(null);
   const clearDraft = useCallback(() => setChatDraft(null), []);
 
-  // Al abrir: si el servidor está dormido la primera petición falla o se corta;
-  // se reintenta unas veces y, si sigue sin responder, se ofrece reintentar.
+  // Al abrir: si el servidor está dormido la primera petición falla o se corta.
+  // Render gratis tarda hasta unos 3 minutos en despertar, así que se reintenta
+  // durante ese tiempo y, si sigue sin responder, se ofrece reintentar.
   const [boot, setBoot] = useState<'loading' | 'waking' | 'failed'>('loading');
   const loadMe = useCallback(async () => {
     setBoot('loading');
-    for (let attempt = 0; attempt < 4; attempt++) {
+    const giveUpAt = Date.now() + 3.5 * 60_000;
+    while (Date.now() < giveUpAt) {
       try {
         setMe(await api.me());
         return;
