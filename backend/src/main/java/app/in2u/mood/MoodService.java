@@ -28,13 +28,20 @@ public class MoodService {
 
 	private final Clock clock;
 
+	private final app.in2u.push.PushNotificationService pushNotifications;
+
+	private final app.in2u.user.AppUserRepository users;
+
 	public MoodService(MoodCheckinRepository checkins, CoupleService couples, MoodStream stream,
-			ApplicationEventPublisher events, Clock clock) {
+			ApplicationEventPublisher events, Clock clock, app.in2u.push.PushNotificationService pushNotifications,
+			app.in2u.user.AppUserRepository users) {
 		this.checkins = checkins;
 		this.couples = couples;
 		this.stream = stream;
 		this.events = events;
 		this.clock = clock;
+		this.pushNotifications = pushNotifications;
+		this.users = users;
 	}
 
 	/** Crea o reemplaza el check-in de hoy (uno por persona por día). */
@@ -71,11 +78,16 @@ public class MoodService {
 		return checkins.findByUserIdOrderByCheckinDateDesc(userId, PageRequest.of(0, limit));
 	}
 
-	/** Avisa a la pareja por SSE, solo cuando el check-in ya quedó guardado. */
+	/** Avisa a la pareja por SSE y push, solo cuando el check-in ya quedó guardado. */
 	@org.springframework.transaction.event.TransactionalEventListener(
 			phase = org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
 	void notifyPartner(CheckinSaved event) {
 		stream.publish(event.coupleId(), "mood");
+		String authorName = users.findById(event.authorId())
+				.map(app.in2u.user.AppUser::getDisplayName)
+				.orElse("Tu pareja");
+		pushNotifications.notifyPartner(event.coupleId(), event.authorId(), "in2u",
+				authorName + " registró su ánimo de hoy", "/");
 	}
 
 	public MoodStream stream() {

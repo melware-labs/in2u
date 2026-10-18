@@ -4,6 +4,7 @@ import { api, type Me } from '../api';
 import { locale, t } from '../i18n';
 import { parseLocalDate } from '../lib';
 import { ProfileForm } from './ProfileForm';
+import { PushSettings } from './PushSettings';
 import { ThemePicker } from './ThemePicker';
 
 export function Profile({
@@ -70,6 +71,8 @@ export function Profile({
           </p>
         </section>
       </div>
+
+      <PushSettings />
 
       <ThemePicker />
 
