@@ -196,6 +196,10 @@ export const api = {
   game: () => request<GameState>('GET', '/api/game') as Promise<GameState>,
   answerGame: (questionKey: string, self: number, guess: number) =>
     request<GameState>('POST', '/api/game/answers', { questionKey, self, guess }) as Promise<GameState>,
+  getPushPublicKey: () => request<{ publicKey: string }>('GET', '/api/push/public-key'),
+  subscribePush: (subscription: { endpoint: string; keys: { p256dh: string; auth: string } }) =>
+    request<void>('POST', '/api/push/subscribe', subscription),
+  unsubscribePush: (endpoint: string) => request<void>('POST', '/api/push/unsubscribe', { endpoint }),
   devLogin: (email: string, name: string) => request<void>('POST', '/api/dev/login', { email, name }),
   logout: () => request<void>('POST', '/api/logout'),
 };

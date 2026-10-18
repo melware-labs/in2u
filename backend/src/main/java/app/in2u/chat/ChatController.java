@@ -49,12 +49,15 @@ class ChatController {
 
 	private final MoodStream stream;
 
+	private final app.in2u.push.PushNotificationService pushNotifications;
+
 	ChatController(ChatMessageRepository messages, CoupleService couples, CurrentUser currentUser,
-			MoodStream stream) {
+			MoodStream stream, app.in2u.push.PushNotificationService pushNotifications) {
 		this.messages = messages;
 		this.couples = couples;
 		this.currentUser = currentUser;
 		this.stream = stream;
+		this.pushNotifications = pushNotifications;
 	}
 
 	/** Los últimos mensajes (o los anteriores a {@code before}), del más viejo al más nuevo. */
@@ -82,6 +85,11 @@ class ChatController {
 		}
 		var saved = messages.save(new ChatMessage(couple.getId(), user.getId(), clean));
 		stream.publish(couple.getId(), "chat");
+		String senderName = user.getDisplayName() != null && !user.getDisplayName().isBlank()
+				? user.getDisplayName()
+				: "Tu pareja";
+		String preview = clean.length() > 80 ? clean.substring(0, 77) + "..." : clean;
+		pushNotifications.notifyPartner(couple.getId(), user.getId(), senderName, preview, "/");
 		return toResponse(saved, user.getId());
 	}
 

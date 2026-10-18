@@ -56,3 +56,7 @@ in2u:
     # Las notas del check-in son íntimas y el plan gratuito de Google puede usar
     # los datos enviados: por defecto NO se mandan, solo los números del ánimo.
     send-notes: ${GEMINI_SEND_NOTES:false}
+  push:
+    public-key: ${VAPID_PUBLIC_KEY:BDVVs37Y7BvYqToBx4yJTgWEdwubgKuPp0iasXj9I2kSgayx5KOXV4poTZl9RyiLpOztxvk106FelnE5OZuv8Wc}
+    private-key: ${VAPID_PRIVATE_KEY:}
+    subject: ${VAPID_SUBJECT:mailto:hola@in2u.app}
