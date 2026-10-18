@@ -51,8 +51,10 @@
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.springframework.session</groupId>
-      <artifactId>spring-session-jdbc</artifactId>
+      <!-- En Boot 4 la configuración de Spring Session va en su propio starter:
+           sin él la sesión queda en memoria y se pierde cada vez que Render se duerme. -->
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-session-jdbc</artifactId>
     </dependency>
     <dependency>
       <groupId>nl.martijndwars</groupId>
