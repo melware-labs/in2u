@@ -3,7 +3,7 @@
  */
 const es = {
   loading: 'Cargando…',
-  waking: 'Despertando el servidor, puede tardar hasta un minuto…',
+  waking: 'Despertando el servidor, puede tardar un par de minutos…',
   offline: 'No pudimos conectar con in2u. Revisa tu internet e inténtalo de nuevo.',
   retry: 'Reintentar',
   tabs: {
@@ -283,7 +283,7 @@ const es = {
 
 const en: typeof es = {
   loading: 'Loading…',
-  waking: 'Waking up the server, this can take up to a minute…',
+  waking: 'Waking up the server, this can take a couple of minutes…',
   offline: "We couldn't reach in2u. Check your connection and try again.",
   retry: 'Try again',
   tabs: {
