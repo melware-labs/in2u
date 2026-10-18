@@ -11,6 +11,22 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   return outputArray;
 }
 
+export function isIos(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return (
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  );
+}
+
+export function isStandalone(): boolean {
+  if (typeof window === 'undefined') return false;
+  return (
+    (window.navigator as unknown as { standalone?: boolean }).standalone === true ||
+    window.matchMedia('(display-mode: standalone)').matches
+  );
+}
+
 export function isPushSupported(): boolean {
   return (
     typeof window !== 'undefined' &&
