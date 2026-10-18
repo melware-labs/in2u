@@ -1,17 +1,13 @@
 /**
- * Tema de colores (carmesí de entrada, o una paleta pastel) y modo día/noche. Se guarda en este
- * navegador; "auto" sigue el modo del sistema.
+ * Tema de colores: solo carmesí. Se guarda en este navegador; el modo día/noche
+ * se elige entre "auto" (sigue al sistema), "light" o "dark".
  */
-export type ThemeName = 'carmesi' | 'lavanda' | 'menta' | 'celeste' | 'durazno';
+export type ThemeName = 'carmesi';
 export type Mode = 'auto' | 'light' | 'dark';
 
-/** Color de muestra de cada paleta (su --primary en styles.css). */
+/** Color de muestra de la paleta (su --primary en styles.css). */
 export const THEMES: { id: ThemeName; color: string }[] = [
   { id: 'carmesi', color: '#ab2222' },
-  { id: 'lavanda', color: '#b9a3e3' },
-  { id: 'menta', color: '#8fd0b5' },
-  { id: 'celeste', color: '#9cc8ec' },
-  { id: 'durazno', color: '#f2b392' },
 ];
 export const MODES: Mode[] = ['auto', 'light', 'dark'];
 

@@ -12,6 +12,7 @@ import {
   IdeaIcon,
   MoonIcon,
   MoreIcon,
+  UserIcon,
 } from './icons';
 import { localIsoDate } from './lib';
 import { Album } from './screens/Album';
@@ -41,6 +42,7 @@ const TABS: { id: Tab; icon: ReactNode; label: string; more?: boolean }[] = [
   { id: 'juego', icon: <GameIcon />, label: t.tabs.juego, more: true },
   { id: 'consejos', icon: <IdeaIcon />, label: t.tabs.consejos, more: true },
   { id: 'ciclo', icon: <MoonIcon />, label: t.tabs.ciclo, more: true },
+  { id: 'perfil', icon: <UserIcon />, label: t.tabs.perfil, more: true },
 ];
 
 export function App() {
@@ -244,7 +246,7 @@ export function App() {
         <div className="sheet-bg" onClick={() => setMoreOpen(false)}>
           <div className="sheet" role="dialog" aria-modal="true" aria-label={t.tabs.mas} onClick={(e) => e.stopPropagation()}>
             <div className="more-grid">
-              {TABS.filter((i) => i.more).map((item) => (
+              {TABS.map((item) => (
                 <button
                   key={item.id}
                   className="more-item"
