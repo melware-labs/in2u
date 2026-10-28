@@ -9,8 +9,21 @@ in2u está publicada gratis con tres servicios:
 | [Vercel](https://vercel.com) | web (Root Directory `web`) | proyecto `in2u-app` → https://in2u.vercel.app |
 
 Cada vez que se fusiona un cambio en `main`, Render y Vercel se vuelven a
-publicar solos. El plan gratis de Render "duerme" el backend: la primera visita
-después de un rato puede tardar casi un minuto.
+publicar solos.
+
+## Que el backend no se duerma
+
+El plan gratis de Render duerme el backend tras 15 minutos sin visitas y tarda
+cerca de un minuto en despertar. Para evitarlo, [cron-job.org](https://cron-job.org)
+(gratis, sin tarjeta) visita cada 10 minutos
+`https://in2u-backend.onrender.com/actuator/health/liveness`.
+
+- Esa dirección responde sin tocar la base, así Neon sí puede dormirse
+  (despierta en menos de un segundo) y no gasta sus 100 horas gratis al mes.
+- Con un solo servicio gratis en Render, 24 horas al día son ~744 horas al mes,
+  dentro de las 750 gratis. No crees otro servicio gratis en esa cuenta.
+- El backend no abre conexiones fijas a la base y limpia sesiones vencidas una
+  vez al día (`application.yml`), por la misma razón.
 
 ## Montarla desde cero
 
