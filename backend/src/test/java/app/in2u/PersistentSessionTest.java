@@ -69,4 +69,12 @@ class PersistentSessionTest {
 			"SELECT MAX(MAX_INACTIVE_INTERVAL) FROM SPRING_SESSION WHERE PRINCIPAL_NAME IS NOT NULL", Integer.class);
 		assertThat(maxInactive).isEqualTo(90 * 24 * 3600);
 	}
+
+	/** El ping que mantiene despierto a Render entra sin sesión y no necesita la base. */
+	@Test
+	void livenessIsPublic() throws Exception {
+		mvc.perform(get("/actuator/health/liveness"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.status").value("UP"));
+	}
 }
