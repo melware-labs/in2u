@@ -8,9 +8,11 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -41,16 +43,20 @@ public class GeminiClient {
 	private final RestClient slowHttp;
 
 	GeminiClient(In2uProperties props) {
-		this.config = props.gemini();
-		this.http = client(Duration.ofSeconds(20));
-		this.slowHttp = client(Duration.ofSeconds(75));
+		this(props, "https://generativelanguage.googleapis.com");
 	}
 
-	private static RestClient client(Duration readTimeout) {
+	GeminiClient(In2uProperties props, String baseUrl) {
+		this.config = props.gemini();
+		this.http = client(baseUrl, Duration.ofSeconds(20));
+		this.slowHttp = client(baseUrl, Duration.ofSeconds(75));
+	}
+
+	private static RestClient client(String baseUrl, Duration readTimeout) {
 		var factory = new SimpleClientHttpRequestFactory();
 		factory.setConnectTimeout(Duration.ofSeconds(5));
 		factory.setReadTimeout(readTimeout);
-		return RestClient.builder().baseUrl("https://generativelanguage.googleapis.com").requestFactory(factory).build();
+		return RestClient.builder().baseUrl(baseUrl).requestFactory(factory).build();
 	}
 
 	public boolean enabled() {
@@ -79,24 +85,61 @@ public class GeminiClient {
 			});
 	}
 
+	/** Reintentos cuando Google está saturado (503) o limita (429): esperas de 2 s y 5 s. */
+	private static final long[] RETRY_WAITS_MS = { 2000, 5000 };
+
 	private Optional<JsonNode> call(RestClient http, Map<String, Object> body) {
 		if (!enabled()) {
 			return Optional.empty();
 		}
+		for (int attempt = 0;; attempt++) {
+			try {
+				// Se lee como texto y se parsea aquí: Gemini a veces responde sin Content-Type JSON.
+				String text = http.post()
+					.uri("/v1beta/models/{model}:generateContent", config.model())
+					// La key va en header, no en la URL, para que no quede en logs.
+					.header("x-goog-api-key", config.apiKey())
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON)
+					.body(body)
+					.retrieve()
+					.body(String.class);
+				return Optional.of(JSON.readTree(text));
+			}
+			catch (RestClientResponseException e) {
+				int status = e.getStatusCode().value();
+				if ((status == 503 || status == 429) && attempt < RETRY_WAITS_MS.length) {
+					log.info("Gemini respondió {}; reintento {} de {}.", status, attempt + 1, RETRY_WAITS_MS.length);
+					if (!pause(RETRY_WAITS_MS[attempt])) {
+						return Optional.empty();
+					}
+					continue;
+				}
+				// Cuota agotada, clave inválida, modelo saturado, etc.: se usa el respaldo.
+				log.warn("Gemini no respondió (HTTP {}: {}); se usa el respaldo.", status, abbreviate(e.getResponseBodyAsString()));
+				return Optional.empty();
+			}
+			catch (Exception e) {
+				log.warn("Gemini no respondió ({}); se usa el respaldo.", e.getMessage());
+				return Optional.empty();
+			}
+		}
+	}
+
+	private static boolean pause(long millis) {
 		try {
-			return Optional.ofNullable(http.post()
-				.uri("/v1beta/models/{model}:generateContent", config.model())
-				// La key va en header, no en la URL, para que no quede en logs.
-				.header("x-goog-api-key", config.apiKey())
-				.body(body)
-				.retrieve()
-				.body(JsonNode.class));
+			Thread.sleep(millis);
+			return true;
 		}
-		catch (Exception e) {
-			// Cuota gratuita agotada (429), red caída, etc.: se usa el respaldo.
-			log.warn("Gemini no respondió ({}); se usa el respaldo.", e.getMessage());
-			return Optional.empty();
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return false;
 		}
+	}
+
+	private static String abbreviate(String s) {
+		String flat = s == null ? "" : s.replaceAll("\\s+", " ").strip();
+		return flat.length() <= 300 ? flat : flat.substring(0, 300) + "…";
 	}
 
 	private static String responseText(JsonNode response) {

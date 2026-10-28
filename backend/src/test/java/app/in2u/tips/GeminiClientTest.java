@@ -6,7 +6,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.jupiter.api.Test;
+
+import com.sun.net.httpserver.HttpServer;
+
+import app.in2u.config.In2uProperties;
 
 import app.in2u.mood.MoodCheckin;
 import tools.jackson.databind.ObjectMapper;
@@ -37,5 +44,56 @@ class GeminiClientTest {
 		String badKey = ok.replace("volver-rapido", "inventado");
 		assertThat(GeminiClient.parse(json.readTree(badKey), "Ana")).isEmpty();
 		assertThat(GeminiClient.parse(json.readTree("{}"), "Ana")).isEmpty();
+	}
+
+	private static final String OK = "{\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"{\\\"ok\\\":true}\"}]}}]}";
+
+	private static HttpServer server(AtomicInteger calls, int failures, String contentType) throws Exception {
+		var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+		server.createContext("/", ex -> {
+			boolean fail = calls.incrementAndGet() <= failures;
+			byte[] body = (fail ? "{\"error\":{\"message\":\"high demand\"}}" : OK).getBytes();
+			if (contentType != null) {
+				ex.getResponseHeaders().add("Content-Type", contentType);
+			}
+			ex.sendResponseHeaders(fail ? 503 : 200, body.length);
+			ex.getResponseBody().write(body);
+			ex.close();
+		});
+		server.start();
+		return server;
+	}
+
+	private static GeminiClient client(HttpServer server) {
+		var props = new In2uProperties("", false, new In2uProperties.Gemini("key", "m", false), null, null);
+		return new GeminiClient(props, "http://127.0.0.1:" + server.getAddress().getPort());
+	}
+
+	@Test
+	void readsTheResponseEvenWithoutJsonContentType() throws Exception {
+		var calls = new AtomicInteger();
+		var server = server(calls, 0, "application/octet-stream");
+		try {
+			var json = client(server).generateJson("hola", java.util.Map.of("type", "OBJECT"));
+			assertThat(json).isPresent();
+			assertThat(json.get().path("ok").asBoolean()).isTrue();
+		}
+		finally {
+			server.stop(0);
+		}
+	}
+
+	@Test
+	void retriesWhenGoogleIsOverloaded() throws Exception {
+		var calls = new AtomicInteger();
+		var server = server(calls, 1, "application/json");
+		try {
+			var json = client(server).generateJson("hola", java.util.Map.of("type", "OBJECT"));
+			assertThat(json).isPresent();
+			assertThat(calls.get()).isEqualTo(2);
+		}
+		finally {
+			server.stop(0);
+		}
 	}
 }
