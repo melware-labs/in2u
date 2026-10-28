@@ -1,4 +1,4 @@
-package app.in2u.config;
+package app.in2u.security;
 
 import java.util.List;
 import java.util.Map;

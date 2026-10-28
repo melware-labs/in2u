@@ -69,6 +69,8 @@ in2u:
     # los datos enviados: por defecto NO se mandan, solo los números del ánimo.
     send-notes: ${GEMINI_SEND_NOTES:false}
   push:
-    public-key: ${VAPID_PUBLIC_KEY:BDVVs37Y7BvYqToBx4yJTgWEdwubgKuPp0iasXj9I2kSgayx5KOXV4poTZl9RyiLpOztxvk106FelnE5OZuv8Wc}
-    private-key: ${VAPID_PRIVATE_KEY:KJNDBr6_65OqWKkIY_iotMvOQVfgyiDFbUBmAsPOQKs}
-    subject: ${VAPID_SUBJECT:mailto:hola@in2u.app}
+    # Claves VAPID de Web Push (npx web-push generate-vapid-keys). Sin claves,
+    # las notificaciones push quedan apagadas y el resto de la app funciona igual.
+    public-key: ${VAPID_PUBLIC_KEY:}
+    private-key: ${VAPID_PRIVATE_KEY:}
+    subject: ${VAPID_SUBJECT:mailto:melwarelabs@gmail.com}

@@ -62,8 +62,9 @@ public class PushNotificationService {
 		}
 	}
 
+	/** Clave pública VAPID para el navegador, o null si push no está configurado. */
 	public String getPublicKey() {
-		return properties.push() != null ? properties.push().publicKey() : null;
+		return properties.push() != null && properties.push().configured() ? properties.push().publicKey() : null;
 	}
 
 	@Transactional
