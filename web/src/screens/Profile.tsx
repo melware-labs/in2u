@@ -1,11 +1,11 @@
 import { useState } from 'react';
 
-import { api, type Me } from '../api';
-import { locale, t } from '../i18n';
-import { parseLocalDate } from '../lib';
-import { ProfileForm } from './ProfileForm';
-import { PushSettings } from './PushSettings';
-import { ThemePicker } from './ThemePicker';
+import { ProfileForm } from '../components/ProfileForm';
+import { PushSettings } from '../components/PushSettings';
+import { ThemePicker } from '../components/ThemePicker';
+import { api, type Me } from '../lib/api';
+import { parseLocalDate } from '../lib/dates';
+import { locale, t } from '../lib/i18n';
 
 export function Profile({
   me,

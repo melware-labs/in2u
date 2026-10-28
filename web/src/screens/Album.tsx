@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { ApiError, api, type Me, type Photo, photoUrl } from '../api';
-import { t } from '../i18n';
-import { ChevronIcon, HeartIcon, PlusCircleIcon } from '../icons';
-import { firstName, resizeImage } from '../lib';
+import { PhotoCard } from '../components/PhotoCard';
+import { ChevronIcon, PlusCircleIcon } from '../components/icons';
+import { ApiError, api, type Me, type Photo, photoUrl } from '../lib/api';
+import { t } from '../lib/i18n';
+import { resizeImage } from '../lib/images';
+import { firstName } from '../lib/text';
 
 /** Hoja para subir una foto nueva o editar título y descripción de una existente. */
 function PhotoSheet({
@@ -87,21 +89,6 @@ function PhotoSheet({
         </button>
       </div>
     </div>
-  );
-}
-
-/** Tarjeta de foto redondeada con el título encima, como las del diseño de referencia. */
-export function PhotoCard({ photo, onOpen, className = '' }: { photo: Photo; onOpen: () => void; className?: string }) {
-  return (
-    <button className={`photo-card ${className}`} onClick={onOpen} aria-label={photo.title ?? t.album.title}>
-      <img src={photoUrl(photo.id)} alt="" loading="lazy" />
-      <span className="photo-overlay">
-        {photo.title && <span className="photo-title">{photo.title}</span>}
-        <span className="photo-heart" aria-hidden>
-          <HeartIcon size={12} />
-        </span>
-      </span>
-    </button>
   );
 }
 

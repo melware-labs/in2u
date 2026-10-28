@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-import { api } from '../api';
-import { t } from '../i18n';
-import { Brand } from '../Brand';
+import { Brand } from '../components/Brand';
+import { api } from '../lib/api';
+import { t } from '../lib/i18n';
 
 // El login sin Google solo existe si el backend corre con DEV_LOGIN=true;
 // en el build de producción el formulario ni se muestra.

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import { locale, t } from './i18n';
-import { daysInMonth } from './lib';
+import { daysInMonth } from '../lib/dates';
+import { locale, t } from '../lib/i18n';
 
 /**
  * Fecha con tres listas (día, mes, año) en vez de <input type="date">: el

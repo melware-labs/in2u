@@ -1,6 +1,6 @@
-import type { TodayTip } from '../api';
-import { t } from '../i18n';
-import { TIPS, tipByKey } from '../tips';
+import { TIPS, tipByKey } from '../content/tips';
+import type { TodayTip } from '../lib/api';
+import { t } from '../lib/i18n';
 
 export function TipsScreen({ tip }: { tip: TodayTip | null }) {
   const curated = tip ? tipByKey(tip.tipKey) : undefined;
