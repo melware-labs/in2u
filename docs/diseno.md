@@ -10,11 +10,10 @@
 
 ## Colores y temas
 
-- Color de entrada: **Carmesí** `#AB2222` sobre blanco.
-- En Perfil se puede elegir otro color pastel: Lavanda, Menta, Celeste o Durazno.
+- Un solo color: **Carmesí** `#AB2222` sobre blanco.
 - Modo **Día**, **Noche** o **Automático** (sigue al sistema). En modo noche no
   hay sombras, brillos ni desenfoques.
-- El tema elegido se guarda en el navegador (`web/src/theme.ts`).
+- El modo elegido se guarda en el navegador (`web/src/theme.ts`).
 
 ## Tipografía y estilo
 
