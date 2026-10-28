@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
@@ -42,6 +43,7 @@ public class GeminiClient {
 	/** Lotes de preguntas: son 10 preguntas en dos idiomas y Gemini tarda bastante más de 20 s. */
 	private final RestClient slowHttp;
 
+	@Autowired
 	GeminiClient(In2uProperties props) {
 		this(props, "https://generativelanguage.googleapis.com");
 	}
