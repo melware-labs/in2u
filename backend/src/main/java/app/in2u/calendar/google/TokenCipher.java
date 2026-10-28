@@ -10,6 +10,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import app.in2u.config.In2uProperties;
@@ -29,6 +30,7 @@ class TokenCipher {
 
 	private final SecretKeySpec key;
 
+	@Autowired
 	TokenCipher(In2uProperties props) {
 		this(props.googleCalendar() == null ? null : props.googleCalendar().tokenKey());
 	}
