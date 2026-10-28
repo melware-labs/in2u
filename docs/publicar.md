@@ -32,6 +32,8 @@ cerca de un minuto en despertar. Para evitarlo, [cron-job.org](https://cron-job.
 2. **Render**: *New > Blueprint* con este repositorio. Lee `render.yaml` y pide
    los valores secretos: `DB_URL`, `DB_USER`, `DB_PASSWORD`, `GEMINI_API_KEY`,
    `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `OAUTH_REDIRECT_URI` y `FRONTEND_URL`.
+   Para las notificaciones push agrega también `VAPID_PUBLIC_KEY`,
+   `VAPID_PRIVATE_KEY` y `VAPID_SUBJECT`.
    `COOKIE_SECURE=true` y `DEV_LOGIN=false` ya vienen puestos.
 3. **Vercel**: *Add New > Project*, elige el repositorio y pon **Root Directory** `web`.
    Si el backend tiene otra dirección, cámbiala en `web/vercel.json`.
