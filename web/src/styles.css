@@ -393,6 +393,7 @@ button.avatar { border: 0; padding: 0; position: relative; z-index: 1; }
 .dot.mine { background: var(--pending); }
 .dot.both { background: var(--error); }
 .dot.partner { background: var(--accent); }
+.dot.google { background: var(--muted, #6b7280); }
 .cal-day.selected .dot.both { background: var(--success); }
 .cal-day.today .dot.partner, .cal-day.selected .dot.partner { background: #fff; }
 .legend { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }

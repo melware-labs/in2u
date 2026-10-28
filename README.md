@@ -44,6 +44,7 @@ juego) gira alrededor de esa idea: menos suposiciones, más conexión.
 | 💬 **Ánimo diario** | Un check-in por día con nota opcional. La pareja lo ve en tiempo real. |
 | 💡 **Consejos según el ánimo** | Generados con IA (Gemini) y, si no está disponible, con un motor de reglas propio. |
 | 📅 **Calendario compartido** | Eventos «Solo yo» o «Los dos», y el próximo plan juntos en el inicio. |
+| 🔗 **Google Calendar** | Opcional: tus planes se copian a tu Google Calendar y ves tus eventos de Google en la app. |
 | 🌙 **Ciclo menstrual** | Fases, próximo período y ventana fértil estimados. Quien lo registra decide qué ve su pareja: nada, solo avisos o fase y avisos. |
 | 🗨️ **Chat privado** | Mensajes en tiempo real entre los dos. |
 | 🖼️ **Álbum** | Fotos con título y descripción, y el carrusel «Nuestros recuerdos». |

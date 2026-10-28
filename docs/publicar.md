@@ -45,6 +45,25 @@ cerca de un minuto en despertar. Para evitarlo, [cron-job.org](https://cron-job.
    - `OAUTH_REDIRECT_URI` = `https://in2u.vercel.app/login/oauth2/code/google`
    - `FRONTEND_URL` = `https://in2u.vercel.app`
 
+## Vincular con Google Calendar (opcional)
+
+Cada persona puede vincular su Google Calendar desde la pestaña Calendario. Los
+planes de in2u se copian a su Google Calendar y sus eventos de Google se ven en
+el calendario de la app. Se pide solo el permiso `calendar.events`.
+
+1. **Google Cloud** > *APIs y servicios* > *Biblioteca*: busca **Google Calendar API** y pulsa *Habilitar*.
+2. *Pantalla de consentimiento de OAuth* > *Acceso a los datos* (*Scopes*) > *Agregar o quitar permisos*:
+   agrega `https://www.googleapis.com/auth/calendar.events`.
+3. En las mismas credenciales de OAuth, agrega otro **URI de redireccionamiento autorizado**:
+   `https://in2u.vercel.app/api/google-calendar/callback`.
+4. En Render (*Environment*) agrega `GOOGLE_TOKEN_KEY`: una clave de 32 bytes en base64
+   (`openssl rand -base64 32`). Cifra los tokens de Google en la base. Sin esta
+   variable la opción de vincular no aparece y el resto de la app funciona igual.
+   Opcional: `GOOGLE_CALENDAR_REDIRECT_URI` si el callback no es `FRONTEND_URL` + `/api/google-calendar/callback`.
+5. `calendar.events` es un permiso **sensible**: mientras la app no esté verificada por Google,
+   quien vincule verá el aviso «Google no ha verificado esta app» y habrá un tope de 100 personas.
+   Para quitarlo, envía la app a verificación desde la pantalla de consentimiento.
+
 ## Si el login con Google falla
 
 - Si vuelve a `/login?error`, revisa los logs del servicio en Render.

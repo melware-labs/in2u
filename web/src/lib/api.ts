@@ -47,6 +47,18 @@ export type CoupleEvent = {
   googleSyncEnabled: boolean;
 };
 
+export type GoogleCalendarStatus = { available: boolean; connected: boolean; email: string | null };
+
+/** Evento del Google Calendar de la persona: solo se muestra, no se guarda en in2u. */
+export type GoogleEvent = {
+  id: string;
+  title: string | null;
+  startsAt: string;
+  endsAt: string;
+  allDay: boolean;
+  link: string | null;
+};
+
 export type Visibility = 'nada' | 'avisos' | 'fase_y_avisos';
 export type Symptom = 'dolor' | 'sangrado' | 'sin_energia' | 'antojos' | 'insomnio';
 export const SYMPTOMS: Symptom[] = ['dolor', 'sangrado', 'sin_energia', 'antojos', 'insomnio'];
@@ -182,6 +194,13 @@ export const api = {
   createEvent: (e: { title: string; startsAt: string; endsAt: string; visibility: string }) =>
     request<CoupleEvent>('POST', '/api/events', e) as Promise<CoupleEvent>,
   deleteEvent: (id: string) => request<void>('DELETE', `/api/events/${id}`),
+  googleCalendar: () => request<GoogleCalendarStatus>('GET', '/api/google-calendar') as Promise<GoogleCalendarStatus>,
+  disconnectGoogleCalendar: () => request<void>('DELETE', '/api/google-calendar'),
+  googleEvents: (from: Date, to: Date) =>
+    request<GoogleEvent[]>(
+      'GET',
+      `/api/google-calendar/events?from=${encodeURIComponent(from.toISOString())}&to=${encodeURIComponent(to.toISOString())}`,
+    ) as Promise<GoogleEvent[]>,
   cycle: () => request<OwnCycle>('GET', '/api/cycle') as Promise<OwnCycle>,
   cycleSettings: (cycleLengthDays: number, periodLengthDays: number, partnerVisibility: Visibility) =>
     request<OwnCycle>('PUT', '/api/cycle/settings', {
