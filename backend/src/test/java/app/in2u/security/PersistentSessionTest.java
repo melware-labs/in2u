@@ -1,4 +1,4 @@
-package app.in2u;
+package app.in2u.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;

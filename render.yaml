@@ -29,3 +29,8 @@ services:
         sync: false
       - key: FRONTEND_URL # https://TU-APP.vercel.app
         sync: false
+      # Notificaciones push: genera las claves con `npx web-push generate-vapid-keys`.
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
