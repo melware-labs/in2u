@@ -95,7 +95,16 @@ export type GameQuestionState = {
   partnerGuess: number | null;
 };
 
-export type GameState = { questions: GameQuestionState[]; myScore: number; partnerScore: number; rounds: number };
+/** Pregunta generada para la pareja, con sus textos en los dos idiomas. */
+export type ExtraGameQuestion = { key: string; textEs: string; optionsEs: string[]; textEn: string; optionsEn: string[] };
+
+export type GameState = {
+  questions: GameQuestionState[];
+  myScore: number;
+  partnerScore: number;
+  rounds: number;
+  extraQuestions: ExtraGameQuestion[];
+};
 
 export class ApiError extends Error {
   constructor(
@@ -202,6 +211,7 @@ export const api = {
     request<Photo>('PUT', `/api/album/${id}`, { title, description }) as Promise<Photo>,
   deletePhoto: (id: string) => request<void>('DELETE', `/api/album/${id}`),
   game: () => request<GameState>('GET', '/api/game') as Promise<GameState>,
+  moreGameQuestions: () => request<GameState>('POST', '/api/game/questions') as Promise<GameState>,
   answerGame: (questionKey: string, self: number, guess: number) =>
     request<GameState>('POST', '/api/game/answers', { questionKey, self, guess }) as Promise<GameState>,
   getPushPublicKey: () => request<{ publicKey: string }>('GET', '/api/push/public-key'),
