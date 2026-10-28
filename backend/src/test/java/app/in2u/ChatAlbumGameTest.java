@@ -188,14 +188,20 @@ class ChatAlbumGameTest {
 		mvc.perform(post("/api/game/questions").with(as("kari")).with(csrf()))
 			.andExpect(jsonPath("$.extraQuestions.length()").value(10));
 
-		// Cada 10 respondidas llega otro lote, sin repetir, hasta agotar la reserva (30).
+		// Cada 10 respondidas llega otro lote, sin repetir, sin límite (aunque no haya Gemini ni se acabe la reserva de 30).
 		var keys = new java.util.ArrayList<>(first);
-		for (int round = 0; round < 3; round++) {
+		for (int round = 0; round < 6; round++) {
 			answerAll("kari", keys.subList(keys.size() - 10, keys.size()));
 			state = json(as("kari"), "POST", "/api/game/questions", null);
 			keys = new java.util.ArrayList<>(JsonPath.<java.util.List<String>>read(state, "$.extraQuestions[*].key"));
 		}
+		// 10 + 6 lotes más: nunca se queda sin preguntas y ninguna es idéntica a otra.
 		java.util.List<String> texts = JsonPath.read(state, "$.extraQuestions[*].textEs");
-		assertThat(texts).hasSize(30).doesNotHaveDuplicates();
+		java.util.List<java.util.List<String>> options = JsonPath.read(state, "$.extraQuestions[*].optionsEs");
+		assertThat(texts).hasSize(70);
+		var combos = new java.util.HashSet<String>();
+		for (int i = 0; i < texts.size(); i++) {
+			assertThat(combos.add(texts.get(i) + options.get(i).stream().sorted().toList())).isTrue();
+		}
 	}
 }

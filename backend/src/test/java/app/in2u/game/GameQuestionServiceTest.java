@@ -39,4 +39,33 @@ class GameQuestionServiceTest {
 		assertThat(all.stream().map(QuestionDraft::normalize)).doesNotHaveDuplicates();
 		assertThat(GameQuestionBank.RESERVE).hasSize(30);
 	}
+
+	@Test
+	void generatorNeverRunsOut_andEveryQuestionIsValidAndUnique() {
+		var random = new java.util.Random(7);
+		var seen = new java.util.HashSet<String>();
+		for (int batch = 0; batch < 300; batch++) {
+			var drafts = QuestionGenerator.next(GameQuestionService.BATCH_SIZE, random);
+			assertThat(drafts).hasSize(GameQuestionService.BATCH_SIZE);
+			assertThat(drafts.stream().map(QuestionDraft::textEs)).doesNotHaveDuplicates();
+			for (var d : drafts) {
+				assertThat(d.optionsEs()).hasSize(4).doesNotHaveDuplicates();
+				assertThat(d.optionsEn()).hasSize(4);
+				seen.add(GameQuestionService.combo(d.textEs(), d.optionsEs()));
+			}
+		}
+		// 3000 preguntas sorteadas: algunas se repiten al azar (el servicio las descarta contra las ya hechas),
+		// pero hay miles de combinaciones distintas.
+		assertThat(seen.size()).isGreaterThan(2000);
+		assertThat(QuestionGenerator.templateCount()).isGreaterThanOrEqualTo(GameQuestionService.BATCH_SIZE);
+	}
+
+	@Test
+	void templatesUseNeutralTuteoWithoutVoseo() {
+		var random = new java.util.Random(1);
+		for (int i = 0; i < 20; i++) {
+			QuestionGenerator.next(GameQuestionService.BATCH_SIZE, random)
+				.forEach(d -> assertThat(d.textEs()).doesNotContainPattern("(?i)\\b(vos|elegís|tenés|podés|querés|hacés|preferís)\\b"));
+		}
+	}
 }
