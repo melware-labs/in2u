@@ -3,16 +3,14 @@
  * planas con borde y barra inferior en píldora con íconos en círculos. Todo
  * en Nunito Sans (sans serif).
  *
- * Temas: <html data-theme="carmesi|lavanda|menta|celeste|durazno"> elige la
- * paleta y <html data-mode="light|dark"> el modo día/noche (sin
- * data-mode se sigue al sistema). Ver theme.ts.
+ * Paleta carmesí. <html data-mode="light|dark"> elige el modo día/noche
+ * (ver lib/theme.ts).
  */
 @import '@fontsource-variable/nunito-sans';
 @import '@fontsource-variable/fredoka';
 
 :root {
-  /* Paleta "carmesí" (la de entrada): rojo #AB2222 sobre blanco.
-     Los demás temas pisan estas variables. */
+  /* Paleta carmesí: rojo #AB2222 sobre blanco. */
   --primary: #ab2222;
   --accent: #7f1d1d; /* día de hoy */
   --brand: #ab2222; /* logo y corazones */
@@ -66,13 +64,10 @@
 
 /* Carmesí: los tintes de las tarjetas van en gris cálido, no en rojo
    aguado (que se vería rosa). Solo de día; de noche se mezclan con el fondo oscuro. */
-:root:not([data-mode='dark']):not([data-theme]),
-:root[data-theme='carmesi']:not([data-mode='dark']) {
+:root:not([data-mode='dark']) {
   --primary-soft: #f5f6fa;
   --accent-soft: #f5f6fa;
 }
-
-/* Solo se usa la paleta carmesí. Las demás han sido eliminadas. */
 
 /* Modo noche: a mano o, si no se eligió, cuando el sistema está en oscuro. */
 :root[data-mode='dark'] {

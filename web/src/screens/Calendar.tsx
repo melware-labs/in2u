@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { api, type CoupleEvent, type Me } from '../api';
-import { locale, t } from '../i18n';
-import { firstName, localIsoDate, monthGrid } from '../lib';
-import { CalendarIcon, ChevronIcon, ClockIcon, PlusCircleIcon } from '../icons';
-import { NewEventSheet } from './NewEventSheet';
+import { NewEventSheet } from '../components/NewEventSheet';
+import { CalendarIcon, ChevronIcon, ClockIcon, PlusCircleIcon } from '../components/icons';
+import { api, type CoupleEvent, type Me } from '../lib/api';
+import { localIsoDate, monthGrid } from '../lib/dates';
+import { locale, t } from '../lib/i18n';
+import { firstName } from '../lib/text';
 
 const INTL = locale === 'en' ? 'en-US' : 'es-ES';
 

@@ -1,16 +1,10 @@
 import { useEffect, useState } from 'react';
 
-import { api, type GameQuestionState, type GameState, type Me } from '../api';
-import { t } from '../i18n';
-import { firstName } from '../lib';
-import { GAME_QUESTIONS, type GameQuestion, gameQuestion } from '../questions';
-
-/** La próxima pregunta sin responder; primero las que la pareja ya contestó. */
-export function nextQuestion(state: GameState | null): GameQuestion | undefined {
-  const byKey = new Map(state?.questions.map((q) => [q.questionKey, q]));
-  const open = GAME_QUESTIONS.filter((q) => byKey.get(q.key)?.mySelf == null);
-  return open.find((q) => byKey.get(q.key)?.partnerAnswered) ?? open[0];
-}
+import { type GameQuestion, gameQuestion } from '../content/questions';
+import { api, type GameQuestionState, type GameState, type Me } from '../lib/api';
+import { nextQuestion } from '../lib/game';
+import { t } from '../lib/i18n';
+import { firstName } from '../lib/text';
 
 function Options({
   question,

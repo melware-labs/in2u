@@ -1,4 +1,4 @@
-import { locale } from './i18n';
+import { locale } from '../lib/i18n';
 
 /**
  * Preguntas del juego "¿Cuánto me conoces?": cada una con 4 opciones. La

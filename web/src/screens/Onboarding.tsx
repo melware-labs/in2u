@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-import { api, type Me } from '../api';
-import { Brand } from '../Brand';
-import { t } from '../i18n';
+import { Brand } from '../components/Brand';
+import { api, type Me } from '../lib/api';
+import { t } from '../lib/i18n';
 
 export function Onboarding({ me, onChange }: { me: Me; onChange: (me: Me) => void }) {
   const [joining, setJoining] = useState(false);

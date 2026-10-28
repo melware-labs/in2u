@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { api, type Checkin, type CoupleEvent, type GameState, type Me, type PartnerCycle, type Photo, type TodayTip } from '../api';
-import { Emoji } from '../Emoji';
-import { locale, moodEmoji, t } from '../i18n';
-import { ChatIcon, GameIcon, IdeaIcon, PlusCircleIcon } from '../icons';
-import { daysSince, firstName, localIsoDate, ofTheDay, parseLocalDate } from '../lib';
-import { DAILY_QUESTIONS } from '../questions';
-import { CARE_TIPS, tipByKey } from '../tips';
-import { PhotoCard } from './Album';
-import { nextQuestion } from './Game';
+import { CycleCareCard } from '../components/CycleCareCard';
+import { Emoji } from '../components/Emoji';
+import { PhotoCard } from '../components/PhotoCard';
+import { ChatIcon, GameIcon, IdeaIcon, PlusCircleIcon } from '../components/icons';
+import { DAILY_QUESTIONS } from '../content/questions';
+import { tipByKey } from '../content/tips';
+import { api, type Checkin, type CoupleEvent, type GameState, type Me, type PartnerCycle, type Photo, type TodayTip } from '../lib/api';
+import { daysSince, localIsoDate, ofTheDay, parseLocalDate } from '../lib/dates';
+import { nextQuestion } from '../lib/game';
+import { locale, moodEmoji, t } from '../lib/i18n';
+import { firstName } from '../lib/text';
 
 export type HomeTarget = 'calendario' | 'consejos' | 'album' | 'juego' | 'perfil';
 
@@ -79,44 +81,6 @@ function PhotoCarousel({
         </div>
       )}
     </section>
-  );
-}
-
-export function CycleCareCard({ partner, cycle }: { partner: string; cycle: PartnerCycle }) {
-  if (cycle.visibility === 'nada' || !cycle.hasData) return null;
-
-  if (cycle.visibility === 'avisos') {
-    return cycle.careMode ? (
-      <section className="card">
-        <p className="kicker">{t.cuidar.title}</p>
-        <p>{t.cuidar.careMode(partner)}</p>
-      </section>
-    ) : null;
-  }
-
-  const soon = (cycle.daysUntilNextPeriod ?? 99) <= 1;
-  const near = (cycle.daysUntilNextPeriod ?? 99) <= 3;
-  return (
-    <>
-      <section className="card">
-        <p className="kicker">{t.cuidar.cycleOf(partner, t.ciclo.phases[cycle.phase ?? 'menstrual'])}</p>
-        <h2>{t.cuidar.dayOfCycle(cycle.dayOfCycle ?? 0)}</h2>
-        {near && <p>{soon ? t.cuidar.arrivingSoon : t.cuidar.arrivingIn(cycle.daysUntilNextPeriod ?? 0)}</p>}
-        <p className="muted small">{t.cuidar.hint}</p>
-        <p className="muted small">{t.cuidar.shared(partner)}</p>
-      </section>
-      {(cycle.phase === 'menstrual' || cycle.phase === 'lutea') && (
-        <>
-          <p className="kicker">{t.cuidar.title}</p>
-          {CARE_TIPS.map((tip) => (
-            <article key={tip.key} className="card">
-              <h2>{tip.title}</h2>
-              <p className="muted">{tip.body}</p>
-            </article>
-          ))}
-        </>
-      )}
-    </>
   );
 }
 

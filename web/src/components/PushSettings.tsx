@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import { t } from '../i18n';
-import { getPushStatus, isIos, isStandalone, type PushStatus, subscribeToPush, unsubscribeFromPush } from '../push';
+import { t } from '../lib/i18n';
+import { getPushStatus, isIos, isStandalone, type PushStatus, subscribeToPush, unsubscribeFromPush } from '../lib/push';
 
 export function PushSettings() {
   const [status, setStatus] = useState<PushStatus | 'loading'>('loading');

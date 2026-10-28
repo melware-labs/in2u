@@ -1,31 +1,21 @@
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 
-import { api, type Checkin, type Me, type PartnerCycle, type TodayTip, subscribeToUpdates } from './api';
-import { Brand } from './Brand';
-import { t } from './i18n';
-import {
-  AlbumIcon,
-  CalendarIcon,
-  ChatIcon,
-  GameIcon,
-  HomeIcon,
-  IdeaIcon,
-  MoonIcon,
-  MoreIcon,
-  UserIcon,
-} from './icons';
-import { localIsoDate } from './lib';
+import { Brand } from './components/Brand';
+import { CheckInSheet } from './components/CheckInSheet';
+import { ProfileForm } from './components/ProfileForm';
+import { AlbumIcon, CalendarIcon, ChatIcon, GameIcon, HomeIcon, IdeaIcon, MoonIcon, MoreIcon, UserIcon } from './components/icons';
+import { api, type Checkin, type Me, type PartnerCycle, type TodayTip, subscribeToUpdates } from './lib/api';
+import { localIsoDate } from './lib/dates';
+import { t } from './lib/i18n';
 import { Album } from './screens/Album';
 import { Calendar } from './screens/Calendar';
 import { Chat } from './screens/Chat';
-import { CheckInSheet } from './screens/CheckInSheet';
 import { Cycle, PartnerCycleScreen } from './screens/Cycle';
 import { Game } from './screens/Game';
 import { Home } from './screens/Home';
 import { Login } from './screens/Login';
 import { Onboarding } from './screens/Onboarding';
 import { Profile } from './screens/Profile';
-import { ProfileForm } from './screens/ProfileForm';
 import { TipsScreen } from './screens/Tips';
 
 type Tab = 'nosotros' | 'calendario' | 'chat' | 'album' | 'juego' | 'consejos' | 'ciclo' | 'perfil';
