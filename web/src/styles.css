@@ -657,6 +657,12 @@ textarea.input { resize: vertical; min-height: 44px; }
 .mark { font-weight: 600; }
 .mark.ok { color: var(--success); }
 .mark.ko { color: var(--error); }
+.verdict { font-size: 14px; font-weight: 600; padding: 6px 12px; border-radius: 12px; align-self: flex-start; }
+.verdict.ok { background: var(--success-soft); color: var(--text); }
+.verdict.ko { background: var(--error-soft); color: var(--text); }
+.verdict.ok .mark { color: var(--success); }
+.verdict.ko .mark { color: var(--error); }
+.verdict .muted { font-weight: 400; }
 
 /*
  * Diseño adaptable. Celular: una columna y barra abajo (lo de arriba).

@@ -47,8 +47,16 @@ class GameController {
 			Integer partnerSelf, Integer partnerGuess) {
 	}
 
-	/** myScore: veces que adiviné a mi pareja; partnerScore: veces que me adivinó; rounds: preguntas que respondimos los dos. */
-	record GameState(List<QuestionState> questions, int myScore, int partnerScore, int rounds) {
+	/** Pregunta generada para la pareja (las 20 primeras viven en el frontend). */
+	record ExtraQuestion(String key, String textEs, List<String> optionsEs, String textEn, List<String> optionsEn) {
+	}
+
+	/**
+	 * myScore: veces que adiviné a mi pareja; partnerScore: veces que me adivinó; rounds: preguntas que respondimos
+	 * los dos; extraQuestions: preguntas generadas, en orden.
+	 */
+	record GameState(List<QuestionState> questions, int myScore, int partnerScore, int rounds,
+			List<ExtraQuestion> extraQuestions) {
 	}
 
 	private final GameAnswerRepository answers;
@@ -61,9 +69,12 @@ class GameController {
 
 	private final app.in2u.push.PushNotificationService pushNotifications;
 
+	private final GameQuestionService extraQuestions;
+
 	GameController(GameAnswerRepository answers, CoupleService couples, CurrentUser currentUser, MoodStream stream,
-			app.in2u.push.PushNotificationService pushNotifications) {
+			app.in2u.push.PushNotificationService pushNotifications, GameQuestionService extraQuestions) {
 		this.answers = answers;
+		this.extraQuestions = extraQuestions;
 		this.couples = couples;
 		this.currentUser = currentUser;
 		this.stream = stream;
@@ -105,7 +116,31 @@ class GameController {
 					m == null ? null : m.getGuessChoice(), p != null, reveal ? p.getSelfChoice() : null,
 					reveal ? p.getGuessChoice() : null));
 		}
-		return new GameState(questions, myScore, partnerScore, rounds);
+		var extra = extraQuestions.forCouple(couple.getId()).stream()
+			.map(q -> new ExtraQuestion(q.getQuestionKey(), q.getTextEs(), q.getOptionsEs(), q.getTextEn(),
+					q.getOptionsEn()))
+			.toList();
+		return new GameState(questions, myScore, partnerScore, rounds, extra);
+	}
+
+	/**
+	 * Agrega 10 preguntas nuevas cuando quien llama ya respondió todas (las 20
+	 * fijas y las generadas). Si todavía le quedan, no hace nada.
+	 */
+	@PostMapping("/questions")
+	GameState moreQuestions(@AuthenticationPrincipal OAuth2User principal) {
+		var user = currentUser.of(principal);
+		var couple = couples.requirePaired(user);
+		var mine = answers.findByCoupleId(couple.getId()).stream()
+			.filter(a -> a.getUserId().equals(user.getId()))
+			.map(GameAnswer::getQuestionKey)
+			.collect(java.util.stream.Collectors.toSet());
+		boolean allAnswered = mine.size() >= GameQuestionBank.BUILT_IN_ES.size() && extraQuestions
+			.forCouple(couple.getId()).stream().allMatch(q -> mine.contains(q.getQuestionKey()));
+		if (allAnswered && extraQuestions.addBatch(couple.getId()) > 0) {
+			stream.publish(couple.getId(), "game");
+		}
+		return state(principal);
 	}
 
 	/** Cada pregunta se responde una sola vez: así el puntaje no se puede arreglar después de ver la respuesta. */
