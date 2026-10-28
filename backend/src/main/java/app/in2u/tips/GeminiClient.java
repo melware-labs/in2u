@@ -52,24 +52,49 @@ public class GeminiClient {
 	}
 
 	public Optional<TipSuggestion> suggest(String authorName, List<MoodCheckin> recent) {
+		return call(requestBody(authorName, recent, config.sendNotes())).flatMap(r -> parse(r, authorName));
+	}
+
+	/**
+	 * Pide a Gemini una respuesta JSON con el esquema dado y devuelve ese JSON
+	 * ya leído. Vacío si no hay key o si Gemini falla: quien llama usa su respaldo.
+	 */
+	public Optional<JsonNode> generateJson(String prompt, Map<String, Object> schema) {
+		return call(Map.of("contents", List.of(Map.of("parts", List.of(Map.of("text", prompt)))), "generationConfig",
+				Map.of("responseMimeType", "application/json", "responseSchema", schema)))
+			.flatMap(response -> {
+				try {
+					return Optional.of(JSON.readTree(responseText(response)));
+				}
+				catch (Exception e) {
+					log.warn("Gemini devolvió un JSON inválido; se usa el respaldo.");
+					return Optional.empty();
+				}
+			});
+	}
+
+	private Optional<JsonNode> call(Map<String, Object> body) {
 		if (!enabled()) {
 			return Optional.empty();
 		}
 		try {
-			JsonNode response = http.post()
+			return Optional.ofNullable(http.post()
 				.uri("/v1beta/models/{model}:generateContent", config.model())
 				// La key va en header, no en la URL, para que no quede en logs.
 				.header("x-goog-api-key", config.apiKey())
-				.body(requestBody(authorName, recent, config.sendNotes()))
+				.body(body)
 				.retrieve()
-				.body(JsonNode.class);
-			return parse(response, authorName);
+				.body(JsonNode.class));
 		}
 		catch (Exception e) {
 			// Cuota gratuita agotada (429), red caída, etc.: se usa el respaldo.
-			log.warn("Gemini no respondió ({}); se usa el respaldo por reglas.", e.getMessage());
+			log.warn("Gemini no respondió ({}); se usa el respaldo.", e.getMessage());
 			return Optional.empty();
 		}
+	}
+
+	private static String responseText(JsonNode response) {
+		return response.path("candidates").path(0).path("content").path("parts").path(0).path("text").asText("");
 	}
 
 	static Map<String, Object> requestBody(String authorName, List<MoodCheckin> recent, boolean sendNotes) {
@@ -108,9 +133,7 @@ public class GeminiClient {
 
 	static Optional<TipSuggestion> parse(JsonNode response, String authorName) {
 		try {
-			String text = response.path("candidates").path(0).path("content").path("parts").path(0).path("text")
-				.asText("");
-			JsonNode parsed = JSON.readTree(text);
+			JsonNode parsed = JSON.readTree(responseText(response));
 			String key = parsed.path("tip_key").asText();
 			String kicker = parsed.path("kicker").asText("").strip();
 			String advice = parsed.path("advice").asText("").strip();

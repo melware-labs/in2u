@@ -160,4 +160,42 @@ class ChatAlbumGameTest {
 			.content("{\"questionKey\":\"otra\",\"self\":4,\"guess\":0}"))
 			.andExpect(status().isBadRequest());
 	}
+
+	void answerAll(String who, java.util.List<String> keys) throws Exception {
+		for (String key : keys) {
+			mvc.perform(post("/api/game/answers").with(as(who)).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+				.content("{\"questionKey\":\"" + key + "\",\"self\":0,\"guess\":1}"))
+				.andExpect(status().isOk());
+		}
+	}
+
+	@Test
+	void gameAddsBatchesOfTenWithoutRepeating_usingReserveWithoutGemini() throws Exception {
+		pair("kari", "leo");
+		// Sin terminar las 20 fijas no se generan preguntas.
+		mvc.perform(post("/api/game/questions").with(as("kari")).with(csrf()))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.extraQuestions.length()").value(0));
+
+		answerAll("kari", java.util.stream.IntStream.range(0, 20).mapToObj(i -> "fija_" + i).toList());
+		String state = json(as("kari"), "POST", "/api/game/questions", null);
+		java.util.List<String> first = JsonPath.read(state, "$.extraQuestions[*].key");
+		assertThat(first).hasSize(10);
+		assertThat(JsonPath.<java.util.List<String>>read(state, "$.extraQuestions[0].optionsEs")).hasSize(4);
+
+		// Su pareja ve las mismas preguntas; pedir otra vez sin responderlas no agrega más.
+		mvc.perform(get("/api/game").with(as("leo"))).andExpect(jsonPath("$.extraQuestions.length()").value(10));
+		mvc.perform(post("/api/game/questions").with(as("kari")).with(csrf()))
+			.andExpect(jsonPath("$.extraQuestions.length()").value(10));
+
+		// Cada 10 respondidas llega otro lote, sin repetir, hasta agotar la reserva (30).
+		var keys = new java.util.ArrayList<>(first);
+		for (int round = 0; round < 3; round++) {
+			answerAll("kari", keys.subList(keys.size() - 10, keys.size()));
+			state = json(as("kari"), "POST", "/api/game/questions", null);
+			keys = new java.util.ArrayList<>(JsonPath.<java.util.List<String>>read(state, "$.extraQuestions[*].key"));
+		}
+		java.util.List<String> texts = JsonPath.read(state, "$.extraQuestions[*].textEs");
+		assertThat(texts).hasSize(30).doesNotHaveDuplicates();
+	}
 }
