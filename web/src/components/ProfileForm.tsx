@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
-import { api, GENDERS, type Gender, type Me } from '../api';
-import { DateSelect } from '../DateSelect';
-import { t } from '../i18n';
-import { localIsoDate } from '../lib';
+import { api, GENDERS, type Gender, type Me } from '../lib/api';
+import { localIsoDate } from '../lib/dates';
+import { t } from '../lib/i18n';
+import { DateSelect } from './DateSelect';
 
 /**
  * Datos que se piden al crear la cuenta (y se editan desde Perfil): nombre,

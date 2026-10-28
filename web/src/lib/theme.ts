@@ -1,17 +1,11 @@
 /**
- * Tema de colores: solo carmesí. Se guarda en este navegador; el modo día/noche
- * se elige entre "auto" (sigue al sistema), "light" o "dark".
+ * Modo día/noche, guardado en este navegador: "auto" (sigue al sistema),
+ * "light" o "dark". La paleta es una sola (carmesí, en styles.css).
  */
-export type ThemeName = 'carmesi';
 export type Mode = 'auto' | 'light' | 'dark';
 
-/** Color de muestra de la paleta (su --primary en styles.css). */
-export const THEMES: { id: ThemeName; color: string }[] = [
-  { id: 'carmesi', color: '#ab2222' },
-];
 export const MODES: Mode[] = ['auto', 'light', 'dark'];
 
-const THEME_KEY = 'in2u.theme';
 const MODE_KEY = 'in2u.mode';
 
 function read(key: string): string | null {
@@ -30,11 +24,6 @@ function write(key: string, value: string) {
   }
 }
 
-export function savedTheme(): ThemeName {
-  const v = read(THEME_KEY);
-  return THEMES.some((t) => t.id === v) ? (v as ThemeName) : 'carmesi'; // incluye a quien tenía guardado el viejo "rosa"
-}
-
 export function savedMode(): Mode {
   const v = read(MODE_KEY);
   return MODES.includes(v as Mode) ? (v as Mode) : 'auto';
@@ -46,16 +35,10 @@ function paint() {
   const root = document.documentElement;
   const mode = savedMode();
   const dark = mode === 'dark' || (mode === 'auto' && !!darkQuery?.matches);
-  root.dataset.theme = savedTheme();
   root.dataset.mode = dark ? 'dark' : 'light';
   // Color de la barra del navegador en el celular.
   const bg = getComputedStyle(root).getPropertyValue('--bg').trim();
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bg || '#ffffff');
-}
-
-export function setTheme(theme: ThemeName) {
-  write(THEME_KEY, theme);
-  paint();
 }
 
 export function setMode(mode: Mode) {

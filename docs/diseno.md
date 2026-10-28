@@ -13,7 +13,7 @@
 - Un solo color: **Carmesí** `#AB2222` sobre blanco.
 - Modo **Día**, **Noche** o **Automático** (sigue al sistema). En modo noche no
   hay sombras, brillos ni desenfoques.
-- El modo elegido se guarda en el navegador (`web/src/theme.ts`).
+- El modo elegido se guarda en el navegador (`web/src/lib/theme.ts`).
 
 ## Tipografía y estilo
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { Checkin } from './api';
-import { dayNumber, daysInMonth, daysSince, firstName, localIsoDate, ofTheDay, weekDays } from './lib';
+import { dayNumber, daysInMonth, daysSince, localIsoDate, monthGrid, ofTheDay, parseLocalDate, weekDays } from './dates';
 
 const checkin = (date: string, mine: boolean, mood = 4): Checkin => ({
   id: date + mine,
@@ -37,19 +37,11 @@ describe('weekDays', () => {
   });
 });
 
-describe('helpers', () => {
-  it('localIsoDate usa el día local, no UTC', () => {
+describe('localIsoDate', () => {
+  it('usa el día local, no UTC', () => {
     expect(localIsoDate(new Date(2026, 0, 5, 23, 59))).toBe('2026-01-05');
   });
-
-  it('firstName toma el primer nombre y cae al valor por defecto', () => {
-    expect(firstName('Ana María López', 'Tu pareja')).toBe('Ana');
-    expect(firstName('   ', 'Tu pareja')).toBe('Tu pareja');
-    expect(firstName(null, 'Tu pareja')).toBe('Tu pareja');
-  });
 });
-
-import { cycleGrid, monthGrid, parseLocalDate, phaseForOffset } from './lib';
 
 describe('monthGrid', () => {
   it('empieza en lunes y termina en domingo, con semanas completas', () => {
@@ -78,37 +70,6 @@ describe('parseLocalDate', () => {
   });
 });
 
-describe('ciclo', () => {
-  // Mismos límites que CyclePhaseCalculatorTest.java para un ciclo de 29 días con 5 de período.
-  it('phaseForOffset coincide con el backend', () => {
-    const at = (d: number) => phaseForOffset(d, 29, 5);
-    expect([at(0), at(4)]).toEqual(['menstrual', 'menstrual']);
-    expect([at(5), at(12)]).toEqual(['folicular', 'folicular']);
-    expect([at(13), at(16)]).toEqual(['ovulacion', 'ovulacion']);
-    expect([at(17), at(28)]).toEqual(['lutea', 'lutea']);
-  });
-
-  it('cycleGrid usa el período registrado más reciente como ancla y no extrapola hacia atrás', () => {
-    const cells = cycleGrid(2026, 9, ['2026-10-10'], 29, 5, new Date(2026, 9, 17));
-    const by = Object.fromEntries(cells.map((c) => [c.dateKey, c]));
-    expect(by['2026-10-09'].phase).toBeNull();
-    expect(by['2026-10-10'].phase).toBe('menstrual');
-    expect(by['2026-10-10'].isRegisteredStart).toBe(true);
-    expect(by['2026-10-15'].phase).toBe('folicular');
-    expect(by['2026-10-23'].phase).toBe('ovulacion');
-    expect(by['2026-10-27'].phase).toBe('lutea');
-    expect(by['2026-11-01'].phase).toBe('lutea');
-  });
-
-  it('daysSince cuenta días de calendario, también cruzando el cambio de horario', () => {
-    const now = new Date(2026, 9, 17, 23, 30);
-    expect(daysSince('2026-10-17', now)).toBe(0);
-    expect(daysSince('2026-10-16', now)).toBe(1);
-    expect(daysSince('2025-10-17', now)).toBe(365);
-    expect(daysSince('2026-03-01', now)).toBe(230);
-  });
-});
-
 describe('ofTheDay', () => {
   it('da lo mismo todo el día y cambia al día siguiente', () => {
     const items = ['a', 'b', 'c'];
@@ -124,5 +85,15 @@ describe('ofTheDay', () => {
     expect(daysInMonth(2024, 2)).toBe(29);
     expect(daysInMonth(2023, 2)).toBe(28);
     expect(daysInMonth(2026, 10)).toBe(31);
+  });
+});
+
+describe('daysSince', () => {
+  it('cuenta días de calendario, también cruzando el cambio de horario', () => {
+    const now = new Date(2026, 9, 17, 23, 30);
+    expect(daysSince('2026-10-17', now)).toBe(0);
+    expect(daysSince('2026-10-16', now)).toBe(1);
+    expect(daysSince('2025-10-17', now)).toBe(365);
+    expect(daysSince('2026-03-01', now)).toBe(230);
   });
 });

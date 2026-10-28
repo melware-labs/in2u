@@ -1,4 +1,4 @@
-package app.in2u;
+package app.in2u.tips;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,8 +9,6 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import app.in2u.mood.MoodCheckin;
-import app.in2u.tips.RuleBasedTipper;
-import app.in2u.tips.TipCatalog;
 
 class RuleBasedTipperTest {
 

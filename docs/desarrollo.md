@@ -48,7 +48,7 @@ backend/                     API Spring Boot
     user/                    usuario actual y perfil
     couple/                  /api/me, vincular pareja con código, días juntos
     mood/                    ánimo diario + stream en tiempo real (SSE)
-    events/                  calendario compartido
+    calendar/                calendario compartido
     cycle/                   ciclo, fases y qué ve la pareja
     tips/                    consejos: Gemini + reglas (TipCatalog, RuleBasedTipper)
     album/                   fotos (bytea en Postgres)
@@ -56,15 +56,18 @@ backend/                     API Spring Boot
     game/                    "¿Cuánto me conoces?"
     push/                    notificaciones Web Push (VAPID)
     common/                  manejo de errores de la API
-    config/                  seguridad, OAuth, login de desarrollo
+    security/                sesión, OAuth, CSRF y login de desarrollo
+    config/                  propiedades de la app y reloj
   src/main/resources/
     application.yml          configuración (lee las variables de entorno)
     db/migration/            migraciones Flyway (V1, V2, V3...)
 web/                         Web React + Vite
+  src/App.tsx                navegación y estado general
   src/screens/               pantallas (Inicio, Calendario, Ciclo, Álbum, Chat, Juego, Consejos, Perfil...)
-  src/i18n.ts                textos en español e inglés
-  src/theme.ts               color y modo día/noche
-  src/push.ts                suscripción a notificaciones push
+  src/components/            piezas reutilizables (hojas, formularios, tarjetas, íconos)
+  src/lib/                   api, textos (i18n), tema día/noche, push y utilidades con sus tests
+  src/content/               contenido fijo: preguntas del juego y consejos
+  src/styles.css             estilos globales
   public/                    logo, íconos, emojis, sw.js y privacidad.html
   vercel.json                reenvío de /api y OAuth a Render
 docs/                        documentación y capturas

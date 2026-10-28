@@ -1,4 +1,4 @@
-package app.in2u.config;
+package app.in2u.security;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -23,6 +23,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.CookieSerializer.CookieValue;
 import org.springframework.session.web.http.DefaultCookieSerializer;
+
+import app.in2u.config.In2uProperties;
 
 /**
  * Sesión con cookie persistente en Postgres (Spring Session JDBC) + CSRF en modo SPA:

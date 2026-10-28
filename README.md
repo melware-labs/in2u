@@ -143,7 +143,9 @@ el build de las imágenes Docker en cada pull request.
 in2u/
 ├── web/                  Frontend React + TypeScript (Vercel)
 │   ├── src/screens/      Una pantalla por sección
-│   ├── src/i18n.ts       Textos en español e inglés
+│   ├── src/components/   Piezas reutilizables
+│   ├── src/lib/          API, textos (i18n), tema, push y utilidades
+│   ├── src/content/      Preguntas del juego y consejos
 │   └── public/           Logo, íconos PWA, Service Worker y privacidad.html
 ├── backend/              API Spring Boot (Render)
 │   ├── src/main/java/app/in2u/<dominio>/
