@@ -5,6 +5,11 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/in2u}
     username: ${DB_USER:in2u}
     password: ${DB_PASSWORD:in2u}
+    # Sin conexiones fijas abiertas: así la base de Neon puede dormirse cuando nadie la usa
+    # y no gasta sus horas gratis aunque el backend esté despierto todo el día.
+    hikari:
+      minimum-idle: 0
+      idle-timeout: 60000 # 1 minuto
   jpa:
     open-in-view: false
     hibernate:
@@ -23,6 +28,8 @@ spring:
     store-type: jdbc
     jdbc:
       initialize-schema: never
+      # Limpia sesiones vencidas una vez al día (por defecto es cada minuto y no deja dormir a Neon).
+      cleanup-cron: "0 0 4 * * *"
     timeout: 90d
 
 server:
@@ -42,6 +49,11 @@ management:
     web:
       exposure:
         include: health
+  endpoint:
+    health:
+      # /actuator/health/liveness responde sin tocar la base: es la que usan Render y el ping externo.
+      probes:
+        enabled: true
 
 in2u:
   # Adónde vuelve el navegador después de loguearse con Google (el frontend).
