@@ -50,7 +50,7 @@ juego) gira alrededor de esa idea: menos suposiciones, más conexión.
 | 🎲 **«¿Cuánto me conoces?»** | Juego de preguntas: respondes sobre ti y adivinas lo que respondió tu pareja. |
 | 🔔 **Notificaciones push** | Avisos web (también en iPhone con la app en la pantalla de inicio). |
 | ❤️ **Días juntos** | Contador desde el inicio de la relación. |
-| 🌐 **Bilingüe y accesible** | Español e inglés, modo día, noche o automático, diseño responsive para celular, tablet y compu. |
+| 🌐 **Bilingüe y accesible** | Español e inglés, modo día, noche o automático, diseño responsive para celular, tablet y pc. |
 
 <p align="center">
   <img src="docs/capturas/escritorio-inicio.webp" alt="in2u en la compu" width="85%" />
