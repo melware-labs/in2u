@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +27,12 @@ public class EventService {
 
 	private final CoupleService couples;
 
-	public EventService(CoupleEventRepository events, CoupleService couples) {
+	private final ApplicationEventPublisher publisher;
+
+	public EventService(CoupleEventRepository events, CoupleService couples, ApplicationEventPublisher publisher) {
 		this.events = events;
 		this.couples = couples;
+		this.publisher = publisher;
 	}
 
 	@Transactional(readOnly = true)
@@ -54,8 +58,10 @@ public class EventService {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Visibilidad inválida.");
 		}
 		var couple = couples.requirePaired(user);
-		return events.save(new CoupleEvent(couple.getId(), user.getId(), clean, startsAt, endsAt, visibility,
+		var saved = events.save(new CoupleEvent(couple.getId(), user.getId(), clean, startsAt, endsAt, visibility,
 				googleSync));
+		publisher.publishEvent(new EventChanges.Created(saved.getId()));
+		return saved;
 	}
 
 	/** Solo quien lo creó puede borrarlo; para el resto el evento "no existe" (404, no 403). */
@@ -72,6 +78,7 @@ public class EventService {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo quien creó el evento puede borrarlo.");
 		}
 		events.delete(event);
+		publisher.publishEvent(new EventChanges.Deleted(event.getId()));
 	}
 
 	private UUID eventCouple(CoupleEvent e) {
