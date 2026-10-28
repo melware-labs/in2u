@@ -34,17 +34,23 @@ public class GeminiClient {
 
 	private final In2uProperties.Gemini config;
 
+	/** Respuestas cortas (consejos): si tarda más, es mejor el respaldo. */
 	private final RestClient http;
+
+	/** Lotes de preguntas: son 10 preguntas en dos idiomas y Gemini tarda bastante más de 20 s. */
+	private final RestClient slowHttp;
 
 	GeminiClient(In2uProperties props) {
 		this.config = props.gemini();
+		this.http = client(Duration.ofSeconds(20));
+		this.slowHttp = client(Duration.ofSeconds(75));
+	}
+
+	private static RestClient client(Duration readTimeout) {
 		var factory = new SimpleClientHttpRequestFactory();
 		factory.setConnectTimeout(Duration.ofSeconds(5));
-		factory.setReadTimeout(Duration.ofSeconds(20));
-		this.http = RestClient.builder()
-			.baseUrl("https://generativelanguage.googleapis.com")
-			.requestFactory(factory)
-			.build();
+		factory.setReadTimeout(readTimeout);
+		return RestClient.builder().baseUrl("https://generativelanguage.googleapis.com").requestFactory(factory).build();
 	}
 
 	public boolean enabled() {
@@ -52,7 +58,7 @@ public class GeminiClient {
 	}
 
 	public Optional<TipSuggestion> suggest(String authorName, List<MoodCheckin> recent) {
-		return call(requestBody(authorName, recent, config.sendNotes())).flatMap(r -> parse(r, authorName));
+		return call(http, requestBody(authorName, recent, config.sendNotes())).flatMap(r -> parse(r, authorName));
 	}
 
 	/**
@@ -60,7 +66,7 @@ public class GeminiClient {
 	 * ya leído. Vacío si no hay key o si Gemini falla: quien llama usa su respaldo.
 	 */
 	public Optional<JsonNode> generateJson(String prompt, Map<String, Object> schema) {
-		return call(Map.of("contents", List.of(Map.of("parts", List.of(Map.of("text", prompt)))), "generationConfig",
+		return call(slowHttp, Map.of("contents", List.of(Map.of("parts", List.of(Map.of("text", prompt)))), "generationConfig",
 				Map.of("responseMimeType", "application/json", "responseSchema", schema)))
 			.flatMap(response -> {
 				try {
@@ -73,7 +79,7 @@ public class GeminiClient {
 			});
 	}
 
-	private Optional<JsonNode> call(Map<String, Object> body) {
+	private Optional<JsonNode> call(RestClient http, Map<String, Object> body) {
 		if (!enabled()) {
 			return Optional.empty();
 		}
