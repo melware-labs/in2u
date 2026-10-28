@@ -7,5 +7,5 @@ Web app responsive para parejas. Lee `README.md` y `docs/` antes de cambiar algo
   Tests: `TESTCONTAINERS_RYUK_DISABLED=true mvn test`.
 - Local: `DEV_LOGIN=true docker compose up --build` → http://localhost:8080.
 - Textos en español neutro con "tú" (nunca voseo) y en inglés (`web/src/i18n.ts`).
-- Las carpetas de la app Expo anterior (`src/`, `supabase/`, etc.) no se usan.
+- La versión anterior con Expo y Supabase se borró; sigue en el historial de git (commit `30867a9`).
 - Nunca subas claves ni actives `DEV_LOGIN` en producción.

@@ -34,6 +34,12 @@ npm test         # vitest
 npm run build    # typecheck + build de producción en web/dist
 ```
 
+## Integración continua
+
+Cada pull request corre en GitHub Actions (`.github/workflows/ci.yml`): tests
+y build de la web, `mvn verify` del backend (con Testcontainers) y el build de
+las imágenes Docker. Si algo falla, el PR lo muestra en rojo antes de fusionar.
+
 ## Estructura
 
 ```
@@ -48,6 +54,8 @@ backend/                     API Spring Boot
     album/                   fotos (bytea en Postgres)
     chat/                    mensajes (SSE)
     game/                    "¿Cuánto me conoces?"
+    push/                    notificaciones Web Push (VAPID)
+    common/                  manejo de errores de la API
     config/                  seguridad, OAuth, login de desarrollo
   src/main/resources/
     application.yml          configuración (lee las variables de entorno)
@@ -55,9 +63,12 @@ backend/                     API Spring Boot
 web/                         Web React + Vite
   src/screens/               pantallas (Inicio, Calendario, Ciclo, Álbum, Chat, Juego, Consejos, Perfil...)
   src/i18n.ts                textos en español e inglés
-  src/theme.ts               temas de color y modo día/noche
-  public/                    logo, favicon, emojis y privacidad.html
+  src/theme.ts               color y modo día/noche
+  src/push.ts                suscripción a notificaciones push
+  public/                    logo, íconos, emojis, sw.js y privacidad.html
   vercel.json                reenvío de /api y OAuth a Render
+docs/                        documentación y capturas
+.github/workflows/ci.yml     tests y builds en cada PR
 docker-compose.yml           db + backend + web para correr en local
 render.yaml                  blueprint del backend en Render
 ```
@@ -77,6 +88,7 @@ Todas las rutas están bajo `/api` y requieren sesión (cookie), salvo el login.
 | `/api/album` | fotos (`/{id}/image` devuelve la imagen) |
 | `/api/chat` (`stream`) | chat |
 | `/api/game` (`answers`) | juego |
+| `/api/push` (`public-key`, `subscribe`, `unsubscribe`) | notificaciones push |
 | `POST /api/dev/login` | solo con `DEV_LOGIN=true` |
 
 `GET /actuator/health` es el chequeo de salud que usan Docker y Render.
@@ -96,5 +108,6 @@ Nunca los subas a GitHub.
 | `GEMINI_API_KEY` | consejos con IA (gratis en https://aistudio.google.com/apikey). Sin clave se usan reglas |
 | `GEMINI_MODEL` | modelo de Gemini (por defecto `gemini-flash-latest`) |
 | `GEMINI_SEND_NOTES` | `false` por defecto: a Gemini solo se envía el número del ánimo, no las notas |
+| `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` | claves para firmar las notificaciones push |
 | `DEV_LOGIN` | login sin Google, solo local |
 | `WEB_PORT` | puerto local de `docker compose` (8080 por defecto) |

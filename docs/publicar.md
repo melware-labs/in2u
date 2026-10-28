@@ -10,7 +10,8 @@ in2u está publicada gratis con tres servicios:
 
 Cada vez que se fusiona un cambio en `main`, Render y Vercel se vuelven a
 publicar solos. El plan gratis de Render "duerme" el backend: la primera visita
-después de un rato puede tardar casi un minuto.
+después de un rato puede tardar un par de minutos, y la web muestra
+"Despertando el servidor" mientras espera (hasta 3,5 minutos).
 
 ## Montarla desde cero
 
@@ -19,6 +20,8 @@ después de un rato puede tardar casi un minuto.
 2. **Render**: *New > Blueprint* con este repositorio. Lee `render.yaml` y pide
    los valores secretos: `DB_URL`, `DB_USER`, `DB_PASSWORD`, `GEMINI_API_KEY`,
    `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `OAUTH_REDIRECT_URI` y `FRONTEND_URL`.
+   Para las notificaciones push agrega también `VAPID_PUBLIC_KEY`,
+   `VAPID_PRIVATE_KEY` y `VAPID_SUBJECT`.
    `COOKIE_SECURE=true` y `DEV_LOGIN=false` ya vienen puestos.
 3. **Vercel**: *Add New > Project*, elige el repositorio y pon **Root Directory** `web`.
    Si el backend tiene otra dirección, cámbiala en `web/vercel.json`.
