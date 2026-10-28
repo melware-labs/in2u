@@ -51,6 +51,7 @@ app.in2u
 ├── album     fotos
 ├── chat      mensajes
 ├── game      «¿Cuánto me conoces?»
+├── calendar/google  vinculación opcional con Google Calendar (tokens cifrados AES-GCM)
 ├── push      suscripciones y envío de Web Push
 ├── common    manejo de errores de la API
 ├── security  sesión, OAuth, CSRF y login de desarrollo
@@ -116,6 +117,16 @@ sequenceDiagram
   (`mood` o `chat`) y la web recarga solo esa parte.
 - **Notificaciones push**: con la app cerrada, el backend envía Web Push firmado
   con claves VAPID; `web/public/sw.js` muestra la notificación.
+
+## Google Calendar
+
+Opcional y por persona. `GET /api/google-calendar/connect` redirige a Google con el
+permiso `calendar.events` (acceso offline); el callback canjea el código y guarda los
+tokens cifrados con AES-256-GCM (`GOOGLE_TOKEN_KEY`) en `google_calendar_links`. Al crear
+un evento, `EventService` publica un aviso y `GoogleCalendarMirror` lo copia en segundo
+plano al calendario de quien lo ve (nunca un «Solo yo» ajeno); `google_event_copies`
+guarda el id de cada copia para borrarla. Los eventos de Google se leen en vivo y no se
+guardan en in2u. Si Google revoca el permiso, la vinculación se borra sola.
 
 ## Consejos
 

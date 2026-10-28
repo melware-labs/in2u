@@ -33,6 +33,7 @@ services:
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:${WEB_PORT:-8080}}
       DEV_LOGIN: ${DEV_LOGIN:-false}
+      GOOGLE_TOKEN_KEY: ${GOOGLE_TOKEN_KEY:-}
       VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
       VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
     healthcheck:

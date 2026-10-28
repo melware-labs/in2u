@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { GoogleCalendarCard } from '../components/GoogleCalendarCard';
 import { NewEventSheet } from '../components/NewEventSheet';
 import { CalendarIcon, ChevronIcon, ClockIcon, PlusCircleIcon } from '../components/icons';
-import { api, type CoupleEvent, type Me } from '../lib/api';
+import { api, type CoupleEvent, type GoogleEvent, type Me } from '../lib/api';
 import { localIsoDate, monthGrid } from '../lib/dates';
 import { locale, t } from '../lib/i18n';
 import { firstName } from '../lib/text';
@@ -18,6 +19,7 @@ export function Calendar({ me }: { me: Me }) {
   const [month, setMonth] = useState(now.getMonth());
   const [selected, setSelected] = useState(localIsoDate(now));
   const [events, setEvents] = useState<CoupleEvent[]>([]);
+  const [googleEvents, setGoogleEvents] = useState<GoogleEvent[]>([]);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,6 +34,13 @@ export function Calendar({ me }: { me: Me }) {
       setEvents(await api.events(from, to));
     } catch {
       setError(t.error);
+    }
+    // Los eventos de Google son aparte: si falla (o no hay vínculo) el calendario de in2u sigue igual.
+    try {
+      const status = await api.googleCalendar();
+      setGoogleEvents(status.connected ? await api.googleEvents(from, to) : []);
+    } catch {
+      setGoogleEvents([]);
     }
   }, [cells]);
 
@@ -48,6 +57,15 @@ export function Calendar({ me }: { me: Me }) {
     }
     return map;
   }, [events]);
+
+  const googleByDay = useMemo(() => {
+    const map = new Map<string, GoogleEvent[]>();
+    for (const e of googleEvents) {
+      const key = localIsoDate(new Date(e.startsAt));
+      map.set(key, [...(map.get(key) ?? []), e]);
+    }
+    return map;
+  }, [googleEvents]);
 
   function shift(delta: number) {
     const d = new Date(year, month + delta, 1);
@@ -66,6 +84,7 @@ export function Calendar({ me }: { me: Me }) {
 
   const monthLabel = new Date(year, month, 1).toLocaleDateString(INTL, { month: 'long', year: 'numeric' });
   const dayEvents = byDay.get(selected) ?? [];
+  const dayGoogle = googleByDay.get(selected) ?? [];
   const selectedLabel = new Date(`${selected}T00:00:00`).toLocaleDateString(INTL, {
     weekday: 'long',
     day: 'numeric',
@@ -118,6 +137,7 @@ export function Calendar({ me }: { me: Me }) {
                       {list.some((e) => e.mine && e.visibility === 'solo_yo') && <i className="dot mine" />}
                       {list.some((e) => e.visibility === 'los_dos') && <i className="dot both" />}
                       {list.some((e) => !e.mine) && <i className="dot partner" />}
+                      {googleByDay.has(c.dateKey) && <i className="dot google" />}
                     </span>
                   </button>
                 );
@@ -128,6 +148,7 @@ export function Calendar({ me }: { me: Me }) {
               <span><i className="dot mine" /> {t.calendario.legend.mine}</span>
               <span><i className="dot both" /> {t.calendario.legend.both}</span>
               <span><i className="dot partner" /> {t.calendario.legend.partner}</span>
+              {googleEvents.length > 0 && <span><i className="dot google" /> {t.google.badge}</span>}
             </div>
           </section>
         </div>
@@ -139,7 +160,7 @@ export function Calendar({ me }: { me: Me }) {
           <p className="kicker cap">
             {selectedLabel}
           </p>
-          {dayEvents.length === 0 && <p className="muted">{t.calendario.noEvents}</p>}
+          {dayEvents.length === 0 && dayGoogle.length === 0 && <p className="muted">{t.calendario.noEvents}</p>}
           {dayEvents.map((e) => (
             <article key={e.id} className={`bubble ${!e.mine ? 'sky' : e.visibility === 'los_dos' ? 'coral' : 'yellow'}`}>
               <div className="row between">
@@ -160,7 +181,26 @@ export function Calendar({ me }: { me: Me }) {
               )}
             </article>
           ))}
+          {dayGoogle.map((e) => (
+            <article key={e.id} className="bubble sky">
+              <div className="row between">
+                <div className="stack" style={{ gap: 6 }}>
+                  <h2>{e.title ?? t.google.untitled}</h2>
+                  <p className="meta">
+                    <ClockIcon /> {e.allDay ? t.google.allDay : `${timeLabel(e.startsAt)} – ${timeLabel(e.endsAt)}`}
+                  </p>
+                </div>
+                <span className="pill">{t.google.badge}</span>
+              </div>
+              {e.link && (
+                <a className="btn link" style={{ alignSelf: 'flex-end', padding: 0 }} href={e.link} target="_blank" rel="noopener noreferrer">
+                  {t.google.open}
+                </a>
+              )}
+            </article>
+          ))}
           {error && <p className="error">{error}</p>}
+          <GoogleCalendarCard onChange={load} />
         </div>
       </div>
 

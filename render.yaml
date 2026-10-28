@@ -34,3 +34,6 @@ services:
         sync: false
       - key: VAPID_PRIVATE_KEY
         sync: false
+      # Vincular Google Calendar: `openssl rand -base64 32`.
+      - key: GOOGLE_TOKEN_KEY
+        sync: false
