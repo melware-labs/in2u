@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { t } from '../i18n';
-import { MODES, type Mode, savedMode, setMode } from '../theme';
+import { t } from '../lib/i18n';
+import { MODES, type Mode, savedMode, setMode } from '../lib/theme';
 
 /** Solo el selector de modo día/noche. La paleta siempre es carmesí. */
 export function ThemePicker() {

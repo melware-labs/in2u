@@ -1,9 +1,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import { api, type ChatMessage, type Me } from '../api';
-import { t } from '../i18n';
-import { SendIcon } from '../icons';
-import { firstName, localIsoDate } from '../lib';
+import { SendIcon } from '../components/icons';
+import { api, type ChatMessage, type Me } from '../lib/api';
+import { localIsoDate } from '../lib/dates';
+import { t } from '../lib/i18n';
+import { firstName } from '../lib/text';
 
 function dayLabel(iso: string): string {
   const d = new Date(iso);

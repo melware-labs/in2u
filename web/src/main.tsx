@@ -2,9 +2,9 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { App } from './App';
-import { registerServiceWorker } from './push';
+import { registerServiceWorker } from './lib/push';
+import { initTheme } from './lib/theme';
 import './styles.css';
-import { initTheme } from './theme';
 
 initTheme();
 registerServiceWorker();

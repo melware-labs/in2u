@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { api, SYMPTOMS, type Me, type OwnCycle, type PartnerCycle, type Symptom, type Visibility } from '../api';
-import { locale, t } from '../i18n';
-import { ChevronIcon, MoonIcon } from '../icons';
-import { cycleGrid, firstName, localIsoDate, parseLocalDate } from '../lib';
-import { CycleCareCard } from './Home';
+import { CycleCareCard } from '../components/CycleCareCard';
+import { ChevronIcon, MoonIcon } from '../components/icons';
+import { api, SYMPTOMS, type Me, type OwnCycle, type PartnerCycle, type Symptom, type Visibility } from '../lib/api';
+import { cycleGrid } from '../lib/cycle';
+import { localIsoDate, parseLocalDate } from '../lib/dates';
+import { locale, t } from '../lib/i18n';
+import { firstName } from '../lib/text';
 
 const INTL = locale === 'en' ? 'en-US' : 'es-ES';
 const fmt = (key: string) => parseLocalDate(key).toLocaleDateString(INTL, { day: 'numeric', month: 'short' });

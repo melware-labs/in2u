@@ -1,5 +1,5 @@
 /** Catálogo curado de consejos, portado de src/content/tips.ts. Las claves coinciden con TipCatalog.java. */
-import { locale } from './i18n';
+import { locale } from '../lib/i18n';
 
 export type Tip = { key: string; kicker: string; title: string; body: string };
 

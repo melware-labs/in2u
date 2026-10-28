@@ -1,4 +1,4 @@
-package app.in2u.events;
+package app.in2u.calendar;
 
 import java.time.Duration;
 import java.time.Instant;

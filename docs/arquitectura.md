@@ -45,7 +45,7 @@ app.in2u
 ├── user      usuario actual (CurrentUser) y perfil
 ├── couple    vincular con código, días juntos, límite de intentos
 ├── mood      check-in diario y stream SSE (MoodStream)
-├── events    calendario compartido
+├── calendar  calendario compartido
 ├── cycle     ciclo, cálculo de fases y qué ve la pareja
 ├── tips      consejos: GeminiClient + RuleBasedTipper + TipCatalog
 ├── album     fotos
@@ -53,7 +53,8 @@ app.in2u
 ├── game      «¿Cuánto me conoces?»
 ├── push      suscripciones y envío de Web Push
 ├── common    manejo de errores de la API
-└── config    seguridad, OAuth, propiedades y login de desarrollo
+├── security  sesión, OAuth, CSRF y login de desarrollo
+└── config    propiedades (In2uProperties) y reloj
 ```
 
 Cada dominio tiene sus entidades JPA, repositorios Spring Data, servicio (cuando

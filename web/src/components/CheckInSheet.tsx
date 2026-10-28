@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
-import { api, type Checkin, type Me } from '../api';
-import { Emoji } from '../Emoji';
-import { MOODS, t } from '../i18n';
-import { firstName } from '../lib';
+import { api, type Checkin, type Me } from '../lib/api';
+import { MOODS, t } from '../lib/i18n';
+import { firstName } from '../lib/text';
+import { Emoji } from './Emoji';
 
 export function CheckInSheet({
   me,
