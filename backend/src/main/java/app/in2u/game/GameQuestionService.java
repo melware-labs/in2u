@@ -23,7 +23,7 @@ import app.in2u.tips.GeminiClient;
  * Preguntas infinitas: cada vez que alguien termina todas las preguntas
  * disponibles, se agrega un lote de 10 para la pareja. Primero se piden a
  * Gemini (plan gratuito) y, si no hay key, falla o devuelve pocas, se completa
- * con el banco de reserva. Nunca se repite una pregunta que la pareja ya tiene.
+ * con el banco de reserva y, si aún falta, con plantillas sorteadas (nunca se agotan). Nunca se repite una pregunta que la pareja ya tiene.
  * A Gemini solo viajan los textos de las preguntas, ningún dato de la pareja.
  */
 @Service
@@ -57,14 +57,30 @@ class GameQuestionService {
 		List<String> asked = Stream.concat(GameQuestionBank.BUILT_IN_ES.stream(),
 				existing.stream().map(GameQuestion::getTextEs)).toList();
 		Set<String> seen = asked.stream().map(QuestionDraft::normalize).collect(Collectors.toCollection(HashSet::new));
+		// Las plantillas repiten el texto con otras opciones: se distinguen por texto + opciones.
+		Set<String> seenCombos = existing.stream().map(q -> combo(q.getTextEs(), q.getOptionsEs()))
+			.collect(Collectors.toCollection(HashSet::new));
 
 		var batch = new ArrayList<GameQuestion>();
 		int number = existing.isEmpty() ? 1 : existing.get(existing.size() - 1).getBatch() + 1;
+		if (!gemini.enabled()) {
+			log.warn("GEMINI_API_KEY no está configurada: el juego usa preguntas de reserva.");
+		}
 		addUnseen(batch, fromGemini(asked), seen, coupleId, number, "gemini");
 		addUnseen(batch, GameQuestionBank.RESERVE, seen, coupleId, number, "reserva");
+		// Inagotable: si Gemini y el banco no alcanzan, se arman preguntas con las plantillas.
+		for (int attempt = 0; attempt < 20 && batch.size() < BATCH_SIZE; attempt++) {
+			for (QuestionDraft d : QuestionGenerator.next(BATCH_SIZE - batch.size(), RANDOM)) {
+				if (batch.size() < BATCH_SIZE && seenCombos.add(combo(d.textEs(), d.optionsEs()))) {
+					batch.add(new GameQuestion(coupleId, newKey(), number, batch.size(), d, "plantilla"));
+				}
+			}
+		}
 		if (batch.isEmpty()) {
 			return 0;
 		}
+		log.info("Lote {} del juego: {} preguntas ({} de Gemini).", number, batch.size(),
+				batch.stream().filter(q -> q.getSource().equals("gemini")).count());
 		try {
 			questions.saveAllAndFlush(batch);
 			return batch.size();
@@ -85,6 +101,11 @@ class GameQuestionService {
 				batch.add(new GameQuestion(coupleId, newKey(), number, batch.size(), d, source));
 			}
 		}
+	}
+
+	static String combo(String text, List<String> options) {
+		return QuestionDraft.normalize(text) + "|"
+				+ options.stream().map(QuestionDraft::normalize).sorted().collect(Collectors.joining(","));
 	}
 
 	private static String newKey() {

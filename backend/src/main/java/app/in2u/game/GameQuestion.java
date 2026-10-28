@@ -44,7 +44,7 @@ public class GameQuestion {
 	@Column(nullable = false)
 	private String optionsEn;
 
-	/** "gemini" o "reserva". */
+	/** "gemini", "reserva" o "plantilla". */
 	@Column(nullable = false)
 	private String source;
 
@@ -64,6 +64,10 @@ public class GameQuestion {
 		this.textEn = draft.textEn();
 		this.optionsEn = String.join("\n", draft.optionsEn());
 		this.source = source;
+	}
+
+	public String getSource() {
+		return source;
 	}
 
 	public String getQuestionKey() {
